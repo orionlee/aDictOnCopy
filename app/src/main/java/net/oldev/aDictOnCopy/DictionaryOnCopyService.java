@@ -1,5 +1,7 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.Service;
 import android.content.ClipData;
@@ -12,12 +14,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.util.List;
 
 // Based on the Clipboard wacther service at
 // https://stackoverflow.com/a/22287217
 public class DictionaryOnCopyService extends Service {
+
+    public static final String ACTION_START_FOREGROUND = "net.oldev.aDictOnCopy.DictionaryOnCopyService.START_FOREGROUND";
+    public static final String ACTION_STOP_FOREGROUND = "net.oldev.aDictOnCopy.DictionaryOnCopyService.STOP_FOREGROUND";
 
     private OnPrimaryClipChangedListener listener = new OnPrimaryClipChangedListener() {
         public void onPrimaryClipChanged() {
@@ -27,12 +34,63 @@ public class DictionaryOnCopyService extends Service {
 
     @Override 
     public void onCreate() {
+        super.onCreate();
+        PLog.d("DictionaryOnCopyService.onCreate()");
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PLog.d("DictionaryOnCopyService.onDestroy");
+        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(listener);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        String action = intent.getAction();
+        PLog.d("DictionaryOnCopyService.onStartCommand(): action=<%s>", action);
+        switch(action) {
+            case ACTION_START_FOREGROUND:
+                doStartForeground();
+                break;
+            case ACTION_STOP_FOREGROUND:
+                doStopForeground();
+                break;
+            default:
+                PLog.w("DictionaryOnCopyService.onStartCommand(): Unknown intent action <" + action + ">");
+        }
+
         return START_STICKY;
+    }
+
+    private static final int ONGOING_NOTIFICATION_ID = 99;
+
+    private void doStartForeground() {
+        String msg = "Starting Dictionary On Copy...";
+        PLog.d(msg);
+        dbgMsg(msg);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.dictionary)
+                .setContentTitle("Dictionary On Copy")
+                .setContentText("Touch to stop.");
+
+        // Set a PendingIntent to stop the copy service
+        Intent stopIntent = new Intent(getApplicationContext(), DictionaryOnCopyService.class);
+        stopIntent.setAction(ACTION_STOP_FOREGROUND);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+
+        Notification notification = builder.build();
+        startForeground(ONGOING_NOTIFICATION_ID, notification);
+    }
+
+    private void doStopForeground() {
+        String msg = "Stopping Dictionary On Copy...";
+        PLog.d(msg);
+        dbgMsg(msg);
+        stopForeground(true);
+        stopSelf();
     }
 
     @Override
@@ -118,17 +176,12 @@ public class DictionaryOnCopyService extends Service {
      * Convenience helper to start this background service, 
      * if it has not been started.
      */
-    public static ComponentName start(Context ctx) {
-        ComponentName res = ctx.startService(new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class));
-        PLog.v("DictionaryOnCopyService.start(): %s", res);
+    public static ComponentName startForeground(Context ctx) {
+        Intent intent = new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class);
+        intent.setAction(ACTION_START_FOREGROUND);
+        ComponentName res = ctx.startService(intent);
+        PLog.v("DictionaryOnCopyService.startForeground(): %s", res);
         return res;
     }
-
-    public static boolean stop(Context ctx) {
-        boolean res = ctx.stopService(new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class));
-        PLog.v("DictionaryOnCopyService.stop(): %s", res);
-        return res;
-    }
-
 
 }
