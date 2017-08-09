@@ -99,7 +99,9 @@ public class DictionaryOnCopyService extends Service {
         Intent intent = new Intent(Intent.ACTION_SEARCH);
         intent.setPackage(dictPkg); //you can use also livio.pack.lang.it_IT, livio.pack.lang.es_ES, livio.pack.lang.de_DE, livio.pack.lang.pt_BR or livio.pack.lang.fr_FR
         intent.putExtra(SearchManager.QUERY, word);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // FLAG_ACTIVITY_NO_USER_ACTION is needed to make system back button work, i.e.,
+        // after dictionary is launched, pressing back button will go back to the previous app.
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         if (isIntentAvailable(this, intent)) // check if intent is available ?
             startActivity(intent);
         else {
