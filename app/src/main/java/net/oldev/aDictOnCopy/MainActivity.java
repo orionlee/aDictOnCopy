@@ -1,5 +1,6 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 .setContentTitle("Dictionary On Copy")
                 .setContentText("Touch to stop.");
 
+        builder.setOngoing(true);
+
         // Set a PendingIntent to disable the copy service
         Intent resultIntent = new Intent(this, MainActivity.class);
         resultIntent.putExtra(STOP, Boolean.TRUE);
@@ -75,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DictionaryOnCopyService.stop(getApplicationContext());
-        mNotifyMgr.cancel(mNotificationId);
+        // the service remains even when the activity is destroyed.
     }
 }
 
