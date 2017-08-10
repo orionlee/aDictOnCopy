@@ -55,7 +55,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
                 .setContentText("Touch to stop.");
 
         // Set a PendingIntent to stop the copy service
-        Intent stopIntent = new Intent(getApplicationContext(), DictionaryOnCopyService.class);
+        Intent stopIntent = new Intent(getApplicationContext(), this.getClass());
         stopIntent.setAction(ACTION_STOP_FOREGROUND);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
