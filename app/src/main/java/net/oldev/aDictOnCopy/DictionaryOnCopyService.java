@@ -19,88 +19,35 @@ import android.widget.Toast;
 
 import java.util.List;
 
-// Based on the Clipboard wacther service at
-// https://stackoverflow.com/a/22287217
-public class DictionaryOnCopyService extends Service {
+public class DictionaryOnCopyService extends ClipChangedListenerForegroundService {
 
-    public static final String ACTION_START_FOREGROUND = "net.oldev.aDictOnCopy.DictionaryOnCopyService.START_FOREGROUND";
-    public static final String ACTION_STOP_FOREGROUND = "net.oldev.aDictOnCopy.DictionaryOnCopyService.STOP_FOREGROUND";
-
-    private OnPrimaryClipChangedListener listener = new OnPrimaryClipChangedListener() {
-        public void onPrimaryClipChanged() {
-            performClipboardCheck();
-        }
-    };
-
-    @Override 
-    public void onCreate() {
-        super.onCreate();
-        PLog.d("DictionaryOnCopyService.onCreate()");
-        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        PLog.d("DictionaryOnCopyService.onDestroy");
-        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(listener);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent.getAction();
-        PLog.d("DictionaryOnCopyService.onStartCommand(): action=<%s>", action);
-        switch(action) {
-            case ACTION_START_FOREGROUND:
-                doStartForeground();
-                break;
-            case ACTION_STOP_FOREGROUND:
-                doStopForeground();
-                break;
-            default:
-                PLog.w("DictionaryOnCopyService.onStartCommand(): Unknown intent action <" + action + ">");
-        }
-
-        return START_STICKY;
-    }
+    //
+    // Implement hooks for foreground service
+    //
 
     private static final int ONGOING_NOTIFICATION_ID = 99;
 
-    private void doStartForeground() {
-        String msg = "Starting Dictionary On Copy...";
-        PLog.d(msg);
-        dbgMsg(msg);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.dictionary)
-                .setContentTitle("Dictionary On Copy")
-                .setContentText("Touch to stop.");
-
-        // Set a PendingIntent to stop the copy service
-        Intent stopIntent = new Intent(getApplicationContext(), DictionaryOnCopyService.class);
-        stopIntent.setAction(ACTION_STOP_FOREGROUND);
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
-
-        Notification notification = builder.build();
-        startForeground(ONGOING_NOTIFICATION_ID, notification);
-    }
-
-    private void doStopForeground() {
-        String msg = "Stopping Dictionary On Copy...";
-        PLog.d(msg);
-        dbgMsg(msg);
-        stopForeground(true);
-        stopSelf();
+    @Override
+    protected CharSequence getServiceDisplayName() {
+        return getString(R.string.app_name);
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    protected int getOngoingNotificationId() {
+        return ONGOING_NOTIFICATION_ID;
     }
 
-    private void dbgMsg(String msg) {
-        android.widget.Toast.makeText(getApplicationContext(), msg,
-                android.widget.Toast.LENGTH_LONG).show();
+    //
+    // Implement actual clipboard logic, i.e., ClipChangedListenerService
+    //
+
+    @Override
+    protected OnPrimaryClipChangedListener createListener() {
+        return new OnPrimaryClipChangedListener() {
+            public void onPrimaryClipChanged() {
+                performClipboardCheck();
+            }
+        };
     }
 
     private void performClipboardCheck() {
@@ -171,6 +118,12 @@ public class DictionaryOnCopyService extends Service {
         List<ResolveInfo> lri = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return (lri != null) && (lri.size() > 0);
     }
+
+    private void dbgMsg(String msg) {
+        android.widget.Toast.makeText(getApplicationContext(), msg,
+                android.widget.Toast.LENGTH_LONG).show();
+    }
+
 
     /**
      * Convenience helper to start this background service, 

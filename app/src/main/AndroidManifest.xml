@@ -5,8 +5,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.oldev.aDictOnCopy"
-    android:versionCode="000101"
-    android:versionName="0.1.1"
+    android:versionCode="000102"
+    android:versionName="0.1.2"
     tools:ignore="GradleOverrides">
 
     <!-- for autoboot service -->
