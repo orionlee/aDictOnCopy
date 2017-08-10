@@ -14,7 +14,18 @@
     tools:context="net.oldev.aDictOnCopy.MainActivity">
 
 
-    <RelativeLayout 
+    <Button
+        android:id="@+id/startCtl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Start Dictionay On Copy" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <TextView
@@ -27,16 +38,5 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="Random text for testing. Hello world.\nThis is a testing. Some tyyypos.\nOn Friday, there is an announcement about changes will take effect in next fiscal year."
-            style="@style/BodyFont"
-            android:textIsSelectable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
 
 </LinearLayout>

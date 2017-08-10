@@ -2,6 +2,7 @@ package net.oldev.aDictOnCopy;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,21 +13,20 @@ public class MainActivity extends AppCompatActivity {
         // Now setup the UI
         setContentView(R.layout.activity_main);
 
+        View startCtl = findViewById(R.id.startCtl);
+        startCtl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DictionaryOnCopyService.startForeground(getApplicationContext());
+                MainActivity.this.finish();
+            }
+        });
+
+        // Let the main activity acts as a convenient shortcut to stop the service as well
+        if (DictionaryOnCopyService.isRunning()) {
+            DictionaryOnCopyService.stopForeground(getApplicationContext());
+        }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Start the service.
-        // It needs to be in onResume() rather than onCreate(), to support the workflow of
-        //   launch > press notification to stop > do something else > launch again,
-        // the subsequent launch will invoke onResume(), but may not invoke onCreate(), if the previous instance still exists.
-        //
-        DictionaryOnCopyService.startForeground(getApplicationContext());
-    }
-
-
 
     @Override
     protected void onDestroy() {

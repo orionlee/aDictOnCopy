@@ -1,9 +1,6 @@
 package net.oldev.aDictOnCopy;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -13,13 +10,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import java.util.List;
 
 public class DictionaryOnCopyService extends ClipChangedListenerForegroundService {
+
+    //
+    // For query service running state (locally within the app)
+    //
+    private static boolean msRunning = false;
+    public static boolean isRunning() {
+        return msRunning;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        final int res = super.onStartCommand(intent, flags, startId);
+        msRunning = true;
+        return res;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        msRunning = false;
+    }
 
     //
     // Implement hooks for foreground service
@@ -131,7 +146,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
 
     /**
-     * Convenience helper to start this background service, 
+     * Convenience helper to start this background service,
      * if it has not been started.
      */
     public static ComponentName startForeground(Context ctx) {
@@ -142,4 +157,10 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return res;
     }
 
+    public static void stopForeground(Context ctx) {
+        Intent intent = new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class);
+        intent.setAction(ACTION_STOP_FOREGROUND);
+        ComponentName res = ctx.startService(intent);
+        PLog.v("DictionaryOnCopyService.stopForeground(): %s", res);
+    }
 }
