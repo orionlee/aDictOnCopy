@@ -14,7 +14,18 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     abstract protected CharSequence getServiceDisplayName();
 
+    /**
+     *
+     * @return the id to be used for the ongoing notification for foreground service. It should be a constant.
+     * @see android.app.Service#startForeground(int, Notification)
+     */
     abstract protected int getOngoingNotificationId();
+
+    /**
+     *
+     * @return the resource id for the icon used in the ongoing notification.
+     */
+    abstract protected int getNotificationSmallIconId();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -39,7 +50,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         PLog.d(msg);
         toastMsg(msg);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.dictionary)
+                .setSmallIcon(getNotificationSmallIconId())
                 .setContentTitle(getServiceDisplayName())
                 .setContentText("Touch to stop.");
 

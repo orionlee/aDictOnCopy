@@ -37,6 +37,11 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return ONGOING_NOTIFICATION_ID;
     }
 
+    @Override
+    protected int getNotificationSmallIconId() {
+        return R.drawable.dictionary;
+    }
+
     //
     // Implement actual clipboard logic, i.e., ClipChangedListenerService
     //
