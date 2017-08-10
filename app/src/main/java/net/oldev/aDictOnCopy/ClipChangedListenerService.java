@@ -42,6 +42,15 @@ public abstract class ClipChangedListenerService extends Service {
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(listener);
     }
 
+    protected void pause() {
+        PLog.d(LIFECYCLE_LOG_FORMAT, "pause()");
+        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(listener);
+    }
+
+    protected void resume() {
+        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;

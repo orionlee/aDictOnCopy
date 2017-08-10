@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
 
 import java.util.List;
 
@@ -53,9 +52,23 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return ONGOING_NOTIFICATION_ID;
     }
 
+    private static final NotificationResources NOTIFICATION_RESOURCES = new NotificationResources() {
+        @Override
+        public int getNotificationSmallIconId() { return R.drawable.dictionary; }
+
+        @Override
+        public int getPauseNotificationSmallIconId() { return R.drawable.dictionary_pause; }
+
+        @Override
+        public int getPauseActionIconId() { return R.drawable.btn_pause; }
+
+        @Override
+        public int getResumeActionIconId() { return R.drawable.btn_resume; }
+    };
+
     @Override
-    protected int getNotificationSmallIconId() {
-        return R.drawable.dictionary;
+    protected NotificationResources getNotificationResources() {
+        return NOTIFICATION_RESOURCES;
     }
 
     //

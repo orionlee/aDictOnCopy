@@ -8,5 +8,5 @@ Launcher Icons source:
 - [x] A button to start the service / app itself as a shortcut to stop
 - [x] Log service cycle in details
 - [x] Review log statements and level
-- [ ] Add pause
+- [x] Add pause/resume on notification bar
 - [ ] Allow users to specify dictionary to use.
