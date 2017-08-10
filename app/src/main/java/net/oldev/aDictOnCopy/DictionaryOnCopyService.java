@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
 
 import java.util.List;
 
@@ -79,19 +80,19 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
                 CharSequence clipText = (cd.getItemAt(0).getText()).toString();
                 String msg = "<" + descText + "> " + clipText;
-                PLog.d(msg);
+                PLog.v(msg);
                 boolean launched = launchDictionaryIfAWord(clipText);
                 if (!launched) dbgMsg("[Not word]" + msg);
             } else if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
                 CharSequence clipText = cd.getItemAt(0).coerceToText(getApplicationContext());
                 String msg = "<" + descText + "> " + clipText;
-                PLog.d(msg);
+                PLog.v(msg);
                 boolean launched = launchDictionaryIfAWord(clipText);
                 if (!launched) dbgMsg("[Not word]" + msg);
             } else {
                 String msg = "!<" + descText + "> " + (cd.getItemAt(0).toString());
-                PLog.d(msg);
-                dbgMsg(msg);
+                PLog.v(msg);
+                dbgMsg("[Unsupported type]" + msg);
             }
         }
     }
@@ -140,8 +141,10 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void dbgMsg(String msg) {
-        android.widget.Toast.makeText(getApplicationContext(), msg,
-                android.widget.Toast.LENGTH_LONG).show();
+        if (BuildConfig.DEBUG) {
+            android.widget.Toast.makeText(getApplicationContext(), msg,
+                    android.widget.Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -153,7 +156,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         Intent intent = new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class);
         intent.setAction(ACTION_START_FOREGROUND);
         ComponentName res = ctx.startService(intent);
-        PLog.v("DictionaryOnCopyService.startForeground(): %s", res);
+        PLog.v("DictionaryOnCopyService.startForeground(ctx): %s", res);
         return res;
     }
 
@@ -161,6 +164,6 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         Intent intent = new Intent(ctx.getApplicationContext(), DictionaryOnCopyService.class);
         intent.setAction(ACTION_STOP_FOREGROUND);
         ComponentName res = ctx.startService(intent);
-        PLog.v("DictionaryOnCopyService.stopForeground(): %s", res);
+        PLog.v("DictionaryOnCopyService.stopForeground(ctx): %s", res);
     }
 }

@@ -15,6 +15,8 @@ public abstract class ClipChangedListenerService extends Service {
 
     private final ClipboardManager.OnPrimaryClipChangedListener listener;
 
+    protected final String LIFECYCLE_LOG_FORMAT = this.getClass().getSimpleName() + ".%s";
+
     public ClipChangedListenerService() {
         listener = createListener();
     }
@@ -29,14 +31,14 @@ public abstract class ClipChangedListenerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        PLog.d(this.getClass().getSimpleName() + ".onCreate()");
+        PLog.d(LIFECYCLE_LOG_FORMAT, "onCreate()");
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        PLog.d(this.getClass().getSimpleName() + ".onDestroy()");
+        PLog.d(LIFECYCLE_LOG_FORMAT, "onDestroy()");
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(listener);
     }
 

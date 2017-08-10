@@ -30,7 +30,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
-        PLog.d(".onStartCommand(): action=<%s>", action);
+        PLog.d(LIFECYCLE_LOG_FORMAT, "onStartCommand(): action=<%s>", action);
         switch(action) {
             case ACTION_START_FOREGROUND:
                 doStartForeground();
@@ -39,16 +39,16 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
                 doStopForeground();
                 break;
             default:
-                PLog.w(".onStartCommand(): Unknown intent action <" + action + ">");
+                PLog.w("  .onStartCommand(): Unknown intent action <" + action + ">");
         }
 
         return START_STICKY;
     }
 
     private void doStartForeground() {
-        String msg = "Starting " + getServiceDisplayName() + "...";
-        PLog.d(msg);
-        toastMsg(msg);
+        PLog.d(LIFECYCLE_LOG_FORMAT, "doStartForeground()");
+        toastMsg("Starting " + getServiceDisplayName() + "...");
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getNotificationSmallIconId())
                 .setContentTitle(getServiceDisplayName())
@@ -65,9 +65,9 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
     }
 
     private void doStopForeground() {
-        String msg = "Stopping " + getServiceDisplayName() + "...";
-        PLog.d(msg);
-        toastMsg(msg);
+        PLog.d(LIFECYCLE_LOG_FORMAT, "doStopForeground()");
+        toastMsg("Stopping " + getServiceDisplayName() + "...");
+
         stopForeground(true);
         stopSelf();
     }
