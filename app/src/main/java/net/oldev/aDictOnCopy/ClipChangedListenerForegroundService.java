@@ -55,7 +55,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent.getAction();
+        String action = ( intent != null ? intent.getAction() : "[null-intent]"); // In some edge cases, intent is null
         PLog.d(LIFECYCLE_LOG_FORMAT, "onStartCommand(): action=<" + action + ">");
         switch(action) {
             case ACTION_START_FOREGROUND:
