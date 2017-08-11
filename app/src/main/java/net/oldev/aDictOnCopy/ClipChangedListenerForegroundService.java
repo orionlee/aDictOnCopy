@@ -25,6 +25,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
      */
     abstract protected int getOngoingNotificationId();
 
+    abstract protected CharSequence getNotificationTitle();
 
     public static interface NotificationResources {
         /**
@@ -127,7 +128,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
     private NotificationCompat.Builder createBasicBuilder() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIconId())
-                .setContentTitle(getServiceDisplayName())
+                .setContentTitle(getNotificationTitle())
                 .setContentText("Touch to stop.");
 
         // Set a PendingIntent to stop the copy service

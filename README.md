@@ -10,11 +10,11 @@ Launcher Icons source:
 - [x] Review log statements and level
 - [x] Add pause/resume on notification bar
 - [x] Allow users to specify dictionary to use.
-- [ ] Bug fixes
+- [x] Bug fixes
   - [x] Livio's dictionaries do not support colordict action well.
   - [x] Clipboard Data null handling
-- [ ] Misc. UI cleanup
+- [x] Misc. UI cleanup
   - [x] UI layout / style in todos
-  - [ ] Notification title (using app name is redundant)
+  - [x] Notification title (using app name is redundant)
   - [x] Prompt users to start service after selecting a dictionary
 - [ ] i18N

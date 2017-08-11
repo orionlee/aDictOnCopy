@@ -52,6 +52,11 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     @Override
+    protected CharSequence getNotificationTitle() {
+        return "Launch dictionary when text is copied.";
+    }
+
+    @Override
     protected int getOngoingNotificationId() {
         return ONGOING_NOTIFICATION_ID;
     }
