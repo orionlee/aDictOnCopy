@@ -42,16 +42,14 @@ public class MainActivity extends AppCompatActivity {
 
         final DictionaryChooser chooser = new DictionaryChooser(MainActivity.this);
 
-        final TextView selectDictCtl = (TextView)findViewById(R.id.dictSelectCtl);
+        final View selectDictCtl = findViewById(R.id.dictSelectCtl);
         selectDictCtl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooser.prompt(new DictionaryChooser.OnSelectedListener() {
                     @Override
                     public void onSelected(DictionaryChooser.DictChoiceItem item) {
-                        selectDictCtl.setText(item.getLabel());
-                        DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
-                                MainActivity.this);
+                        setDictionaryToUse(item);
                     }
                 });
             }
@@ -61,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         if (dictPackageNameInUse != null) {
             DictionaryChooser.DictChoiceItem item = chooser.getInfoOfPackage(dictPackageNameInUse);
             if (item != null) {
-                selectDictCtl.setText(item.getLabel());
+                final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
+                selectDictOutput .setText(item.getLabel());
             } else {
                 String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
                         dictPackageNameInUse);
@@ -79,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setDictionaryToUse(DictionaryChooser.DictChoiceItem item) {
+        final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
+        selectDictOutput.setText(item.getLabel()); //TODO: let UI bind to the model instead
+        DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
+                MainActivity.this);
+    }
 
     private void autoSetDefaultDictionary(DictionaryChooser chooser) {
         PLog.d("autoSetDefaultDictionary(): auto select a dictionary to use (case initial installation).");
@@ -86,11 +91,8 @@ public class MainActivity extends AppCompatActivity {
         if (dictChoiceItems.size() > 0) {
             // Just pick the first one
             DictionaryChooser.DictChoiceItem item = dictChoiceItems.get(0);
+            setDictionaryToUse(item);
 
-            final TextView selectDictCtl = (TextView)findViewById(R.id.dictSelectCtl);
-            selectDictCtl.setText(item.getLabel());
-            DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
-                    MainActivity.this);
         } else {
             Toast.makeText(this, "No dictionary found. Please install an appropriate one.", Toast.LENGTH_LONG).show();
         }

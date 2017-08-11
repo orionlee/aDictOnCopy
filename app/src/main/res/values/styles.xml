@@ -23,9 +23,20 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="SectionFont" parent="@style/HeadingFont">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
     <style name="BodyFont" parent="@style/HeadingFont">
         <item name="android:textSize">18sp</item>
         <item name="android:layout_marginTop">8sp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ItemFont" parent="@style/HeadingFont">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginTop">0sp</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
