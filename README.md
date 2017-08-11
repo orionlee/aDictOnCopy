@@ -11,6 +11,7 @@ Launcher Icons source:
 - [x] Add pause/resume on notification bar
 - [x] Allow users to specify dictionary to use.
 - [ ] Bug fixes
+  - [x] Livio's dictionaries do not support colordict action well.
   - [ ] Clipboard Data null handling
 - [ ] Misc. UI cleanup
   - [ ] UI layout / style in todos

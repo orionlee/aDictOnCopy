@@ -139,12 +139,21 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
     private void launchDictionary(CharSequence word) {
         String dictPkg = SettingsModel.getPackageName(this);
-        Intent intent = new Intent(SettingsModel.getAction(this));
+        String action = SettingsModel.getAction(this);
+        if (dictPkg.startsWith("livio.pack.lang.") && action != Intent.ACTION_SEARCH) {
+            PLog.v("DictionaryOnCopyService.launchDictionary(): Livio-specific workaround for action. package=%s", dictPkg);
+            // Livio dictionaries support colordict's action, but somehow it only brings up the app without word lookup.
+            // So here I use Livio's default action string
+            action = Intent.ACTION_SEARCH;
+        }
+        Intent intent = new Intent(action);
         intent.setPackage(dictPkg);
         intent.putExtra(SearchManager.QUERY, word);
         // FLAG_ACTIVITY_NO_USER_ACTION is needed to make system back button work, i.e.,
         // after dictionary is launched, pressing back button will go back to the previous app.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+
+        PLog.v("DictionaryOnCopyService.launchDictionary(): intent=%s", intent);
         if (isIntentAvailable(this, intent)) // check if intent is available ?
             startActivity(intent);
         else {
