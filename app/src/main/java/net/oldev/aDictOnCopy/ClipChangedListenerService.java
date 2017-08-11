@@ -48,6 +48,7 @@ public abstract class ClipChangedListenerService extends Service {
     }
 
     protected void resume() {
+        PLog.d(LIFECYCLE_LOG_FORMAT, "resume()");
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
     }
 

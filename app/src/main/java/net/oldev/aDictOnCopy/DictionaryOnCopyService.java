@@ -101,6 +101,26 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
                 ClipDescription desc = cd.getDescription();
                 String descText = desc.toString();
                 if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) || desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
+                    // Extra verbose debug messages to diagnose why the service (aka listener) is fired twice when
+                    // a copy is performed.
+                    //
+                    // Conclusions:
+                    // - it seems to be some android weiredness that when html text is copied
+                    //   (tried on browsers and other apps), system clipboard manager fires
+                    //    the listener twice (or even 3 times) in a row.
+                    // - It can be shown from the debug statement: the current time logged differs by a few ms.
+                    //   Furthermore, the oid of the listener instance is the same, suggesting it is not the case
+                    //   2 instances of the listener has been registered.
+                    // - It does not happen when the text to be copied is plain text
+                    // - Tested on 2 devices, ibe with Andriid 7.1 and one with 4.4
+                    // - There does not seem to be any workaround, barring some custom logic that tracks the last time
+                    //   the listener was fired and prevent it from firing again (with the same text) within a short timespan.
+                    //   Given there is no user-visible difference (of firing the dictionary multiple times in a few ms),
+                    //   I opt for leaving it alone.
+                    //
+                    ///descText += String.format(" { oid:[%s] , ts:[%s] , label:[%s] , mimeTypeCount:[%s] , intent:[%s] } ",
+                    ///        listener.hashCode(), System.currentTimeMillis(), desc.getLabel(), desc.getMimeTypeCount(), cd.getItemAt(0).getIntent());
+
                     // For plain text, sometimes using cd.getItemAt(0).getText()).toString() will throw null pointers
                     // simplify the flow using coerceToText
                     CharSequence clipText = cd.getItemAt(0).coerceToText(getApplicationContext());
@@ -191,7 +211,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
         public static @NonNull String getAction(Context ctx) {
             // Intent.ACTION_SEARCH would work, but it may be too generic.
-            // use color dict intent limits the packages to a manageable level.
+            // use color dict intent limits the packages to a manageable level (at UI).
             return "colordict.intent.action.SEARCH";
         }
 
