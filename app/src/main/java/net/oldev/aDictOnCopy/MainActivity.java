@@ -35,8 +35,7 @@ public class MainActivity extends AppCompatActivity {
         startCtl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DictionaryOnCopyService.startForeground(getApplicationContext());
-                MainActivity.this.finish();
+                startServiceAndFinish();
             }
         });
 
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSelected(DictionaryChooser.DictChoiceItem item) {
                         setDictionaryToUse(item);
+                        promptUserToStartService();
                     }
                 });
             }
@@ -76,6 +76,28 @@ public class MainActivity extends AppCompatActivity {
             DictionaryOnCopyService.stopForeground(getApplicationContext());
         }
 
+    }
+
+    private void startServiceAndFinish() {
+        DictionaryOnCopyService.startForeground(getApplicationContext());
+        MainActivity.this.finish();
+    }
+
+    private void promptUserToStartService() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Start")
+                .setMessage("Dictionary has been selected. Do you want to start?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startServiceAndFinish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {}
+                });
+        builder.create().show();
     }
 
     private void setDictionaryToUse(DictionaryChooser.DictChoiceItem item) {
@@ -127,7 +149,8 @@ class DictionaryChooser {
             public void onClick(DialogInterface dialog, int which) {
                 // The 'which' argument contains the index position
                 // of the selected item
-                dbgMsg(choices.get(which).getPackageName() + " is selected");
+                ///dbgMsg(choices.get(which).getPackageName() + " is selected");
+                PLog.v("DictionaryChooser.prompt(): <%s> is selected.", choices.get(which).getPackageName());
                 listener.onSelected(choices.get(which));
             }
         });

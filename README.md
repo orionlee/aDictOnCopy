@@ -16,4 +16,5 @@ Launcher Icons source:
 - [ ] Misc. UI cleanup
   - [x] UI layout / style in todos
   - [ ] Notification title (using app name is redundant)
-  - [ ] Prompt users to start service after selecting a dictionary
+  - [x] Prompt users to start service after selecting a dictionary
+- [ ] i18N
