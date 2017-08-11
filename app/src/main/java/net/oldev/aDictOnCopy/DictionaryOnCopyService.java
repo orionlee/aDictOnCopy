@@ -102,7 +102,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
                     String msg = "<" + descText + "> " + clipText;
                     PLog.v(msg);
                     boolean launched = launchDictionaryIfAWord(clipText);
-                    if (!launched) dbgMsg("[Not word]" + msg);
+                    if (!launched) dbgMsg("[Not a word]" + msg);
                 } else {
                     String msg = "!<" + descText + "> " + (cd.getItemAt(0).toString());
                     PLog.v(msg);
@@ -155,7 +155,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         // after dictionary is launched, pressing back button will go back to the previous app.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 
-        PLog.v("DictionaryOnCopyService.launchDictionary(): intent=%s", intent);
+        PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
         if (isIntentAvailable(this, intent)) // check if intent is available ?
             startActivity(intent);
         else {
