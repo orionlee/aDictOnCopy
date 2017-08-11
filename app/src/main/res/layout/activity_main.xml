@@ -39,4 +39,19 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
 
+    <TextView
+        android:text="Dictionary"
+        style="@style/BodyFont"
+        android:layout_gravity="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" /> <!-- TODO: style - add fold and underline -->
+
+    <Button
+        android:id="@+id/dictSelectCtl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:textAllCaps="false"
+        android:text="Select a Dictionary" />
+
 </LinearLayout>
