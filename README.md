@@ -12,8 +12,9 @@ Launcher Icons source:
 - [x] Allow users to specify dictionary to use.
 - [ ] Bug fixes
   - [x] Livio's dictionaries do not support colordict action well.
-  - [ ] Clipboard Data null handling
+  - [x] Clipboard Data null handling
 - [ ] Misc. UI cleanup
   - [ ] UI layout / style in todos
   - [ ] Notification title (using app name is redundant)
-  - [ ] Start/stop toast messages: use short duration 
+  - [ ] Start/stop toast messages: use short duration
+  - [ ] Prompt users to start service after selecting a dictionary

@@ -89,28 +89,30 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void performClipboardCheck() {
-        ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (cb.hasPrimaryClip()) {
-            ClipData cd = cb.getPrimaryClip();
-            ClipDescription desc = cd.getDescription();
-            String descText = desc.toString();
-            if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-                CharSequence clipText = (cd.getItemAt(0).getText()).toString();
-                String msg = "<" + descText + "> " + clipText;
-                PLog.v(msg);
-                boolean launched = launchDictionaryIfAWord(clipText);
-                if (!launched) dbgMsg("[Not word]" + msg);
-            } else if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
-                CharSequence clipText = cd.getItemAt(0).coerceToText(getApplicationContext());
-                String msg = "<" + descText + "> " + clipText;
-                PLog.v(msg);
-                boolean launched = launchDictionaryIfAWord(clipText);
-                if (!launched) dbgMsg("[Not word]" + msg);
-            } else {
-                String msg = "!<" + descText + "> " + (cd.getItemAt(0).toString());
-                PLog.v(msg);
-                dbgMsg("[Unsupported type]" + msg);
+        try {
+            ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            if (cb.hasPrimaryClip()) {
+                ClipData cd = cb.getPrimaryClip();
+                ClipDescription desc = cd.getDescription();
+                String descText = desc.toString();
+                if (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) || desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
+                    // For plain text, sometimes using cd.getItemAt(0).getText()).toString() will throw null pointers
+                    // simplify the flow using coerceToText
+                    CharSequence clipText = cd.getItemAt(0).coerceToText(getApplicationContext());
+                    String msg = "<" + descText + "> " + clipText;
+                    PLog.v(msg);
+                    boolean launched = launchDictionaryIfAWord(clipText);
+                    if (!launched) dbgMsg("[Not word]" + msg);
+                } else {
+                    String msg = "!<" + descText + "> " + (cd.getItemAt(0).toString());
+                    PLog.v(msg);
+                    dbgMsg("[Unsupported type]" + msg);
+                }
             }
+        } catch (Throwable t) {
+            // Catch any exception here as a safety net, to prevent the app crashes.
+            PLog.e("Unhandled errors in DictionaryOnCopyService.performClipboardCheck().", t);
+            toastMsg("Unexpected errors in Dictionary On Copy. Please try again.");
         }
     }
 
@@ -164,6 +166,11 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     private boolean isIntentAvailable(Context context, Intent intent) {
         List<ResolveInfo> lri = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return (lri != null) && (lri.size() > 0);
+    }
+
+    private void toastMsg(String msg) {
+        android.widget.Toast.makeText(getApplicationContext(), msg,
+                android.widget.Toast.LENGTH_LONG).show();
     }
 
     private void dbgMsg(String msg) {
