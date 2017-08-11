@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
                 String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
                         dictPackageNameInUse);
                 PLog.w(warnMsg);
-                autoSetDefaultDictionary();
+                autoSetDefaultDictionary(chooser);
             }
         } else {
-            autoSetDefaultDictionary();
+            autoSetDefaultDictionary(chooser);
         }
 
         // Let the main activity acts as a convenient shortcut to stop the service as well
@@ -79,8 +79,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void autoSetDefaultDictionary() {
-        PLog.w("TODO: implement autoSetDefaultDictionary()");
+
+    private void autoSetDefaultDictionary(DictionaryChooser chooser) {
+        PLog.d("autoSetDefaultDictionary(): auto select a dictionary to use (case initial installation).");
+        List<DictionaryChooser.DictChoiceItem> dictChoiceItems = chooser.getAvailableDictionaries();
+        if (dictChoiceItems.size() > 0) {
+            // Just pick the first one
+            DictionaryChooser.DictChoiceItem item = dictChoiceItems.get(0);
+
+            final TextView selectDictCtl = (TextView)findViewById(R.id.dictSelectCtl);
+            selectDictCtl.setText(item.getLabel());
+            DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
+                    MainActivity.this);
+        } else {
+            Toast.makeText(this, "No dictionary found. Please install an appropriate one.", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -106,7 +119,7 @@ class DictionaryChooser {
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
         builder.setTitle("Select a Dictionary");
 
-        final List<DictChoiceItem> choices = getAvailableDictionaries(mCtx);
+        final List<DictChoiceItem> choices = getAvailableDictionaries();
         builder.setAdapter(new DictChoicesAdapter(choices), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -131,14 +144,14 @@ class DictionaryChooser {
 
     }
 
-    private static List<DictChoiceItem> getAvailableDictionaries(Context ctx) {
-        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(ctx));
+    public List<DictChoiceItem> getAvailableDictionaries() {
+        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(mCtx));
         intent.putExtra(SearchManager.QUERY, "test");
-        List<ResolveInfo> lri = ctx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> lri = mCtx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
         ArrayList<DictChoiceItem> items = new ArrayList<DictChoiceItem>(lri.size());
         for (int i = 0; i < lri.size(); i++) {
-            items.add(toDictChoiceItem(ctx, lri.get(i)));
+            items.add(toDictChoiceItem(mCtx, lri.get(i)));
         }
         return items;
     }

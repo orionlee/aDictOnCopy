@@ -9,7 +9,9 @@ Launcher Icons source:
 - [x] Log service cycle in details
 - [x] Review log statements and level
 - [x] Add pause/resume on notification bar
-- [ ] Allow users to specify dictionary to use.
+- [x] Allow users to specify dictionary to use.
+- [ ] Bug fixes
+  - [ ] Clipboard Data null handling
 - [ ] Misc. UI cleanup
   - [ ] UI layout / style in todos
   - [ ] Notification title (using app name is redundant)
