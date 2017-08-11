@@ -129,7 +129,8 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIconId())
                 .setContentTitle(getNotificationTitle())
-                .setContentText("Touch to stop.");
+                .setContentText("Touch to stop.")
+                .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
         // Set a PendingIntent to stop the copy service
         Intent stopIntent = new Intent(getApplicationContext(), this.getClass());
