@@ -8,10 +8,14 @@ import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.List;
+
 
 public class DictionaryOnCopyService extends ClipChangedListenerForegroundService {
 
@@ -134,9 +138,9 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void launchDictionary(CharSequence word) {
-        String dictPkg = "livio.pack.lang.en_US";
-        Intent intent = new Intent(Intent.ACTION_SEARCH);
-        intent.setPackage(dictPkg); //you can use also livio.pack.lang.it_IT, livio.pack.lang.es_ES, livio.pack.lang.de_DE, livio.pack.lang.pt_BR or livio.pack.lang.fr_FR
+        String dictPkg = SettingsModel.getPackageName(this);
+        Intent intent = new Intent(SettingsModel.getAction(this));
+        intent.setPackage(dictPkg);
         intent.putExtra(SearchManager.QUERY, word);
         // FLAG_ACTIVITY_NO_USER_ACTION is needed to make system back button work, i.e.,
         // after dictionary is launched, pressing back button will go back to the previous app.
@@ -157,6 +161,38 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         if (BuildConfig.DEBUG) {
             android.widget.Toast.makeText(getApplicationContext(), msg,
                     android.widget.Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static class SettingsModel {
+        private static final String PREFERENCES_KEY = "net.oldev.aDictOnCopy";
+        private static final String PREFS_PACKAGE_NAME = "dict.packageName";
+
+        public static @NonNull String getAction(Context ctx) {
+            // Intent.ACTION_SEARCH would work, but it may be too generic.
+            // use color dict intent limits the packages to a manageable level.
+            return "colordict.intent.action.SEARCH";
+        }
+
+        public static @Nullable String getPackageName(Context ctx) {
+            return getPrefs(ctx).getString(PREFS_PACKAGE_NAME, null);
+        }
+
+        /**
+         *
+          * @param packageName the package name of the dictionary app to be launched
+         */
+        public static void setPackageName(String packageName, Context ctx) {
+            SharedPreferences.Editor editor = getPrefs(ctx).edit();
+            editor.putString(PREFS_PACKAGE_NAME, packageName);
+            editor.commit();
+        }
+
+        private static SharedPreferences getPrefs(Context ctx) {
+            SharedPreferences prefs =
+                    ctx.getSharedPreferences(PREFERENCES_KEY,
+                            Context.MODE_PRIVATE);
+            return prefs;
         }
     }
 

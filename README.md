@@ -10,3 +10,7 @@ Launcher Icons source:
 - [x] Review log statements and level
 - [x] Add pause/resume on notification bar
 - [ ] Allow users to specify dictionary to use.
+- [ ] Misc. UI cleanup
+  - [ ] UI layout / style in todos
+  - [ ] Notification title (using app name is redundant)
+  - [ ] Start/stop toast messages: use short duration 

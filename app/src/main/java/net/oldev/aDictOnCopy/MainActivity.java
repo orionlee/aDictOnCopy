@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -39,25 +40,47 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final DictionaryChooser chooser = new DictionaryChooser(MainActivity.this);
+
         final TextView selectDictCtl = (TextView)findViewById(R.id.dictSelectCtl);
         selectDictCtl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DictionaryChooser(MainActivity.this).prompt(new DictionaryChooser.OnSelectedListener() {
+                chooser.prompt(new DictionaryChooser.OnSelectedListener() {
                     @Override
                     public void onSelected(DictionaryChooser.DictChoiceItem item) {
                         selectDictCtl.setText(item.getLabel());
-                        // TODO: store in the backend
+                        DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
+                                MainActivity.this);
                     }
                 });
             }
         });
+
+        final String dictPackageNameInUse = DictionaryOnCopyService.SettingsModel.getPackageName(this);
+        if (dictPackageNameInUse != null) {
+            DictionaryChooser.DictChoiceItem item = chooser.getInfoOfPackage(dictPackageNameInUse);
+            if (item != null) {
+                selectDictCtl.setText(item.getLabel());
+            } else {
+                String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
+                        dictPackageNameInUse);
+                PLog.w(warnMsg);
+                autoSetDefaultDictionary();
+            }
+        } else {
+            autoSetDefaultDictionary();
+        }
 
         // Let the main activity acts as a convenient shortcut to stop the service as well
         if (DictionaryOnCopyService.isRunning()) {
             DictionaryOnCopyService.stopForeground(getApplicationContext());
         }
 
+    }
+
+    private void autoSetDefaultDictionary() {
+        PLog.w("TODO: implement autoSetDefaultDictionary()");
     }
 
     @Override
@@ -97,8 +120,19 @@ class DictionaryChooser {
         builder.create().show();
     }
 
+    public DictChoiceItem getInfoOfPackage(String packageName) {
+        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(mCtx));
+        intent.setPackage(packageName);
+        intent.putExtra(SearchManager.QUERY, "test");
+
+        ResolveInfo ri = mCtx.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+        return ( (ri != null) ? toDictChoiceItem(mCtx, ri) : null);
+
+    }
+
     private static List<DictChoiceItem> getAvailableDictionaries(Context ctx) {
-        Intent intent = new Intent("colordict.intent.action.SEARCH"); // use color dict limits the packages to a manageable level.
+        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(ctx));
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = ctx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
@@ -109,7 +143,7 @@ class DictionaryChooser {
         return items;
     }
 
-    private static DictChoiceItem toDictChoiceItem(Context ctx, ResolveInfo ri) {
+    private static @NonNull DictChoiceItem toDictChoiceItem(@NonNull Context ctx, @NonNull ResolveInfo ri) {
         PackageManager pm = ctx.getPackageManager();
         return new DictChoiceItem(ri.activityInfo.applicationInfo.packageName,
                 ri.loadLabel(pm),
