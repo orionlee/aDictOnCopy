@@ -145,14 +145,36 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     // Actual logic in launching dictionary
     //
 
-    private static final int MAX_NUM_WORDS_IN_TEXT = 3;
-    private static boolean isAWord(CharSequence text) {
+    private static final int MAX_NUM_WORDS_IN_TEXT = 5;
+    private static final int MAX_NUM_CHARS_IN_TEXT = 100;
+    static boolean isAWord(CharSequence text) { // package scope for unit test
         String textStr = text.toString().trim();
         if (textStr.isEmpty()) { // NO-op for empty string
             return false;
         }
+
+        if (textStr.length() > MAX_NUM_CHARS_IN_TEXT) {
+            return false;
+        }
+
+        // ignore URIs
+        if (textStr.matches("^(https?|file|mailto|tel):.*")) {
+            return false;
+        }
+
+        // ignore numbers
+        if (textStr.matches("^[$0-9.,\\s%/]+$")) {
+            return false;
+        }
+
+        // ignore text with too many words (e.g., a phrase or a sentence)
         final String[] splitted = textStr.split("\\s+", MAX_NUM_WORDS_IN_TEXT + 1);
-        return splitted.length <= MAX_NUM_WORDS_IN_TEXT;
+        if (splitted.length > MAX_NUM_WORDS_IN_TEXT) {
+            return false;
+        }
+
+        // Pass all tests. text considered to be a word
+        return true;
     }
 
     private boolean launchDictionaryIfAWord(CharSequence text) {
