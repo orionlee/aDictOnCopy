@@ -25,6 +25,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -42,14 +43,13 @@ public class MainActivitySanityTest {
                 DictionaryOnCopyService.isRunning());
 
 
-        // ASSUMPTION: a single dictionary, Livio English , has been installed on the device
-        // OPEN: mock the dictionary list
-
         // Test: assert a dictionary is auto-selected by default;
+        // ASSUMPTION: some dictionary, e.g., Livio English , has been installed on the device
+        // OPEN: mock the dictionary list
         onView(allOf(withId(R.id.dictSelectOutput),
                 withParent(withId(R.id.dictSelectCtl)),
                 isDisplayed()))
-                .check(matches(withText(("English"))));
+                .check(matches(not(withText(("Select...")))));
 
         // Test: click dictionary selection and pick one
         ViewInteraction dictSelectCtl = onView(
@@ -68,6 +68,9 @@ public class MainActivitySanityTest {
         ViewInteraction launchServiceDialogNoButton = onView(
                 allOf(withId(android.R.id.button2), withText("No")));
         launchServiceDialogNoButton.perform(scrollTo(), click());
+
+        // OPEN: test the dictionary selection is actually persisted.
+        // To do it reliably, I'd probably need a mock provide list though.
 
         //
         // Launch service manually
