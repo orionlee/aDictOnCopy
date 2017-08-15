@@ -233,9 +233,14 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         private static final String PREFERENCES_KEY = "net.oldev.aDictOnCopy";
         private static final String PREFS_PACKAGE_NAME = "dict.packageName";
 
-        private final Context mCtx;
+        public static interface ChangeListener {
+            void onChange(String newPackageName);
+        }
 
-        public SettingsModel(Context ctx) {
+        private final Context mCtx;
+        private ChangeListener mListener = null;
+
+        public SettingsModel(@NonNull Context ctx) {
             mCtx = ctx;
         }
 
@@ -262,8 +267,19 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             SharedPreferences.Editor editor = getPrefs().edit();
             editor.putString(PREFS_PACKAGE_NAME, packageName);
             editor.commit();
+            fireChangeEvent();
         }
 
+        public void setOnChangeListener(@Nullable ChangeListener listener) {
+            mListener = listener;
+            fireChangeEvent();
+        }
+
+        private void fireChangeEvent() {
+            if (mListener != null) {
+                mListener.onChange(getPackageName());
+            }
+        }
 
         private SharedPreferences getPrefs() {
             SharedPreferences prefs =

@@ -24,11 +24,35 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final DictionaryOnCopyService.SettingsModel mSettings = new DictionaryOnCopyService.SettingsModel(this);
+    private DictionaryOnCopyService.SettingsModel mSettings;
+    private DictionaryChooser mChooser;
+
+
+    private void bindModelToUI() {
+        mSettings.setOnChangeListener(new DictionaryOnCopyService.SettingsModel.ChangeListener() {
+            @Override
+            public void onChange(String newPackageName) {
+                DictionaryChooser.DictChoiceItem item = mChooser.getInfoOfPackage(newPackageName);
+                if (item != null) {
+                    final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
+                    selectDictOutput.setText(item.getLabel());
+                } else {
+                    String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
+                            newPackageName);
+                    PLog.w(warnMsg);
+                    Toast.makeText(MainActivity.this, "Selected dictionary " + newPackageName + " not found. " +
+                            "Please select one or install a supported dictionary.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSettings = new DictionaryOnCopyService.SettingsModel(this);
+        mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
 
         // Now setup the UI
         setContentView(R.layout.activity_main);
@@ -41,14 +65,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final DictionaryChooser chooser = new DictionaryChooser(MainActivity.this,
-                mSettings.getAction());
-
         final View selectDictCtl = findViewById(R.id.dictSelectCtl);
         selectDictCtl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chooser.prompt(new DictionaryChooser.OnSelectedListener() {
+                mChooser.prompt(new DictionaryChooser.OnSelectedListener() {
                     @Override
                     public void onSelected(DictionaryChooser.DictChoiceItem item) {
                         setDictionaryToUse(item);
@@ -58,20 +79,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final String dictPackageNameInUse = mSettings.getPackageName();
-        if (dictPackageNameInUse != null) {
-            DictionaryChooser.DictChoiceItem item = chooser.getInfoOfPackage(dictPackageNameInUse);
-            if (item != null) {
-                final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
-                selectDictOutput .setText(item.getLabel());
-            } else {
-                String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
-                        dictPackageNameInUse);
-                PLog.w(warnMsg);
-                autoSetDefaultDictionary(chooser);
-            }
-        } else {
-            autoSetDefaultDictionary(chooser);
+        bindModelToUI();
+
+        // Case initial installation: auto set a dictionary if available
+        if (mSettings.getPackageName() == null) {
+            autoSetDefaultDictionary(mChooser);
         }
 
         // Let the main activity acts as a convenient shortcut to stop the service as well
@@ -104,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDictionaryToUse(DictionaryChooser.DictChoiceItem item) {
-        final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
-        selectDictOutput.setText(item.getLabel()); //TODO: let UI bind to the model instead
         mSettings.setPackageName(item.getPackageName().toString());
     }
 
