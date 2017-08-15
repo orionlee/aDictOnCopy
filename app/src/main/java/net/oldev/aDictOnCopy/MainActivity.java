@@ -1,5 +1,6 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,8 +24,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    // package scope for DictionaryChooser
-    final DictionaryOnCopyService.SettingsModel mSettings = new DictionaryOnCopyService.SettingsModel(this);
+    private final DictionaryOnCopyService.SettingsModel mSettings = new DictionaryOnCopyService.SettingsModel(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final DictionaryChooser chooser = new DictionaryChooser(MainActivity.this);
+        final DictionaryChooser chooser = new DictionaryChooser(MainActivity.this,
+                mSettings.getAction());
 
         final View selectDictCtl = findViewById(R.id.dictSelectCtl);
         selectDictCtl.setOnClickListener(new View.OnClickListener() {
@@ -134,10 +135,12 @@ class DictionaryChooser {
         void onSelected(DictChoiceItem item);
     }
 
-    private final MainActivity mCtx; // need to use MainActivity as it needs to access to settings
+    private final Activity mCtx;
+    private final String mAction; // action string to be used to launch a dictionary service
 
-    public DictionaryChooser(MainActivity ctx) {
+    public DictionaryChooser(@NonNull Activity ctx, @NonNull String action) {
         mCtx = ctx;
+        mAction = action;
     }
 
     public void prompt(final OnSelectedListener listener) {
@@ -160,7 +163,7 @@ class DictionaryChooser {
     }
 
     public DictChoiceItem getInfoOfPackage(String packageName) {
-        Intent intent = new Intent(mCtx.mSettings.getAction());
+        Intent intent = new Intent(mAction);
         intent.setPackage(packageName);
         intent.putExtra(SearchManager.QUERY, "test");
 
@@ -171,7 +174,7 @@ class DictionaryChooser {
     }
 
     public List<DictChoiceItem> getAvailableDictionaries() {
-        Intent intent = new Intent(mCtx.mSettings.getAction());
+        Intent intent = new Intent(mAction);
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = mCtx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
