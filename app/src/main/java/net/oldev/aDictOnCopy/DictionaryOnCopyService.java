@@ -187,8 +187,9 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void launchDictionary(CharSequence word) {
-        String dictPkg = SettingsModel.getPackageName(this);
-        String action = SettingsModel.getAction(this);
+        final SettingsModel settings = new SettingsModel(this);
+        String dictPkg = settings.getPackageName();
+        String action = settings.getAction();
         if (dictPkg.startsWith("livio.pack.lang.") && action != Intent.ACTION_SEARCH) {
             PLog.v("DictionaryOnCopyService.launchDictionary(): Livio-specific workaround for action. package=%s", dictPkg);
             // Livio dictionaries support colordict's action, but somehow it only brings up the app without word lookup.
@@ -228,32 +229,45 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     public static class SettingsModel {
+
         private static final String PREFERENCES_KEY = "net.oldev.aDictOnCopy";
         private static final String PREFS_PACKAGE_NAME = "dict.packageName";
 
-        public static @NonNull String getAction(Context ctx) {
+        private final Context mCtx;
+
+        public SettingsModel(Context ctx) {
+            mCtx = ctx;
+        }
+
+
+        /**
+         *
+         * @return the action to be used for the dictionary intent. Constant for now.
+         */
+        public @NonNull String getAction() {
             // Intent.ACTION_SEARCH would work, but it may be too generic.
             // use color dict intent limits the packages to a manageable level (at UI).
             return "colordict.intent.action.SEARCH";
         }
 
-        public static @Nullable String getPackageName(Context ctx) {
-            return getPrefs(ctx).getString(PREFS_PACKAGE_NAME, null);
+        public @Nullable String getPackageName() {
+            return getPrefs().getString(PREFS_PACKAGE_NAME, null);
         }
 
         /**
          *
-          * @param packageName the package name of the dictionary app to be launched
+         * @param packageName the package name of the dictionary app to be launched
          */
-        public static void setPackageName(String packageName, Context ctx) {
-            SharedPreferences.Editor editor = getPrefs(ctx).edit();
+        public void setPackageName(String packageName) {
+            SharedPreferences.Editor editor = getPrefs().edit();
             editor.putString(PREFS_PACKAGE_NAME, packageName);
             editor.commit();
         }
 
-        private static SharedPreferences getPrefs(Context ctx) {
+
+        private SharedPreferences getPrefs() {
             SharedPreferences prefs =
-                    ctx.getSharedPreferences(PREFERENCES_KEY,
+                    mCtx.getSharedPreferences(PREFERENCES_KEY,
                             Context.MODE_PRIVATE);
             return prefs;
         }

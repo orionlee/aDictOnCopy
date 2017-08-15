@@ -1,6 +1,5 @@
 package net.oldev.aDictOnCopy;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    // package scope for DictionaryChooser
+    final DictionaryOnCopyService.SettingsModel mSettings = new DictionaryOnCopyService.SettingsModel(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final String dictPackageNameInUse = DictionaryOnCopyService.SettingsModel.getPackageName(this);
+        final String dictPackageNameInUse = mSettings.getPackageName();
         if (dictPackageNameInUse != null) {
             DictionaryChooser.DictChoiceItem item = chooser.getInfoOfPackage(dictPackageNameInUse);
             if (item != null) {
@@ -103,8 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private void setDictionaryToUse(DictionaryChooser.DictChoiceItem item) {
         final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
         selectDictOutput.setText(item.getLabel()); //TODO: let UI bind to the model instead
-        DictionaryOnCopyService.SettingsModel.setPackageName(item.getPackageName().toString(),
-                MainActivity.this);
+        mSettings.setPackageName(item.getPackageName().toString());
     }
 
     private void autoSetDefaultDictionary(DictionaryChooser chooser) {
@@ -133,9 +134,9 @@ class DictionaryChooser {
         void onSelected(DictChoiceItem item);
     }
 
-    private final Activity mCtx;
+    private final MainActivity mCtx; // need to use MainActivity as it needs to access to settings
 
-    public DictionaryChooser(Activity ctx) {
+    public DictionaryChooser(MainActivity ctx) {
         mCtx = ctx;
     }
 
@@ -159,7 +160,7 @@ class DictionaryChooser {
     }
 
     public DictChoiceItem getInfoOfPackage(String packageName) {
-        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(mCtx));
+        Intent intent = new Intent(mCtx.mSettings.getAction());
         intent.setPackage(packageName);
         intent.putExtra(SearchManager.QUERY, "test");
 
@@ -170,7 +171,7 @@ class DictionaryChooser {
     }
 
     public List<DictChoiceItem> getAvailableDictionaries() {
-        Intent intent = new Intent(DictionaryOnCopyService.SettingsModel.getAction(mCtx));
+        Intent intent = new Intent(mCtx.mSettings.getAction());
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = mCtx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
