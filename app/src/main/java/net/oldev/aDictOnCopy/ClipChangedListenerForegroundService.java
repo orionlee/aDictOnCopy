@@ -79,7 +79,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     private void doStartForeground() {
         PLog.d(LIFECYCLE_LOG_FORMAT, "doStartForeground()");
-        toastMsg("Starting " + getServiceDisplayName() + "...");
+        toastMsg(getString(R.string.info_msgf_starting_service, getServiceDisplayName()));
 
         NotificationCompat.Builder builder = createBasicBuilder();
 
@@ -119,7 +119,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     private void doStopForeground() {
         PLog.d(LIFECYCLE_LOG_FORMAT, "doStopForeground()");
-        toastMsg("Stopping " + getServiceDisplayName() + "...");
+        toastMsg(getString(R.string.info_msgf_stopping_service,getServiceDisplayName()));
 
         stopForeground(true);
         stopSelf();
@@ -129,7 +129,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIconId())
                 .setContentTitle(getNotificationTitle())
-                .setContentText("Touch to stop.")
+                .setContentText(getString(R.string.noti_msg_touch_to_stop))
                 .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
         // Set a PendingIntent to stop the copy service
@@ -145,7 +145,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getPauseActionIconId(), "Pause", pausePendingIntent);
+        builder.addAction(getNotificationResources().getPauseActionIconId(), getString(R.string.noti_btn_pause), pausePendingIntent);
         return builder;
     }
 
@@ -153,7 +153,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_RESUME);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getResumeActionIconId(), "Resume", pausePendingIntent);
+        builder.addAction(getNotificationResources().getResumeActionIconId(), getString(R.string.noti_btn_resume), pausePendingIntent);
         return builder;
     }
 

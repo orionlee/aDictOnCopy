@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
                             newPackageName);
                     PLog.w(warnMsg);
-                    Toast.makeText(MainActivity.this, "Selected dictionary " + newPackageName + " not found. " +
-                            "Please select one or install a supported dictionary.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.err_msgf_selected_dict_not_found, newPackageName), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -100,15 +99,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void promptUserToStartService() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Start")
-                .setMessage("Dictionary has been selected. Do you want to start?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.prompt_start_service_title)
+                .setMessage(R.string.prompt_start_service_msg)
+                .setPositiveButton(R.string.yes_btn_label, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         startServiceAndFinish();
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.no_btn_label, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {}
                 });
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             setDictionaryToUse(item);
 
         } else {
-            Toast.makeText(this, "No dictionary found. Please install an appropriate one.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.err_msg_dict_not_found, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -155,7 +154,7 @@ class DictionaryChooser {
 
     public void prompt(final OnSelectedListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-        builder.setTitle("Select a Dictionary");
+        builder.setTitle(R.string.prompt_select_dict_title);
 
         final List<DictChoiceItem> choices = getAvailableDictionaries();
         builder.setAdapter(new DictChoicesAdapter(choices), new DialogInterface.OnClickListener() {

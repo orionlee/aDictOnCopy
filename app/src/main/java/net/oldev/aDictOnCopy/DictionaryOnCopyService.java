@@ -53,7 +53,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
     @Override
     protected CharSequence getNotificationTitle() {
-        return "Launch dictionary when text is copied.";
+        return getString(R.string.noti_title); // TODO: consider to move it to NotificationResources
     }
 
     @Override
@@ -137,7 +137,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         } catch (Throwable t) {
             // Catch any exception here as a safety net, to prevent the app crashes.
             PLog.e("Unhandled errors in DictionaryOnCopyService.performClipboardCheck().", t);
-            toastMsg("Unexpected errors in Dictionary On Copy. Please try again.");
+            toastMsg(getString(R.string.err_msg_service_unexpected_err));
         }
     }
 
@@ -207,7 +207,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         if (isIntentAvailable(this, intent)) // check if intent is available ?
             startActivity(intent);
         else {
-            dbgMsg("Dictionary <" + dictPkg  + "> not found.");
+            toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, dictPkg));
         }
     }
 
@@ -217,6 +217,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void toastMsg(String msg) {
+
         android.widget.Toast.makeText(getApplicationContext(), msg,
                 android.widget.Toast.LENGTH_LONG).show();
     }

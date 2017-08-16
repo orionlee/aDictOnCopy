@@ -1,6 +1,8 @@
 package net.oldev.aDictOnCopy;
 
 
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.SmallTest;
 import android.support.test.rule.ActivityTestRule;
@@ -49,7 +51,7 @@ public class MainActivitySanityTest {
         onView(allOf(withId(R.id.dictSelectOutput),
                 withParent(withId(R.id.dictSelectCtl)),
                 isDisplayed()))
-                .check(matches(not(withText(("Select...")))));
+                .check(matches(not(withText((getString(R.string.dict_selection_label))))));
 
         // Test: click dictionary selection and pick one
         ViewInteraction dictSelectCtl = onView(
@@ -66,7 +68,7 @@ public class MainActivitySanityTest {
 
         // A dialog box asking whether to launch the service. answer no.
         ViewInteraction launchServiceDialogNoButton = onView(
-                allOf(withId(android.R.id.button2), withText("No")));
+                allOf(withId(android.R.id.button2), withText(getString(R.string.no_btn_label))));
         launchServiceDialogNoButton.perform(scrollTo(), click());
 
         // OPEN: test the dictionary selection is actually persisted.
@@ -80,7 +82,7 @@ public class MainActivitySanityTest {
                 mActivityTestRule.getActivity().isFinishing());
 
         ViewInteraction launchServiceButton = onView(
-                allOf(withId(R.id.startCtl), withText("Start Dictionary On Copy"), isDisplayed()));
+                allOf(withId(R.id.startCtl), withText(getString(R.string.start_service_label)), isDisplayed()));
         launchServiceButton.perform(click());
 
         delay(100); // give time for service & activity to complete their action
@@ -110,6 +112,11 @@ public class MainActivitySanityTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
+    }
+
+    @NonNull
+    private String getString(@StringRes int resId) {
+        return mActivityTestRule.getActivity().getString(resId);
     }
 
     private static void delay(long delayMillis) {

@@ -7,4 +7,28 @@
     <string name="app_name_debug" tools:ignore="UnusedResources">Dictionary On Copy (Dev)</string>
     <string name="app_name_release" tools:ignore="UnusedResources">Dictionary On Copy</string>
     <string name="service_label">Dictionary On Copy Service</string>
+
+    <string name="start_service_label">Start Dictionary On Copy</string>
+    <string name="app_intro_label">When text is copied, it will be looked up in the dictionary.</string>
+    <string name="selected_dict_label">Dictionary:</string>
+    <string name="dict_selection_label">Select...</string>
+    <string name="prompt_start_service_title">Start</string>
+    <string name="prompt_start_service_msg">Dictionary has been selected. Do you want to start?</string>
+    <string name="yes_btn_label">Yes</string>
+    <string name="no_btn_label">No</string>
+    <string name="prompt_select_dict_title">Select a Dictionary</string>
+    <string name="err_msgf_selected_dict_not_found">Selected dictionary %s is not found. Please select one, or install a supported dictionary.</string>
+    <string name="err_msg_dict_not_found">No dictionary found. Please install an appropriate one.</string>
+
+    <!-- resources for the service -->
+
+    <string name="info_msgf_starting_service">Starting %s ...</string>
+    <string name="info_msgf_stopping_service">Stopping %s ...</string>
+    <string name="noti_msg_touch_to_stop">Touch to stop.</string>
+    <string name="noti_btn_pause">Pause</string>
+    <string name="noti_btn_resume">Resume</string>
+    <string name="noti_title">Launch dictionary when text is copied.</string>
+    <string name="err_msg_service_unexpected_err">Unexpected errors in Dictionary On Copy. Please try again.</string>
+    <string name="err_msgf_service_dict_not_found_at_intent_launch">Dictionary [%s] not found."</string>
+
 </resources>
