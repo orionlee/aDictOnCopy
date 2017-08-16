@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 
 /**
@@ -16,8 +18,6 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
     public static final String ACTION_PAUSE = "net.oldev.aDictOnCopy.ClipChangedListenerForegroundService.PAUSE";
     public static final String ACTION_RESUME = "net.oldev.aDictOnCopy.ClipChangedListenerForegroundService.RESUME";
 
-    abstract protected CharSequence getServiceDisplayName();
-
     /**
      *
      * @return the id to be used for the ongoing notification for foreground service. It should be a constant.
@@ -25,31 +25,51 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
      */
     abstract protected int getOngoingNotificationId();
 
-    abstract protected CharSequence getNotificationTitle();
-
     public static interface NotificationResources {
+
+        @StringRes int getContentTitle();
+
+        @StringRes int getContentText();
+
         /**
          *
          * @return the resource id for the icon used in the ongoing notification.
          */
-        int getNotificationSmallIconId();
+        @DrawableRes int getNotificationSmallIcon();
+
+        // Notes: the following are all @StringRes or @DrawableRes
+        // But since they are optional (can be zero), they are not annotated as such/
 
         /**
          *
          * @return the resource id for the icon used if the service is paused.
          * 0 if the service does not allow pause.
          */
-        int getPauseNotificationSmallIconId();
+        int getPauseNotificationSmallIcon();
 
-        int getPauseActionIconId();
+        int getPauseActionIcon();
+        int getPauseActionText();
 
-        int getResumeActionIconId();
+        int getResumeActionIcon();
+        int getResumeActionText();
     }
 
     abstract protected NotificationResources getNotificationResources();
 
+    public abstract interface ServiceResources {
+        @StringRes int getDisplayName();
+        @StringRes int getStartingServiceTextf();
+        @StringRes int getStoppingServiceTextf();
+    }
+
+    abstract protected ServiceResources getServiceResources();
+
+    private CharSequence getServiceDisplayName() {
+        return getString(getServiceResources().getDisplayName());
+    }
+
     protected boolean allowPause() {
-        return getNotificationResources().getPauseNotificationSmallIconId() > 0;
+        return getNotificationResources().getPauseNotificationSmallIcon() > 0;
     }
 
 
@@ -79,7 +99,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     private void doStartForeground() {
         PLog.d(LIFECYCLE_LOG_FORMAT, "doStartForeground()");
-        toastMsg(getString(R.string.info_msgf_starting_service, getServiceDisplayName()));
+        toastMsg(getString(getServiceResources().getStartingServiceTextf(), getServiceDisplayName()));
 
         NotificationCompat.Builder builder = createBasicBuilder();
 
@@ -97,7 +117,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
         // Update UI
         NotificationCompat.Builder builder = createBasicBuilder();
-        builder.setSmallIcon(getNotificationResources().getPauseNotificationSmallIconId());
+        builder.setSmallIcon(getNotificationResources().getPauseNotificationSmallIcon());
 
         addActionResume(builder);
 
@@ -119,7 +139,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     private void doStopForeground() {
         PLog.d(LIFECYCLE_LOG_FORMAT, "doStopForeground()");
-        toastMsg(getString(R.string.info_msgf_stopping_service,getServiceDisplayName()));
+        toastMsg(getString(getServiceResources().getStoppingServiceTextf(),getServiceDisplayName()));
 
         stopForeground(true);
         stopSelf();
@@ -127,9 +147,9 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     private NotificationCompat.Builder createBasicBuilder() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(getNotificationResources().getNotificationSmallIconId())
-                .setContentTitle(getNotificationTitle())
-                .setContentText(getString(R.string.noti_msg_touch_to_stop))
+                .setSmallIcon(getNotificationResources().getNotificationSmallIcon())
+                .setContentTitle(getString(getNotificationResources().getContentTitle()))
+                .setContentText(getString(getNotificationResources().getContentText()))
                 .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
         // Set a PendingIntent to stop the copy service
@@ -145,7 +165,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getPauseActionIconId(), getString(R.string.noti_btn_pause), pausePendingIntent);
+        builder.addAction(getNotificationResources().getPauseActionIcon(), getString(getNotificationResources().getPauseActionText()), pausePendingIntent);
         return builder;
     }
 
@@ -153,7 +173,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_RESUME);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getResumeActionIconId(), getString(R.string.noti_btn_resume), pausePendingIntent);
+        builder.addAction(getNotificationResources().getResumeActionIcon(), getString(getNotificationResources().getResumeActionText()), pausePendingIntent);
         return builder;
     }
 

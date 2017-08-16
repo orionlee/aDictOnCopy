@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import java.util.List;
 
@@ -47,37 +49,56 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     private static final int ONGOING_NOTIFICATION_ID = 99;
 
     @Override
-    protected CharSequence getServiceDisplayName() {
-        return getString(R.string.app_name);
-    }
-
-    @Override
-    protected CharSequence getNotificationTitle() {
-        return getString(R.string.noti_title); // TODO: consider to move it to NotificationResources
-    }
-
-    @Override
     protected int getOngoingNotificationId() {
         return ONGOING_NOTIFICATION_ID;
     }
 
     private static final NotificationResources NOTIFICATION_RESOURCES = new NotificationResources() {
-        @Override
-        public int getNotificationSmallIconId() { return R.drawable.dictionary; }
 
         @Override
-        public int getPauseNotificationSmallIconId() { return R.drawable.dictionary_pause; }
+        public @StringRes int getContentTitle() { return R.string.noti_title; }
 
         @Override
-        public int getPauseActionIconId() { return R.drawable.btn_pause; }
+        public @StringRes int getContentText() { return R.string.noti_msg_touch_to_stop; }
 
         @Override
-        public int getResumeActionIconId() { return R.drawable.btn_resume; }
+        public @DrawableRes int getNotificationSmallIcon() { return R.drawable.dictionary; }
+
+        @Override
+        public int getPauseNotificationSmallIcon() { return R.drawable.dictionary_pause; }
+
+        @Override
+        public int getPauseActionIcon() { return R.drawable.btn_pause; }
+
+        @Override
+        public int getPauseActionText() { return R.string.noti_btn_pause; }
+
+        @Override
+        public int getResumeActionIcon() { return R.drawable.btn_resume; }
+
+        @Override
+        public int getResumeActionText() { return R.string.noti_btn_resume; }
     };
 
     @Override
     protected NotificationResources getNotificationResources() {
         return NOTIFICATION_RESOURCES;
+    }
+
+    private static final ServiceResources SERVICE_RESOURCES = new ServiceResources() {
+        @Override
+        public int getDisplayName() { return R.string.app_name; }
+
+        @Override
+        public int getStartingServiceTextf() { return R.string.info_msgf_starting_service; }
+
+        @Override
+        public int getStoppingServiceTextf() { return R.string.info_msgf_stopping_service; }
+    };
+
+    @Override
+    protected ServiceResources getServiceResources() {
+        return SERVICE_RESOURCES;
     }
 
     //
