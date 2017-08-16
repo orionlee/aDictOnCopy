@@ -17,4 +17,5 @@ Launcher Icons source:
   - [x] UI layout / style in todos
   - [x] Notification title (using app name is redundant)
   - [x] Prompt users to start service after selecting a dictionary
-- [ ] i18N
+- [x] i18N
+- [ ] More info on supported dictionaries, or broaden the list of supported dictionaries (with other more generic intent action)

@@ -15,6 +15,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -168,7 +169,8 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
     private static final int MAX_NUM_WORDS_IN_TEXT = 5;
     private static final int MAX_NUM_CHARS_IN_TEXT = 100;
-    static boolean isAWord(CharSequence text) { // package scope for unit test
+    @VisibleForTesting
+    static boolean isAWord(CharSequence text) {
         String textStr = text.toString().trim();
         if (textStr.isEmpty()) { // NO-op for empty string
             return false;

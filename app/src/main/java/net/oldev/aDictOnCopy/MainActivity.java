@@ -162,7 +162,6 @@ class DictionaryChooser {
             public void onClick(DialogInterface dialog, int which) {
                 // The 'which' argument contains the index position
                 // of the selected item
-                ///dbgMsg(choices.get(which).getPackageName() + " is selected");
                 PLog.v("DictionaryChooser.prompt(): <%s> is selected.", choices.get(which).getPackageName());
                 listener.onSelected(choices.get(which));
             }
@@ -262,11 +261,4 @@ class DictionaryChooser {
         }
     }
 
-
-    private void dbgMsg(String msg) {
-        if (BuildConfig.DEBUG) {
-            android.widget.Toast.makeText(mCtx.getApplicationContext(), msg,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
 }
