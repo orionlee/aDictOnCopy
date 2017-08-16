@@ -266,7 +266,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         public void setPackageName(String packageName) {
             SharedPreferences.Editor editor = getPrefs().edit();
             editor.putString(PREFS_PACKAGE_NAME, packageName);
-            editor.commit();
+            editor.apply(); // asynchronous apply is sufficient here. No need to use synchronous commit
             fireChangeEvent();
         }
 
