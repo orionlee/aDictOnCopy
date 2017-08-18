@@ -6,6 +6,8 @@
     <data>
         <variable name="settings"
             type="net.oldev.aDictOnCopy.DictionaryOnCopyService.SettingsModel" />
+        <variable name="settingsAdapter"
+            type="net.oldev.aDictOnCopy.MainActivity.SettingsAdapter" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -67,8 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:textAllCaps="false"
-                android:text="@{settings.packageName}" />
-             <!-- TODO: android:text - adapt package name to user readable one (with BindingAdapter or complex binding expression. Also consider case no package found with R.string.dict_selection_label as default -->
+                android:text="@{settingsAdapter.toPackageDisplayName(settings.packageName)}" />
         </LinearLayout>
 
     </LinearLayout>

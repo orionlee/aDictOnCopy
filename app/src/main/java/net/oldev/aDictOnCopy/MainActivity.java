@@ -30,6 +30,36 @@ public class MainActivity extends AppCompatActivity {
     private DictionaryOnCopyService.SettingsModel mSettings;
     private DictionaryChooser mChooser;
 
+    /**
+     * This class is functionally similar to the static methods
+     * annotated with Android Data Binding Library's @BindingAdapter or @BindingConversion
+     * The differences are:
+     * - this adapter applies to a specific attribute instance, i.e., conversion of packageName to
+     *   its display name in *some* android:text instances,
+     *   while the annotated static methods would have applied to all android:text attribute instances.
+     * - It cannot be a static method, it relies on mChooser member.
+     *
+     * Usage wise (in activity_main.xml): it is similar to importing a static XxxUtil class.
+     * Except it cannot be static (due to reliance of mChooser member)
+     *
+     * Alternative: wrap SettingsModel with a SettingsUIModel that encapsulates the logic.
+     */
+    public class SettingsAdapter {
+        public @NonNull CharSequence toPackageDisplayName(String newPackageName) {
+            DictionaryChooser.DictChoiceItem item =
+                    MainActivity.this.mChooser.getInfoOfPackage(newPackageName);
+            if (item != null) {
+                return item.getLabel();
+            } else {
+                String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
+                        newPackageName);
+                PLog.w(warnMsg);
+                Toast.makeText(MainActivity.this, getString(R.string.err_msgf_selected_dict_not_found, newPackageName), Toast.LENGTH_LONG).show();
+                return MainActivity.this.getString(R.string.dict_selection_label);
+            }
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         // Now setup the UI
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setSettings(mSettings);
+        binding.setSettingsAdapter(new SettingsAdapter());
 
         View startCtl = findViewById(R.id.startCtl);
         startCtl.setOnClickListener(new View.OnClickListener() {
