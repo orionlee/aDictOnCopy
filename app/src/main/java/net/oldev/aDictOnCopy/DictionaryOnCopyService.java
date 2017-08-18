@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -252,17 +254,12 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         }
     }
 
-    public static class SettingsModel {
+    public static class SettingsModel extends BaseObservable {
 
         private static final String PREFERENCES_KEY = "net.oldev.aDictOnCopy";
         private static final String PREFS_PACKAGE_NAME = "dict.packageName";
 
-        public static interface ChangeListener {
-            void onChange(String newPackageName);
-        }
-
         private final Context mCtx;
-        private ChangeListener mListener = null;
 
         public SettingsModel(@NonNull Context ctx) {
             mCtx = ctx;
@@ -279,6 +276,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             return "colordict.intent.action.SEARCH";
         }
 
+        @Bindable
         public @Nullable String getPackageName() {
             return getPrefs().getString(PREFS_PACKAGE_NAME, null);
         }
@@ -291,18 +289,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             SharedPreferences.Editor editor = getPrefs().edit();
             editor.putString(PREFS_PACKAGE_NAME, packageName);
             editor.apply(); // asynchronous apply is sufficient here. No need to use synchronous commit
-            fireChangeEvent();
-        }
-
-        public void setOnChangeListener(@Nullable ChangeListener listener) {
-            mListener = listener;
-            fireChangeEvent();
-        }
-
-        private void fireChangeEvent() {
-            if (mListener != null) {
-                mListener.onChange(getPackageName());
-            }
+            notifyPropertyChanged(BR.packageName);
         }
 
         private SharedPreferences getPrefs() {
