@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,24 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private DictionaryChooser mChooser;
 
 
-    private void bindModelToUI() {
-        mSettings.setOnChangeListener(new DictionaryOnCopyService.SettingsModel.ChangeListener() {
-            @Override
-            public void onChange(String newPackageName) {
-                DictionaryChooser.DictChoiceItem item = mChooser.getInfoOfPackage(newPackageName);
-                if (item != null) {
-                    final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
-                    selectDictOutput.setText(item.getLabel());
-                } else {
-                    String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
-                            newPackageName);
-                    PLog.w(warnMsg);
-                    Toast.makeText(MainActivity.this, getString(R.string.err_msgf_selected_dict_not_found, newPackageName), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
 
         // Now setup the UI
-        setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setSettings(mSettings);
 
         View startCtl = findViewById(R.id.startCtl);
         startCtl.setOnClickListener(new View.OnClickListener() {
@@ -77,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
-        bindModelToUI();
 
         // Case initial installation: auto set a dictionary if available
         if (mSettings.getPackageName() == null) {

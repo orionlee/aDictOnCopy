@@ -2,68 +2,75 @@
 <!--
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="net.oldev.aDictOnCopy.MainActivity">
+<layout>
+    <data>
+        <variable name="settings"
+            type="net.oldev.aDictOnCopy.DictionaryOnCopyService.SettingsModel" />
+    </data>
 
-
-    <Button
-        android:id="@+id/startCtl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/start_service_label" />
-
-    <RelativeLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="net.oldev.aDictOnCopy.MainActivity">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="@string/app_intro_label"
-            style="@style/BodyFont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
-
-    <LinearLayout
-        android:id="@+id/dictSelectCtl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:text="@string/selected_dict_label"
-            style="@style/SectionFont"
-            android:layout_gravity="bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <RelativeLayout
-            android:layout_width="@dimen/item_spacer_width"
-            android:layout_height="match_parent"/>
-        <TextView
-            android:id="@+id/dictSelectOutput"
-            style="@style/BodyFont"
+        <Button
+            android:id="@+id/startCtl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:textAllCaps="false"
-            android:text="@string/dict_selection_label" />
+            android:layout_gravity="center_horizontal"
+            android:text="@string/start_service_label" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="@string/app_intro_label"
+                style="@style/BodyFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+
+        <LinearLayout
+            android:id="@+id/dictSelectCtl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/selected_dict_label"
+                style="@style/SectionFont"
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="@dimen/item_spacer_width"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/dictSelectOutput"
+                style="@style/BodyFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textAllCaps="false"
+                android:text="@{settings.packageName}" />
+             <!-- TODO: android:text - adapt package name to user readable one (with BindingAdapter or complex binding expression. Also consider case no package found with R.string.dict_selection_label as default -->
+        </LinearLayout>
+
     </LinearLayout>
 
-
-</LinearLayout>
+</layout>
