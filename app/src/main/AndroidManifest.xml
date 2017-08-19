@@ -5,8 +5,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.oldev.aDictOnCopy"
-    android:versionCode="000313"
-    android:versionName="0.3.13"
+    android:versionCode="000314"
+    android:versionName="0.3.14"
     tools:ignore="GradleOverrides">
 
     <application
