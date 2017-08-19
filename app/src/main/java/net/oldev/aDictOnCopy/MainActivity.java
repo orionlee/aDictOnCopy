@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         mSettings.setOnChangeListener(new DictionaryOnCopyService.SettingsModel.ChangeListener() {
             @Override
             public void onChange(String newPackageName) {
-                DictionaryChooser.DictChoiceItem item = mChooser.getInfoOfPackage(newPackageName);
+                DictionaryManager.DictChoiceItem item = mChooser.getManager().getInfoOfPackage(newPackageName);
                 if (item != null) {
                     final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
                     selectDictOutput.setText(item.getLabel());
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mChooser.prompt(new DictionaryChooser.OnSelectedListener() {
                     @Override
-                    public void onSelected(DictionaryChooser.DictChoiceItem item) {
+                    public void onSelected(DictionaryManager.DictChoiceItem item) {
                         setDictionaryToUse(item);
                         promptUserToStartService();
                     }
@@ -102,16 +102,16 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void setDictionaryToUse(DictionaryChooser.DictChoiceItem item) {
+    private void setDictionaryToUse(DictionaryManager.DictChoiceItem item) {
         mSettings.setPackageName(item.getPackageName().toString());
     }
 
     private void autoSetDefaultDictionary(DictionaryChooser chooser) {
         PLog.d("autoSetDefaultDictionary(): auto select a dictionary to use (case initial installation).");
-        List<DictionaryChooser.DictChoiceItem> dictChoiceItems = chooser.getAvailableDictionaries();
+        List<DictionaryManager.DictChoiceItem> dictChoiceItems = chooser.getManager().getAvailableDictionaries();
         if (dictChoiceItems.size() > 0) {
             // Just pick the first one
-            DictionaryChooser.DictChoiceItem item = dictChoiceItems.get(0);
+            DictionaryManager.DictChoiceItem item = dictChoiceItems.get(0);
             setDictionaryToUse(item);
 
         } else {
