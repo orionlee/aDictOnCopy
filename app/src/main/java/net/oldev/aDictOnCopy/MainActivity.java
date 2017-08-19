@@ -7,10 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,25 +30,55 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DictionaryOnCopyService.SettingsModel mSettings;
-    private DictionaryChooser mChooser;
-
     /**
-     * This class is functionally similar to the static methods
-     * annotated with Android Data Binding Library's @BindingAdapter or @BindingConversion
-     * The differences are:
-     * - this adapter applies to a specific attribute instance, i.e., conversion of packageName to
-     *   its display name in *some* android:text instances,
-     *   while the annotated static methods would have applied to all android:text attribute instances.
-     * - It cannot be a static method, it relies on mChooser member.
+     * Semantically decorates DictionaryOnCopyService.SettingsModel,
+     * and provides additional UI-specific functionalities:
+     * - provides user-facing package display name
+     * - interfaces with Android Data Binding
      *
-     * Usage wise (in activity_main.xml): it is similar to importing a static XxxUtil class.
-     * Except it cannot be static (due to reliance of mChooser member)
-     *
-     * Alternative: wrap SettingsModel with a SettingsUIModel that encapsulates the logic.
      */
-    public class SettingsAdapter {
-        public @NonNull CharSequence toPackageDisplayName(String newPackageName) {
+    public class SettingsUIModel extends BaseObservable {
+        private final DictionaryOnCopyService.SettingsModel mRealSettings;
+
+        //
+        // Methods that wrap around DictionaryOnCopyService.SettingsModel
+        // are private scope because they are only needed within parent MainActivity
+        //
+        // The public methods are those exposed (to layouts) via Android Data Binding.
+        //
+        private SettingsUIModel() {
+            mRealSettings = new DictionaryOnCopyService.SettingsModel(MainActivity.this);
+        }
+
+        @NonNull
+        private String getAction() {
+            return mRealSettings.getAction();
+        }
+
+        @Nullable
+        private String getPackageName() {
+            return mRealSettings.getPackageName();
+        }
+
+        private void setPackageName(String packageName) {
+            mRealSettings.setPackageName(packageName);
+            notifyPropertyChanged(BR.packageDisplayName);
+        }
+
+        /**
+         * Encapsulates conversion logic from internal packageName to user-facing one.
+         *
+         * Functionally, it is similar to Android Data Binding's @BindingAdapter static methods,
+         * except this conversion is done specific for packageName (textual conversion),
+         * rather than generic attributes in Android Data Binding (primarily for type conversion).
+         *
+         * @return user-facing name for packageName
+         */
+        @Bindable
+        public @NonNull CharSequence getPackageDisplayName() {
+            // Conversion relies on parent instance's mChooser member.
+
+            final String newPackageName = getPackageName();
             DictionaryChooser.DictChoiceItem item =
                     MainActivity.this.mChooser.getInfoOfPackage(newPackageName);
             if (item != null) {
@@ -58,20 +91,22 @@ public class MainActivity extends AppCompatActivity {
                 return MainActivity.this.getString(R.string.dict_selection_label);
             }
         }
-
     }
+
+    private SettingsUIModel mSettings;
+    private DictionaryChooser mChooser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSettings = new DictionaryOnCopyService.SettingsModel(this);
+        mSettings = new SettingsUIModel();
         mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
 
         // Now setup the UI
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setSettings(mSettings);
-        binding.setSettingsAdapter(new SettingsAdapter());
 
         View startCtl = findViewById(R.id.startCtl);
         startCtl.setOnClickListener(new View.OnClickListener() {

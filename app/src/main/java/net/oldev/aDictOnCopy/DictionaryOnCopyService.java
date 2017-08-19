@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -254,7 +252,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         }
     }
 
-    public static class SettingsModel extends BaseObservable {
+    public static class SettingsModel {
 
         private static final String PREFERENCES_KEY = "net.oldev.aDictOnCopy";
         private static final String PREFS_PACKAGE_NAME = "dict.packageName";
@@ -276,7 +274,6 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             return "colordict.intent.action.SEARCH";
         }
 
-        @Bindable
         public @Nullable String getPackageName() {
             return getPrefs().getString(PREFS_PACKAGE_NAME, null);
         }
@@ -289,7 +286,6 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             SharedPreferences.Editor editor = getPrefs().edit();
             editor.putString(PREFS_PACKAGE_NAME, packageName);
             editor.commit(); // Needs to be synchronous, otherwise the change might not be picked up by the listeners/observers
-            notifyPropertyChanged(BR.packageName);
         }
 
         private SharedPreferences getPrefs() {

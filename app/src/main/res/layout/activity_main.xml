@@ -5,9 +5,7 @@
 <layout>
     <data>
         <variable name="settings"
-            type="net.oldev.aDictOnCopy.DictionaryOnCopyService.SettingsModel" />
-        <variable name="settingsAdapter"
-            type="net.oldev.aDictOnCopy.MainActivity.SettingsAdapter" />
+            type="net.oldev.aDictOnCopy.MainActivity.SettingsUIModel" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -69,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:textAllCaps="false"
-                android:text="@{settingsAdapter.toPackageDisplayName(settings.packageName)}" />
+                android:text="@{settings.packageDisplayName}" />
         </LinearLayout>
 
     </LinearLayout>
