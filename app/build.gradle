@@ -101,4 +101,5 @@ dependencies {
 
     androidTestCompile 'com.android.support.test:runner:1.0.0'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.0'
+    androidTestCompile 'org.mockito:mockito-android:2.8.47'
 }

@@ -2,6 +2,7 @@ package net.oldev.aDictOnCopy;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,7 +14,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private DictionaryOnCopyService.SettingsModel mSettings;
-    private DictionaryChooser mChooser;
+    @VisibleForTesting DictionaryChooser mChooser;
 
 
     private void bindModelToUI() {

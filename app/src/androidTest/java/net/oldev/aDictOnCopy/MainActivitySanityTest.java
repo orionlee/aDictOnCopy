@@ -71,9 +71,6 @@ public class MainActivitySanityTest {
                 allOf(withId(android.R.id.button2), withText(getString(R.string.no_btn_label))));
         launchServiceDialogNoButton.perform(scrollTo(), click());
 
-        // OPEN: test the dictionary selection is actually persisted.
-        // To do it reliably, I'd probably need a mock provide list though.
-
         //
         // Launch service manually
         //

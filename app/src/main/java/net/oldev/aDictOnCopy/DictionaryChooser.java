@@ -4,6 +4,7 @@ package net.oldev.aDictOnCopy;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class DictionaryChooser {
     }
 
     private final Activity mCtx;
-    private final DictionaryManager mDictMgr;
+    @VisibleForTesting final DictionaryManager mDictMgr;
 
     public DictionaryChooser(@NonNull Activity ctx, @NonNull String action) {
         mCtx = ctx;
