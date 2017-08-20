@@ -307,7 +307,8 @@ public class MainActivityTest {
         // A dialog box asking whether to launch the service.
         // click the specified button
         ViewInteraction launchServiceDialogOptionButton = onView(
-                allOf(withText(getString(launchServiceDialogBtnLabel))));
+                allOf(withText(getString(launchServiceDialogBtnLabel)),
+                        withParent(withParent(withId(R.id.buttonPanel)))));
         launchServiceDialogOptionButton.perform(scrollTo(), click());
 
     }
