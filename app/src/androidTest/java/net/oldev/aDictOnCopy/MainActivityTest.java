@@ -60,12 +60,12 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
-    private static class MockPackageMangerBuilder {
+    private static class StubPackageMangerBuilder {
 
         private static final List<ResolveInfo> RI_LIST_ALL = buildRiListAll();
         private final int mNumDictAvailable;
 
-        public MockPackageMangerBuilder(int numDictAvailable) {
+        public StubPackageMangerBuilder(int numDictAvailable) {
             if (numDictAvailable > RI_LIST_ALL.size()) {
                 throw new IllegalArgumentException(String.format("numDictAvailable <%s> is larger than max <s>",
                         numDictAvailable, RI_LIST_ALL.size()));
@@ -153,12 +153,12 @@ public class MainActivityTest {
         }
     }
 
-    private void mockDictionariesAvailable(int numDictAvailable) {
+    private void stubDictionariesAvailable(int numDictAvailable) {
         MainActivity activity = mActivityTestRule.getActivity();
 
-        PackageManager mockPkgMgr = new MockPackageMangerBuilder(numDictAvailable).build();
+        PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
 
-        activity.mChooser.mDictMgr.mPkgMgr = mockPkgMgr;
+        activity.mChooser.mDictMgr.mPkgMgr = stubPkgMgr;
     }
 
     // TODO: add various test configuration
@@ -173,7 +173,7 @@ public class MainActivityTest {
         assertFalse("The activity should shutdown existing service, if any, upon the screen is shown",
                 DictionaryOnCopyService.isRunning());
 
-        mockDictionariesAvailable(2); // 2 dictionaries available
+        stubDictionariesAvailable(2); // 2 dictionaries available
 
         onView(allOf(withId(R.id.dictSelectOutput),
                 withParent(withId(R.id.dictSelectCtl)),
