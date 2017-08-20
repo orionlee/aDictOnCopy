@@ -20,9 +20,11 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.ArgumentMatcher;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -55,14 +58,18 @@ import static org.mockito.Mockito.when;
  */
 @MediumTest
 @RunWith(AndroidJUnit4.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MainActivityTest {
 
+    private static final boolean RELAUNCH_ACTIVITY_TRUE = true;
+
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<MainActivity> mActivityTestRule =
+            new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
 
     private static class StubPackageMangerBuilder {
 
-        private static final List<ResolveInfo> RI_LIST_ALL = buildRiListAll();
+        static final List<ResolveInfo> RI_LIST_ALL = buildRiListAll();
         private final int mNumDictAvailable;
 
         public StubPackageMangerBuilder(int numDictAvailable) {
@@ -161,46 +168,81 @@ public class MainActivityTest {
         activity.mChooser.mDictMgr.mPkgMgr = stubPkgMgr;
     }
 
-    // TODO: add various test configuration
-    // - no dictionary available
-    // TODO: test more thoroughly
-    // - test default selection (on initial installation)
-    // - ensure selected is persisted
+    @Test
+    public void t1InitialLaunchCaseNoDictAvailable() throws Throwable {
+        stubDictionariesAvailable(0);
+
+        // Manually call initial setup logic again now that the package manager is stubbed
+        // (I cannot intercept activity's life cycle so that the Activity instance under test
+        //  is to use stub PackageManager for its setup (mostly in onCreate())
+        mActivityTestRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivityTestRule.getActivity().autoSetDefaultDictionary();
+            }
+        });
+
+        // Ensure the label indicates no dictionary is picked.
+        //
+        delay(100); // some delay to ensure uiThread finishes its work
+        onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
+
+    }
 
     @Test
-    public void mainActivityTest() {
+    public void t2InitialLaunchCaseDictAvailable() throws Throwable {
+        stubDictionariesAvailable(2);
+
+        // Manually call initial setup logic again now that the package manager is stubbed
+        // (I cannot intercept activity's life cycle so that the Activity instance under test
+        //  is to use stub PackageManager for its setup (mostly in onCreate())
+        mActivityTestRule.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivityTestRule.getActivity().autoSetDefaultDictionary();
+            }
+        });
+
+        // Ensure the label indicates some dictionary is picked
+        //
+        delay(100); // some delay to ensure uiThread finishes its work
+        onViewDictSelectOutputCheckMatches(not(withText(getString(R.string.dict_selection_label))));
+
+    }
+
+
+    @Test
+    public void t3TypicalCase() {
         // Test: service has been shut down
         assertFalse("The activity should shutdown existing service, if any, upon the screen is shown",
                 DictionaryOnCopyService.isRunning());
 
         stubDictionariesAvailable(2); // 2 dictionaries available
 
-        onView(allOf(withId(R.id.dictSelectOutput),
-                withParent(withId(R.id.dictSelectCtl)),
-                isDisplayed()))
-                .check(matches(not(withText((getString(R.string.dict_selection_label))))));
+        onViewDictSelectOutputCheckMatches(not(withText(getString(R.string.dict_selection_label))));
 
         // Test: click dictionary selection and pick one
-        ViewInteraction dictSelectCtl = onView(
-                allOf(withId(R.id.dictSelectCtl), isDisplayed()));
-        dictSelectCtl.perform(click());
+        // answer *NO* in whether to launch service dialog
+        final int IDX_DICT_TO_PICK_IN_T3 = 1;
+        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T3, R.string.no_btn_label);
 
-        ViewInteraction linearLayout2 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.select_dialog_listview),
-                                withParent(withId(R.id.contentPanel))),
-                        0),
-                        isDisplayed()));
-        linearLayout2.perform(click());
+        // Ensure the label reflect the dict picked
+        final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+        onViewDictSelectOutputCheckMatches(withText(labelExpected));
 
-        // A dialog box asking whether to launch the service. answer no.
-        ViewInteraction launchServiceDialogNoButton = onView(
-                allOf(withId(android.R.id.button2), withText(getString(R.string.no_btn_label))));
-        launchServiceDialogNoButton.perform(scrollTo(), click());
-
+        // Verify the persistence in backend directly
+        //
+        // OPEN:
+        //   The original plan is to  verify at UI layer (rather than going to backend model),
+        //   in the next test t4 (after activity is relaunched).
+        //   But it cannot be done easily, as the UI output in the test case would rely on
+        //   system's real PackageManager, rather than the stub we use here.
+        final String packageNameExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3).activityInfo.packageName;
+        assertPackageNameInSettingsEquals(packageNameExpected);
 
         //
-        // Launch service manually
+        // Launch service using the top button
         //
 
         assertFalse("The Activity should still be running at this point.",
@@ -218,6 +260,76 @@ public class MainActivityTest {
         // Test: confirm the service is launched.
         assertTrue("The dictionary service should have been just launched",
                 DictionaryOnCopyService.isRunning());
+    }
+
+    @Test
+    public void t5TypicalCaseCasePressYesButton() {
+        stubDictionariesAvailable(2); // 2 dictionaries available
+
+        // Test: click dictionary selection and pick one
+        // answer *YES* in whether to launch service dialog
+        final int IDX_DICT_TO_PICK_IN_T4 = 0;
+        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T4, R.string.yes_btn_label);
+
+        delay(100); // give time for service & activity to complete their action
+
+        assertTrue("The Activity should be finished after the launch service option is clicked in the dialog.",
+                mActivityTestRule.getActivity().isFinishing());
+
+        // Test: confirm the service is launched.
+        assertTrue("The dictionary service should have been just launched",
+                DictionaryOnCopyService.isRunning());
+    }
+
+    /**
+     * Perform the following :
+     * - Click dictionary selection control
+     * - Pick a dictionary among the choices provided, as specified in dictChoiceIdx (0-based)
+     * - Click a button in the subsequent launch service dialog, as specified in launchServiceDialogBtnLabel
+     *
+     * @param dictChoiceIdx
+     * @param launchServiceDialogBtnLabel
+     */
+    private void clickDictSelectCtlAndSelectChoice(int dictChoiceIdx, @StringRes int launchServiceDialogBtnLabel) {
+        ViewInteraction dictSelectCtl = onView(
+                allOf(withId(R.id.dictSelectCtl), isDisplayed()));
+        dictSelectCtl.perform(click());
+
+        // Pick one in the multiple choices in the dialog
+        ViewInteraction linearLayout2 = onView(
+                allOf(childAtPosition(
+                        allOf(withId(R.id.select_dialog_listview),
+                                withParent(withId(R.id.contentPanel))),
+                        dictChoiceIdx),
+                        isDisplayed()));
+        linearLayout2.perform(click());
+
+        // A dialog box asking whether to launch the service.
+        // click the specified button
+        ViewInteraction launchServiceDialogOptionButton = onView(
+                allOf(withText(getString(launchServiceDialogBtnLabel))));
+        launchServiceDialogOptionButton.perform(scrollTo(), click());
+
+    }
+
+
+    private void assertPackageNameInSettingsEquals(String packageNameExpected) {
+        DictionaryOnCopyService.SettingsModel settings =
+                new DictionaryOnCopyService.SettingsModel(mActivityTestRule.getActivity());
+        assertEquals("Dictionary package picked in t3 should still be here, i.e., persisted",
+                packageNameExpected, settings.getPackageName());
+    }
+
+
+    /**
+     * Syntactic sugar to check the TextView @+id/dictSelectOutput
+     * @param matcher the condition to check on the view, beyond the basics that it exists and is displayed.
+     */
+    private ViewInteraction onViewDictSelectOutputCheckMatches(org.hamcrest.Matcher<? super android.view.View> matcher) {
+        return onView(allOf(withId(R.id.dictSelectOutput),
+                withParent(withId(R.id.dictSelectCtl)),
+                isDisplayed()))
+                .check(matches(matcher));
     }
 
     private static Matcher<View> childAtPosition(

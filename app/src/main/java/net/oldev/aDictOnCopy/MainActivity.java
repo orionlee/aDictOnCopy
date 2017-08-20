@@ -21,11 +21,15 @@ public class MainActivity extends AppCompatActivity {
         mSettings.setOnChangeListener(new DictionaryOnCopyService.SettingsModel.ChangeListener() {
             @Override
             public void onChange(String newPackageName) {
+                final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
+                if (newPackageName == null) {
+                    selectDictOutput.setText(R.string.dict_selection_label);
+                }
                 DictionaryManager.DictChoiceItem item = mChooser.getManager().getInfoOfPackage(newPackageName);
                 if (item != null) {
-                    final TextView selectDictOutput = (TextView)findViewById(R.id.dictSelectOutput);
                     selectDictOutput.setText(item.getLabel());
                 } else {
+                    selectDictOutput.setText(R.string.dict_selection_label);
                     String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
                             newPackageName);
                     PLog.w(warnMsg);
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Case initial installation: auto set a dictionary if available
         if (mSettings.getPackageName() == null) {
-            autoSetDefaultDictionary(mChooser);
+            autoSetDefaultDictionary();
         }
 
         // Let the main activity acts as a convenient shortcut to stop the service as well
@@ -104,18 +108,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDictionaryToUse(DictionaryManager.DictChoiceItem item) {
-        mSettings.setPackageName(item.getPackageName().toString());
+        final String packageName = ( item != null ? item.getPackageName().toString() : null );
+        mSettings.setPackageName(packageName);
     }
 
-    private void autoSetDefaultDictionary(DictionaryChooser chooser) {
+    @VisibleForTesting
+    void autoSetDefaultDictionary() {
         PLog.d("autoSetDefaultDictionary(): auto select a dictionary to use (case initial installation).");
-        List<DictionaryManager.DictChoiceItem> dictChoiceItems = chooser.getManager().getAvailableDictionaries();
+        List<DictionaryManager.DictChoiceItem> dictChoiceItems = mChooser.getManager().getAvailableDictionaries();
         if (dictChoiceItems.size() > 0) {
             // Just pick the first one
             DictionaryManager.DictChoiceItem item = dictChoiceItems.get(0);
             setDictionaryToUse(item);
 
         } else {
+            setDictionaryToUse(null);
             Toast.makeText(this, R.string.err_msg_dict_not_found, Toast.LENGTH_LONG).show();
         }
     }
