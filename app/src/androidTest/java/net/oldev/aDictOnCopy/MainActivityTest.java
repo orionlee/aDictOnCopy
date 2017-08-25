@@ -56,6 +56,8 @@ import static org.mockito.Mockito.withSettings;
  * It uses mock PackageManger to avoid external dictionary app dependency.
  * However, the mocks noticably slow down the test.
  *
+ * Test orders are important
+ *
  */
 @MediumTest
 @RunWith(AndroidJUnit4.class)
@@ -162,85 +164,71 @@ public class MainActivityTest {
     }
 
     private void stubDictionariesAvailable(int numDictAvailable) {
-        MainActivity activity = mActivityTestRule.getActivity();
+        final PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
 
-        PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
+        DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
+            @NonNull
+            @Override
+            public PackageManager getManager() {
+                return stubPkgMgr;
+            }
+        };
+    }
 
-        activity.mChooser.mDictMgr.mPkgMgr = stubPkgMgr;
+    /**
+     * A test setup for test t1
+     * It is masqueraded as test because it has a t1-specific parameter (0 dictionary)
+     * that cannot be expressed using @Before.
+     * It works because the tests are executed in order.
+     * The dollar sign after t1 in method name is to ensure the method is called
+     * before the real t1 test method.
+     */
+    @Test
+    public void t1$setUp() {
+        // Change the PackageManger use to a stub for test *before* Activity is created
+        stubDictionariesAvailable(0);
     }
 
     @Test
     public void t1InitialLaunchCaseNoDictAvailable() throws Throwable {
-        stubDictionariesAvailable(0);
-
-        // Manually call initial setup logic again now that the package manager is stubbed
-        // (I cannot intercept activity's life cycle so that the Activity instance under test
-        //  is to use stub PackageManager for its setup (mostly in onCreate())
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().autoSetDefaultDictionary();
-            }
-        });
-
-        // Ensure the label indicates no dictionary is picked.
-        //
-        delay(100); // some delay to ensure uiThread finishes its work
         onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
+    }
 
+    /**
+     * A test setup for test t2 (applied to subsequent tests too)
+     * It is masqueraded as test because it has a t2-specific parameter (2 dictionaries)
+     * that cannot be expressed using @Before
+     * It works because the tests are executed in order.
+     */
+    @Test
+    public void t2$setUp4RemainingTests() {
+        // Change the PackageManger use to a stub for test *before* Activity is created
+        stubDictionariesAvailable(2);
     }
 
     @Test
     public void t2InitialLaunchCaseDictAvailable() throws Throwable {
-        stubDictionariesAvailable(2);
-
-        // Manually call initial setup logic again now that the package manager is stubbed
-        // (I cannot intercept activity's life cycle so that the Activity instance under test
-        //  is to use stub PackageManager for its setup (mostly in onCreate())
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().autoSetDefaultDictionary();
-            }
-        });
-
-        // Ensure the label indicates some dictionary is picked
-        //
-        delay(100); // some delay to ensure uiThread finishes its work
         onViewDictSelectOutputCheckMatches(not(withText(getString(R.string.dict_selection_label))));
-
     }
 
 
+    private final int IDX_DICT_TO_PICK_IN_T3 = 1;
     @Test
     public void t3TypicalCase() {
         // Test: service has been shut down
         assertFalse("The activity should shutdown existing service, if any, upon the screen is shown",
                 DictionaryOnCopyService.isRunning());
 
-        stubDictionariesAvailable(2); // 2 dictionaries available
-
         onViewDictSelectOutputCheckMatches(not(withText(getString(R.string.dict_selection_label))));
 
         // Test: click dictionary selection and pick one
         // answer *NO* in whether to launch service dialog
-        final int IDX_DICT_TO_PICK_IN_T3 = 1;
         clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T3, R.string.no_btn_label);
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
                 .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
-
-        // Verify the persistence in backend directly
-        //
-        // OPEN:
-        //   The original plan is to  verify at UI layer (rather than going to backend model),
-        //   in the next test t4 (after activity is relaunched).
-        //   But it cannot be done easily, as the UI output in the test case would rely on
-        //   system's real PackageManager, rather than the stub we use here.
-        final String packageNameExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3).activityInfo.packageName;
-        assertPackageNameInSettingsEquals(packageNameExpected);
 
         //
         // Launch service using the top button
@@ -263,9 +251,19 @@ public class MainActivityTest {
                 DictionaryOnCopyService.isRunning());
     }
 
+    /**
+     * Semantically part of t3 test. It is to ensure the dictionary package selection in t3 is persisted.
+     * This test relies on the fact that Activity is relaunched per test in ActivityTest rule.
+     */
+    @Test
+    public void t4TypicalCaseVerifySettingsPersistence() {
+        final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+        onViewDictSelectOutputCheckMatches(withText(labelExpected));
+    }
+
     @Test
     public void t5TypicalCaseCasePressYesButton() {
-        stubDictionariesAvailable(2); // 2 dictionaries available
 
         // Test: click dictionary selection and pick one
         // answer *YES* in whether to launch service dialog

@@ -44,11 +44,23 @@ public class DictionaryManager {
 
     private final String mAction; // action string to be used to launch a dictionary service
 
-    @VisibleForTesting PackageManager mPkgMgr;
+    @VisibleForTesting final PackageManager mPkgMgr;
+
+    @VisibleForTesting
+    static interface PackageManagerHolder {
+        @NonNull PackageManager getManager();
+    }
+
+    /**
+     * Usage: set a custom holder in test statically,
+     * so that it can be used before Activity instances are created.
+     */
+    @VisibleForTesting
+    static PackageManagerHolder msPackageManagerHolderForTest  = null;
 
     public DictionaryManager(@NonNull PackageManager pm, @NonNull String action) {
         mAction = action;
-        mPkgMgr = pm;
+        mPkgMgr = msPackageManagerHolderForTest == null ? pm : msPackageManagerHolderForTest.getManager();
     }
 
     public @Nullable DictChoiceItem getInfoOfPackage(String packageName) {
