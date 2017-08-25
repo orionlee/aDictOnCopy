@@ -49,6 +49,7 @@ import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * A more reliable and complete test
@@ -81,7 +82,7 @@ public class MainActivityTest {
         }
 
         public PackageManager build() {
-            PackageManager mockPkgMgr = mock(PackageManager.class);
+            PackageManager mockPkgMgr = mock(PackageManager.class, withSettings().stubOnly());
 
             final List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
             for(int i = 0; i < mNumDictAvailable; i++) {
