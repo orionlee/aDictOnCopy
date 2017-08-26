@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mockito.ArgumentMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +43,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * A more reliable and complete test
@@ -83,49 +76,67 @@ public class MainActivityTest {
             mNumDictAvailable = numDictAvailable;
         }
 
-        public PackageManager build() {
-            PackageManager mockPkgMgr = mock(PackageManager.class, withSettings().stubOnly());
+        private static class StubPackageManager implements DictionaryManager.PackageManagerLite {
+            private final List<ResolveInfo> mRiList;
 
-            final List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
-            for(int i = 0; i < mNumDictAvailable; i++) {
-                final ResolveInfo ri = RI_LIST_ALL.get(i);
-                riList.add(ri);
-
-                when(mockPkgMgr.resolveActivity(argThat(new ArgumentMatcher<Intent>() {
-                    @Override
-                    public boolean matches(Intent intent) {
-                        return ( intent != null &&
-                                ri.activityInfo.packageName.equals(intent.getPackage()) &&
-                                isDictionaryAction(intent) );
-                    }
-                }), eq(PackageManager.MATCH_DEFAULT_ONLY)))
-                        .thenReturn(ri);
-            }
-
-            when(mockPkgMgr.queryIntentActivities(argThat(new ArgumentMatcher<Intent>() {
-                @Override
-                public boolean matches(Intent intent) {
-                    return isDictionaryAction(intent);
+            public StubPackageManager(List<ResolveInfo> riListAll, int numDictAvailable) {
+                List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
+                for(int i = 0; i < numDictAvailable; i++) {
+                    final ResolveInfo ri = riListAll.get(i);
+                    riList.add(ri);
                 }
-            }), eq(PackageManager.MATCH_DEFAULT_ONLY)))
-                    .thenReturn(riList);
-
-            return mockPkgMgr;
-        }
-
-        private static boolean isDictionaryAction(Intent intent) {
-            if (intent == null) {
-                return false;
+                mRiList = Collections.unmodifiableList(riList);
             }
 
-            switch(intent.getAction()) {
-                case "colordict.intent.action.SEARCH":
-                case Intent.ACTION_SEARCH:
-                    return true;
-                default:
+            @Override
+            public ResolveInfo resolveActivity(Intent intent, int flags) {
+                if (isDictionaryAction(intent) && flags == PackageManager.MATCH_DEFAULT_ONLY) {
+                    for (ResolveInfo ri : mRiList) {
+                        if (ri.activityInfo.packageName.equals(intent.getPackage())) {
+                            return ri;
+                        }
+                        // else continue to check the next candidate.
+                    }
+                    return null; // none found
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
+                if (isDictionaryAction(intent) && flags == PackageManager.MATCH_DEFAULT_ONLY) {
+                    return mRiList;
+                } else {
+                    return new ArrayList<ResolveInfo>();
+                }
+            }
+
+            @Override
+            public PackageManager getPackageManager() {
+                return null;
+            }
+
+            private static boolean isDictionaryAction(Intent intent) {
+                if (intent == null) {
                     return false;
+                }
+
+                switch(intent.getAction()) {
+                    case "colordict.intent.action.SEARCH":
+                    case Intent.ACTION_SEARCH:
+                        return true;
+                    default:
+                        return false;
+                }
             }
+
         }
+
+        public DictionaryManager.PackageManagerLite build() {
+            return new StubPackageManager(RI_LIST_ALL, mNumDictAvailable);
+        }
+
 
         private static List<ResolveInfo> buildRiListAll() {
             List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
@@ -141,35 +152,50 @@ public class MainActivityTest {
             return Collections.unmodifiableList(riListAll);
         }
 
-        private static ResolveInfo mockResolveInfo(String packageName, String label, int iconIdIfAvailable) {
-            ResolveInfo ri = mock(ResolveInfo.class);
+        private static class StubResolveInfo extends ResolveInfo {
+            private final @NonNull String mLabel;
+            private final int mIconIdIfAvailable;
 
-            ActivityInfo ai = new ActivityInfo();
-            ai.packageName = packageName;
+            public StubResolveInfo(@NonNull String packageName, @NonNull String label, int iconIdIfAvailable) {
+                super();
+                ActivityInfo ai = new ActivityInfo();
+                ai.packageName = packageName;
+                this.activityInfo = ai;
 
-            ri.activityInfo = ai;
-
-            when(ri.loadLabel(any(PackageManager.class)))
-                    .thenReturn(label);
-
-            Drawable drawable = null;
-            if (iconIdIfAvailable > 0) {
-                drawable = InstrumentationRegistry.getContext().getResources().getDrawable(iconIdIfAvailable, null);
+                mLabel = label;
+                mIconIdIfAvailable = iconIdIfAvailable;
             }
-            when(ri.loadIcon(any(PackageManager.class)))
-                    .thenReturn(drawable);
 
-            return ri;
+            @Override
+            public CharSequence loadLabel(PackageManager pm) {
+                return mLabel;
+            }
+
+            @Override
+            public Drawable loadIcon(PackageManager pm) {
+                if (mIconIdIfAvailable > 0) {
+                    return InstrumentationRegistry.getContext().getResources().getDrawable(mIconIdIfAvailable, null);
+                } else {
+                    return null;
+                }
+            }
         }
+
+        private static ResolveInfo mockResolveInfo(String packageName, String label, int iconIdIfAvailable) {
+            return new StubResolveInfo(packageName, label, iconIdIfAvailable);
+        }
+
+
+
     }
 
     private void stubDictionariesAvailable(int numDictAvailable) {
-        final PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
+        final DictionaryManager.PackageManagerLite stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
 
         DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
             @NonNull
             @Override
-            public PackageManager getManager() {
+            public DictionaryManager.PackageManagerLite getManager() {
                 return stubPkgMgr;
             }
         };
@@ -227,7 +253,7 @@ public class MainActivityTest {
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr.getPackageManager()).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
 
         //
@@ -258,7 +284,7 @@ public class MainActivityTest {
     @Test
     public void t4TypicalCaseVerifySettingsPersistence() {
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr.getPackageManager()).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
     }
 
