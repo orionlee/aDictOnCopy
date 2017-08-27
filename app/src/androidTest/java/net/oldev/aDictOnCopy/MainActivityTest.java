@@ -13,6 +13,7 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.mock.MockPackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -76,10 +77,11 @@ public class MainActivityTest {
             mNumDictAvailable = numDictAvailable;
         }
 
-        private static class StubPackageManager implements DictionaryManager.PackageManagerLite {
+        private static class StubPackageManager extends MockPackageManager {
             private final List<ResolveInfo> mRiList;
 
             public StubPackageManager(List<ResolveInfo> riListAll, int numDictAvailable) {
+                super();
                 List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
                 for(int i = 0; i < numDictAvailable; i++) {
                     final ResolveInfo ri = riListAll.get(i);
@@ -112,10 +114,6 @@ public class MainActivityTest {
                 }
             }
 
-            @Override
-            public PackageManager getPackageManager() {
-                return null;
-            }
 
             private static boolean isDictionaryAction(Intent intent) {
                 if (intent == null) {
@@ -133,7 +131,7 @@ public class MainActivityTest {
 
         }
 
-        public DictionaryManager.PackageManagerLite build() {
+        public PackageManager build() {
             return new StubPackageManager(RI_LIST_ALL, mNumDictAvailable);
         }
 
@@ -190,12 +188,12 @@ public class MainActivityTest {
     }
 
     private void stubDictionariesAvailable(int numDictAvailable) {
-        final DictionaryManager.PackageManagerLite stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
+        final PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
 
         DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
             @NonNull
             @Override
-            public DictionaryManager.PackageManagerLite getManager() {
+            public PackageManager getManager() {
                 return stubPkgMgr;
             }
         };
@@ -253,7 +251,7 @@ public class MainActivityTest {
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr.getPackageManager()).toString();
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
 
         //
@@ -284,7 +282,7 @@ public class MainActivityTest {
     @Test
     public void t4TypicalCaseVerifySettingsPersistence() {
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr.getPackageManager()).toString();
+                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
     }
 

@@ -44,68 +44,12 @@ public class DictionaryManager {
 
     private final String mAction; // action string to be used to launch a dictionary service
 
-    /**
-     * The interface defines PackageManager APIs needed for DictionaryManager implementation.
-     * It is defined so that a stub PackageManager can be created for test without the use of mock,
-     * cutting down test running time.
-     * Another alternative is to use Android's MockPackageManager. However, it is deprecated.
-     *
-     * Empirical data:
-     * Test one-time setup time using Mockito to create stub: 8secs
-     * Test one-time setup time using custom stub with PackageManagerLite: negligible
-     *
-     */
-    @VisibleForTesting
-    static interface PackageManagerLite {
-        // flags should be of type @PackageManager.ResolveInfoFlags
 
-        /**
-         * @see PackageManager#queryIntentActivities(Intent, int)
-         */
-        List<ResolveInfo> queryIntentActivities(Intent intent, int flags);
-
-        /**
-         * @see PackageManager#resolveActivity(Intent, int)
-         */
-        ResolveInfo resolveActivity(Intent intent, int flags);
-
-        /**
-         * Needed for methods such as ResolveInfo#loadLabel(PackageManager)
-         *
-         * @return the actual PackageManager instance
-         */
-        PackageManager getPackageManager();
-    }
-
-    private static class PackageManagerWrapper implements PackageManagerLite {
-
-        private final @NonNull PackageManager mPkgMgr;
-
-        public PackageManagerWrapper(@NonNull PackageManager pkgMgr) {
-            mPkgMgr = pkgMgr;
-        }
-
-        @Override
-        public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-            return mPkgMgr.queryIntentActivities(intent, flags);
-        }
-
-        @Override
-        public ResolveInfo resolveActivity(Intent intent, int flags) {
-            return mPkgMgr.resolveActivity(intent, flags);
-        }
-
-        @Override
-        public PackageManager getPackageManager() {
-            return mPkgMgr;
-        }
-    }
-
-    @VisibleForTesting final PackageManagerLite mPkgMgr;
+    @VisibleForTesting final PackageManager mPkgMgr;
 
     @VisibleForTesting
     static interface PackageManagerHolder {
-        @NonNull PackageManagerLite getManager();
+        @NonNull PackageManager getManager();
     }
 
     /**
@@ -117,7 +61,7 @@ public class DictionaryManager {
 
     public DictionaryManager(@NonNull PackageManager pm, @NonNull String action) {
         mAction = action;
-        mPkgMgr = msPackageManagerHolderForTest == null ? new PackageManagerWrapper(pm) : msPackageManagerHolderForTest.getManager();
+        mPkgMgr = msPackageManagerHolderForTest == null ? pm : msPackageManagerHolderForTest.getManager();
     }
 
     public @Nullable DictChoiceItem getInfoOfPackage(String packageName) {
@@ -145,8 +89,8 @@ public class DictionaryManager {
 
     private @NonNull DictChoiceItem toDictChoiceItem(@NonNull ResolveInfo ri) {
         return new DictChoiceItem(ri.activityInfo.packageName,
-                ri.loadLabel(mPkgMgr.getPackageManager()),
-                ri.loadIcon(mPkgMgr.getPackageManager()));
+                ri.loadLabel(mPkgMgr),
+                ri.loadIcon(mPkgMgr));
     }
 
 }
