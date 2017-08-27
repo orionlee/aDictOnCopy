@@ -291,8 +291,8 @@ public class MainActivityTest {
 
         // Test: click dictionary selection and pick one
         // answer *YES* in whether to launch service dialog
-        final int IDX_DICT_TO_PICK_IN_T4 = 0;
-        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T4, R.string.yes_btn_label);
+        final int IDX_DICT_TO_PICK_IN_T5 = 0;
+        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T5, R.string.yes_btn_label);
 
         delay(100); // give time for service & activity to complete their action
 
