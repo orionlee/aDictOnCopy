@@ -1,23 +1,24 @@
 package net.oldev.aDictOnCopy;
 
 import android.content.DialogInterface;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DictionaryOnCopyService.SettingsModel mSettings;
-    @VisibleForTesting DictionaryChooser mChooser;
     /**
      * Semantically decorates DictionaryOnCopyService.SettingsModel,
      * and provides additional UI-specific functionalities:
@@ -67,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
             // Conversion relies on parent instance's mChooser member.
 
             final String newPackageName = getPackageName();
-            DictionaryChooser.DictChoiceItem item =
-                    MainActivity.this.mChooser.getInfoOfPackage(newPackageName);
+            DictionaryManager.DictChoiceItem item =
+                    MainActivity.this.mChooser.getManager().getInfoOfPackage(newPackageName);
             if (item != null) {
                 return item.getLabel();
             } else {
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private SettingsUIModel mSettings;
-    private DictionaryChooser mChooser;
+    @VisibleForTesting DictionaryChooser mChooser;
 
 
     @Override
