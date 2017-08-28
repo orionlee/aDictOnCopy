@@ -64,7 +64,7 @@ public class MainActivityTest {
     @Test
     public void t1$setUp() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(0);
+        InstrumentedStubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(0);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class MainActivityTest {
     @Test
     public void t2$setUp4RemainingTests() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(2);
+        InstrumentedStubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(2);
     }
 
     @Test

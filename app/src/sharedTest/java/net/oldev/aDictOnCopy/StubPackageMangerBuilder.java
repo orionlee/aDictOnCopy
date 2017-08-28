@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
 import android.test.mock.MockPackageManager;
 
 import java.util.ArrayList;
@@ -16,10 +15,14 @@ import java.util.List;
 
 class StubPackageMangerBuilder {
 
-    static final List<ResolveInfo> RI_LIST_ALL = buildRiListAll();
+    static List<ResolveInfo> RI_LIST_ALL;
     private final int mNumDictAvailable;
 
     public StubPackageMangerBuilder(int numDictAvailable) {
+        if (RI_LIST_ALL == null) {
+            RI_LIST_ALL = buildRiListAll();
+        }
+
         if (numDictAvailable > RI_LIST_ALL.size()) {
             throw new IllegalArgumentException(String.format("numDictAvailable <%s> is larger than max <s>",
                                                              numDictAvailable, RI_LIST_ALL.size()));
@@ -86,24 +89,23 @@ class StubPackageMangerBuilder {
     }
 
 
-    private static List<ResolveInfo> buildRiListAll() {
+    List<ResolveInfo> buildRiListAll() {
         List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
 
         riListAll.add(mockResolveInfo("livio.pack.lang.en_US",
                                       "English (Mock)",
-                                      net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_livio));
+                                      -1));
 
         riListAll.add(mockResolveInfo("com.socialnmobile.colordict",
                                       "ColorDict (Mock)",
-                                      net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_colordict));
+                                      -1));
 
         return Collections.unmodifiableList(riListAll);
     }
 
-    private static class StubResolveInfo extends ResolveInfo {
-        private final @NonNull
-        String mLabel;
-        private final int mIconIdIfAvailable;
+    static class StubResolveInfo extends ResolveInfo {
+        private final @NonNull String mLabel;
+        final int mIconIdIfAvailable;
 
         public StubResolveInfo(@NonNull String packageName, @NonNull String label, int iconIdIfAvailable) {
             super();
@@ -122,15 +124,11 @@ class StubPackageMangerBuilder {
 
         @Override
         public Drawable loadIcon(PackageManager pm) {
-            if (mIconIdIfAvailable > 0) {
-                return InstrumentationRegistry.getContext().getResources().getDrawable(mIconIdIfAvailable, null);
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
-    private static ResolveInfo mockResolveInfo(String packageName, String label, int iconIdIfAvailable) {
+    ResolveInfo mockResolveInfo(String packageName, String label, int iconIdIfAvailable) {
         return new StubResolveInfo(packageName, label, iconIdIfAvailable);
     }
 
