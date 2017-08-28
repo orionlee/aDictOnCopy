@@ -1,19 +1,12 @@
 package net.oldev.aDictOnCopy;
 
 
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.mock.MockPackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -26,10 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -64,141 +53,6 @@ public class MainActivityTest {
     public ActivityTestRule<MainActivity> mActivityTestRule =
             new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
 
-    private static class StubPackageMangerBuilder {
-
-        static final List<ResolveInfo> RI_LIST_ALL = buildRiListAll();
-        private final int mNumDictAvailable;
-
-        public StubPackageMangerBuilder(int numDictAvailable) {
-            if (numDictAvailable > RI_LIST_ALL.size()) {
-                throw new IllegalArgumentException(String.format("numDictAvailable <%s> is larger than max <s>",
-                        numDictAvailable, RI_LIST_ALL.size()));
-            }
-            mNumDictAvailable = numDictAvailable;
-        }
-
-        private static class StubPackageManager extends MockPackageManager {
-            private final List<ResolveInfo> mRiList;
-
-            public StubPackageManager(List<ResolveInfo> riListAll, int numDictAvailable) {
-                super();
-                List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
-                for(int i = 0; i < numDictAvailable; i++) {
-                    final ResolveInfo ri = riListAll.get(i);
-                    riList.add(ri);
-                }
-                mRiList = Collections.unmodifiableList(riList);
-            }
-
-            @Override
-            public ResolveInfo resolveActivity(Intent intent, int flags) {
-                if (isDictionaryAction(intent) && flags == PackageManager.MATCH_DEFAULT_ONLY) {
-                    for (ResolveInfo ri : mRiList) {
-                        if (ri.activityInfo.packageName.equals(intent.getPackage())) {
-                            return ri;
-                        }
-                        // else continue to check the next candidate.
-                    }
-                    return null; // none found
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-                if (isDictionaryAction(intent) && flags == PackageManager.MATCH_DEFAULT_ONLY) {
-                    return mRiList;
-                } else {
-                    return new ArrayList<ResolveInfo>();
-                }
-            }
-
-
-            private static boolean isDictionaryAction(Intent intent) {
-                if (intent == null) {
-                    return false;
-                }
-
-                switch(intent.getAction()) {
-                    case "colordict.intent.action.SEARCH":
-                    case Intent.ACTION_SEARCH:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-        }
-
-        public PackageManager build() {
-            return new StubPackageManager(RI_LIST_ALL, mNumDictAvailable);
-        }
-
-
-        private static List<ResolveInfo> buildRiListAll() {
-            List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
-
-            riListAll.add(mockResolveInfo("livio.pack.lang.en_US",
-                    "English (Mock)",
-                    net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_livio));
-
-            riListAll.add(mockResolveInfo("com.socialnmobile.colordict",
-                    "ColorDict (Mock)",
-                    net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_colordict));
-
-            return Collections.unmodifiableList(riListAll);
-        }
-
-        private static class StubResolveInfo extends ResolveInfo {
-            private final @NonNull String mLabel;
-            private final int mIconIdIfAvailable;
-
-            public StubResolveInfo(@NonNull String packageName, @NonNull String label, int iconIdIfAvailable) {
-                super();
-                ActivityInfo ai = new ActivityInfo();
-                ai.packageName = packageName;
-                this.activityInfo = ai;
-
-                mLabel = label;
-                mIconIdIfAvailable = iconIdIfAvailable;
-            }
-
-            @Override
-            public CharSequence loadLabel(PackageManager pm) {
-                return mLabel;
-            }
-
-            @Override
-            public Drawable loadIcon(PackageManager pm) {
-                if (mIconIdIfAvailable > 0) {
-                    return InstrumentationRegistry.getContext().getResources().getDrawable(mIconIdIfAvailable, null);
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        private static ResolveInfo mockResolveInfo(String packageName, String label, int iconIdIfAvailable) {
-            return new StubResolveInfo(packageName, label, iconIdIfAvailable);
-        }
-
-
-
-    }
-
-    private void stubDictionariesAvailable(int numDictAvailable) {
-        final PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
-
-        DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
-            @NonNull
-            @Override
-            public PackageManager getManager() {
-                return stubPkgMgr;
-            }
-        };
-    }
-
     /**
      * A test setup for test t1
      * It is masqueraded as test because it has a t1-specific parameter (0 dictionary)
@@ -210,7 +64,7 @@ public class MainActivityTest {
     @Test
     public void t1$setUp() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        stubDictionariesAvailable(0);
+        StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(0);
     }
 
     @Test
@@ -227,7 +81,7 @@ public class MainActivityTest {
     @Test
     public void t2$setUp4RemainingTests() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        stubDictionariesAvailable(2);
+        StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(2);
     }
 
     @Test

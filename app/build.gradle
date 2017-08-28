@@ -88,6 +88,15 @@ android {
         main {
             java.srcDirs = ['src/main/java']
         }
+        // share codes between test and androidTest by adding sharedTest
+        // to the source sets of both of them
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
     }
 
 }
