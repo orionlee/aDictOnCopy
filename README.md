@@ -19,3 +19,11 @@ Launcher Icons source:
   - [x] Prompt users to start service after selecting a dictionary
 - [x] i18N
 - [ ] More info on supported dictionaries, or broaden the list of supported dictionaries (with other more generic intent action)
+- [ ] Testing 
+  - [x] complete various scenarios in androidTest
+  - [x] refactor so that StubPackageManger can be injected before Activity is created (hence used in onCreate())
+  - [x] create a PackageManagerLite interface so that I can create a stub without using mock (mock is slow on devices)
+- [ ] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  
+  - [x] initial pilot
+  - [ ] incorporate to master
+  - [ ] binding listeners too?
