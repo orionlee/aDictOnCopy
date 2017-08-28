@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (errorCode) {
                     case SettingsUIModel.PackageDisplayNameErrorListener.ERR_NO_DICT_AVAILABLE:
                         // case no dictionary is available at all (even after init)
-                        Toast.makeText(MainActivity.this, R.string.err_msg_dict_not_found, Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, R.string.err_msg_no_dict_available, Toast.LENGTH_LONG).show();
                         break;
                     case SettingsUIModel.PackageDisplayNameErrorListener.ERR_SELECTED_DICT_NOT_FOUND:
                         Toast.makeText(MainActivity.this,

@@ -18,7 +18,7 @@
     <string name="no_btn_label">No</string>
     <string name="prompt_select_dict_title">Select a Dictionary</string>
     <string name="err_msgf_selected_dict_not_found">Selected dictionary %s is not found. Please select one, or install a supported dictionary.</string>
-    <string name="err_msg_dict_not_found">No dictionary found. Please install an appropriate one.</string>
+    <string name="err_msg_no_dict_available">No dictionary is available. Please install an appropriate one.</string>
 
     <!-- resources for the service -->
 
