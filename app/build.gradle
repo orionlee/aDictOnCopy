@@ -62,9 +62,13 @@ android {
         debug {
             // allow debug / release be installed as separate apps, 
             // versionNameSuffix helps to differentiate them visually
-            applicationIdSuffix ".debug" 
+            applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             resValue "string", "app_name", "@string/app_name_debug"
+            // testCoverageEnabled  needed for androidTest code coverage: it generates tasks
+            // createDebugCoverageReport and createDebugAndroidTestCoverageReport
+            // (createDebugCoverageReport only runs androidTest, as of android gradle 2.3.3)
+            testCoverageEnabled true
         }
         release {
             resValue "string", "app_name", "@string/app_name_release"
