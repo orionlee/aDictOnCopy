@@ -91,7 +91,6 @@ android {
         // Needed so that Log statements using android Log won't cause unit tests fail
         unitTests.returnDefaultValues = true
 
-
         unitTests.all {
             jacoco {
                 append = false  // overwrite previous run data
@@ -119,6 +118,41 @@ android {
         }
     }
 
+}
+
+/*
+ * Creates coverage report combining both unit tests and androidTests
+ *
+ * Reports can be found at $buildDir/reports/jacoco/createDebugCombinedCoverageReport/html/index.html
+ * (Different location from the one by
+ *  android gradle's createDebugCoverageReport, which is for androidTests only)
+ *
+ * @see Based on https://medium.com/@rafael_toledo/setting-up-an-unified-coverage-report-in-android-with-jacoco-robolectric-and-espresso-ffe239aaf3fa
+ *
+ */
+task createDebugCombinedCoverageReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+    description "Creates test coverage reports combining both unit tests and androidTests of debug variant."
+    group "verification"
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
+                      '**/BR.class', '**/databinding/*', // android data binding library artifacts
+                      '**/Manifest*.*',
+                      '**/*Test*.*',
+                      'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec", // default unit test coverage data location, unless customized in unitTests.all > jacoco
+            "outputs/code-coverage/connected/*coverage.ec"
+    ])
 }
 
 ext {
