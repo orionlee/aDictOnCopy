@@ -25,11 +25,21 @@ public class SettingsUIModelTest {
 
         // - default selection, case no dictionary available,
         final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0);
+
+        final MockOnPropertyChangedCallback onPropertyChangedCallback = new MockOnPropertyChangedCallback();
+        uiModel.addOnPropertyChangedCallback(onPropertyChangedCallback);
+
+        // calling the non-simple uiModel.getPackageDisplayName()
+        // would trigger all logic in validating packageName, error handling, etc.
         final CharSequence packageDisplayName = uiModel.getPackageDisplayName();
         assertEquals("Dictionary Package Display Name should be generic the selection label when there is no dictionary available",
                      DICT_SELECTION_LABEL, packageDisplayName);
         assertEquals("Error code should indicate no dictionary is available",
                      SettingsUIModel.ERR_NO_DICT_AVAILABLE, uiModel.getErrorCode());
+
+        // BR.displayName has not been really changed as the initial one is the generic dict selection label
+        verifyPropertyChanged(onPropertyChangedCallback, BR.errorCode, BR.inError);
+
     }
 
     @Test
@@ -40,19 +50,6 @@ public class SettingsUIModelTest {
                         DICT_SELECTION_LABEL, uiModel.getPackageDisplayName());
         assertTrue("There should be no error", uiModel.getErrorCode() < 0);
 
-    }
-
-    private static class MockOnPropertyChangedCallback extends OnPropertyChangedCallback {
-        public final List<Integer> propertyIds = new ArrayList<Integer>();
-
-        public MockOnPropertyChangedCallback() {
-            super();
-        }
-
-        @Override
-        public void onPropertyChanged(Observable sender, int propertyId) {
-            propertyIds.add(propertyId);
-        }
     }
 
     @Test
@@ -75,7 +72,7 @@ public class SettingsUIModelTest {
         assertEquals("Dictionary Package Display Name should be the same as what stub PackageManager provides",
                      riToChangeTo.loadLabel(null), uiModel.getPackageDisplayName());
 
-        assertTrue("There should be no error", uiModel.getErrorCode() < 0);
+        assertTrue("There should be no error", !uiModel.isInError());
 
     }
 
@@ -89,11 +86,33 @@ public class SettingsUIModelTest {
                      SettingsUIModel.ERR_SELECTED_DICT_NOT_FOUND, uiModel.getErrorCode());
     }
 
-    protected final void verifyPropertyChanged(MockOnPropertyChangedCallback onPropertyChangedCallback, int propertyIdExpected) {
-        assertEquals("Ensure OnPropertyChangedCallback is called exactly once with the expected propertyId - incorrect number of invocations",
-                     1, onPropertyChangedCallback.propertyIds.size());
-        assertEquals("Ensure OnPropertyChangedCallback is called exactly once with the expected propertyId - incorrect propertyId",
-                     propertyIdExpected, onPropertyChangedCallback.propertyIds.get(0).intValue());
+
+    private static class MockOnPropertyChangedCallback extends OnPropertyChangedCallback {
+        public final List<Integer> propertyIds = new ArrayList<Integer>();
+
+        public MockOnPropertyChangedCallback() {
+            super();
+        }
+
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            propertyIds.add(propertyId);
+        }
+    }
+
+    /**
+     * @see MockOnPropertyChangedCallback
+     * @param onPropertyChangedCallback
+     * @param propertyIdsExpected
+     */
+    protected final void verifyPropertyChanged(MockOnPropertyChangedCallback onPropertyChangedCallback, int... propertyIdsExpected) {
+        assertEquals("Ensure OnPropertyChangedCallback is called correctly - incorrect number of invocations",
+                     propertyIdsExpected.length, onPropertyChangedCallback.propertyIds.size());
+        for (int i = 0; i < propertyIdsExpected.length; i++) {
+            assertEquals("Ensure OnPropertyChangedCallback is called correctly - incorrect propertyId at invocation <" +
+                                 (i+1) + "> ; propertyIdsActual=" + onPropertyChangedCallback.propertyIds,
+                         propertyIdsExpected[i], onPropertyChangedCallback.propertyIds.get(i).intValue());
+        }
     }
 
 

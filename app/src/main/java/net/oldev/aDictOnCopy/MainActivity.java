@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             DictionaryManager.DictChoiceItem item =
                     mDictMgr.getInfoOfPackage(newPackageName);
             if (item != null) {
+                setErrorCode(-1); // in case it was in error previously.
                 return item.getLabel();
             } else {
                 String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
@@ -111,10 +112,15 @@ public class MainActivity extends AppCompatActivity {
             return mErrorCode;
         }
 
+        @Bindable
+        public boolean isInError() {
+            return getErrorCode() >= 0;
+        }
+
         private void setErrorCode(int errorCode) {
             mErrorCode = errorCode;
             notifyPropertyChanged(BR.errorCode);
-            // TODO: add a property isInError() to enable/disable startCtl
+            notifyPropertyChanged(BR.inError);
         }
 
         private void autoSetDefaultDictionary() {

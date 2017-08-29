@@ -25,6 +25,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -70,6 +71,11 @@ public class MainActivityTest {
     @Test
     public void t1InitialLaunchCaseNoDictAvailable() throws Throwable {
         onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
+        // start service button is disabled when there is no dictionary
+        onView(allOf(not(isEnabled()),
+                     withId(R.id.startCtl),
+                     withText(getString(R.string.start_service_label)),
+                     isDisplayed()));
     }
 
     /**
