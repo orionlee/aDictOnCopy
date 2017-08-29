@@ -26,6 +26,6 @@ Launcher Icons source:
 - [ ] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  
   - [x] initial pilot
   - [x] Make UI Model unit-testable
-  - [ ] binding listeners too?
+  - [x] binding listeners too, reducing boilerplate codes
   - [ ] incorporate to master
   

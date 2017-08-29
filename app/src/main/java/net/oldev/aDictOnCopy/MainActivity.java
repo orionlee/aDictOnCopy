@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
 
@@ -163,28 +162,6 @@ public class MainActivity extends AppCompatActivity {
         // Init *MUST* be done after the settings id bound to data binding.
         mSettings.init(mChooser.getManager(), getString(R.string.dict_selection_label));
 
-        View startCtl = findViewById(R.id.startCtl);
-        startCtl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startServiceAndFinish();
-            }
-        });
-
-        final View selectDictCtl = findViewById(R.id.dictSelectCtl);
-        selectDictCtl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mChooser.prompt(new DictionaryChooser.OnSelectedListener() {
-                    @Override
-                    public void onSelected(DictionaryManager.DictChoiceItem item) {
-                        setDictionaryToUse(item);
-                        promptUserToStartService();
-                    }
-                });
-            }
-        });
-
 
         // Let the main activity acts as a convenient shortcut to stop the service as well
         if (DictionaryOnCopyService.isRunning()) {
@@ -212,9 +189,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startServiceAndFinish() {
+    // Used by binding
+    public void startServiceAndFinish() {
         DictionaryOnCopyService.startForeground(getApplicationContext());
         MainActivity.this.finish();
+    }
+
+    // Used by binding
+    public void promptUserToChooseDictionary() {
+        mChooser.prompt(new DictionaryChooser.OnSelectedListener() {
+            @Override
+            public void onSelected(DictionaryManager.DictChoiceItem item) {
+                setDictionaryToUse(item);
+                promptUserToStartService();
+            }
+        });
     }
 
     private void promptUserToStartService() {

@@ -26,8 +26,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:text="@string/start_service_label"
             android:enabled="@{!settings.inError}"
-            android:text="@string/start_service_label" />
+            android:onClick="@{() -> handler.startServiceAndFinish()}"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -51,7 +52,8 @@
             android:id="@+id/dictSelectCtl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:onClick="@{() -> handler.promptUserToChooseDictionary()}">
 
             <TextView
                 android:text="@string/selected_dict_label"
