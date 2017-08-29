@@ -65,7 +65,7 @@ public class DictionaryManager {
     }
 
     public @Nullable DictChoiceItem getInfoOfPackage(String packageName) {
-        Intent intent = new Intent(mAction);
+        Intent intent = createIntentWithAction(mAction);
         intent.setPackage(packageName);
         intent.putExtra(SearchManager.QUERY, "test");
 
@@ -76,7 +76,7 @@ public class DictionaryManager {
     }
 
     public @NonNull List<DictChoiceItem> getAvailableDictionaries() {
-        Intent intent = new Intent(mAction);
+        Intent intent = createIntentWithAction(mAction);
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = mPkgMgr.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
@@ -92,5 +92,18 @@ public class DictionaryManager {
                 ri.loadLabel(mPkgMgr),
                 ri.loadIcon(mPkgMgr));
     }
+
+    private static @NonNull Intent createIntentWithAction(@NonNull String action) {
+        return ( msIntentFactoryForTest == null ?
+                new Intent(action) :
+                msIntentFactoryForTest.withAction(action));
+    }
+
+    static interface IntentFactory {
+        @NonNull Intent withAction(String action);
+    }
+
+    @VisibleForTesting
+    static IntentFactory msIntentFactoryForTest = null;
 
 }

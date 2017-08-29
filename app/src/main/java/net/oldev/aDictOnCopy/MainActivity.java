@@ -1,6 +1,5 @@
 package net.oldev.aDictOnCopy;
 
-import android.app.Application;
 import android.content.DialogInterface;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             void onError(int errorCode, SettingsUIModel settings);
         }
 
-        private final @NonNull DictionaryOnCopyService.SettingsModel mRealSettings;
+        private @NonNull DictionaryOnCopyService.SettingsModel mRealSettings; // non-final for injection during testing
         private @NonNull DictionaryManager mDictMgr; // final upon init()
         private @NonNull String mDictSelectionLabel; // final upon init()
 
@@ -52,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
         //
         // The public methods are those exposed (to layouts) via Android Data Binding.
         //
-        private SettingsUIModel(@NonNull Application app) {
-            mRealSettings = new DictionaryOnCopyService.SettingsModel(app.getApplicationContext());
+        SettingsUIModel(@NonNull DictionaryOnCopyService.SettingsModel realSettings) {
+            mRealSettings = realSettings;
         }
 
         public void init(@NonNull DictionaryManager dictMgr,
@@ -71,16 +70,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         @NonNull
-        private String getAction() {
+        String getAction() {
             return mRealSettings.getAction();
         }
 
         @Nullable
-        private String getPackageName() {
+        String getPackageName() {
             return mRealSettings.getPackageName();
         }
 
-        private void setPackageName(String packageName) {
+        void setPackageName(String packageName) {
             mRealSettings.setPackageName(packageName);
             notifyPropertyChanged(BR.packageDisplayName);
         }
@@ -147,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         // a separate init() method.
         // It also has the advantage that it allows additional UI logic to listen to
         // changes during actual initialization (see below)
-        mSettings = new SettingsUIModel(this.getApplication());
+        mSettings = new SettingsUIModel(new DictionaryOnCopyService.SettingsModel(this.getApplicationContext()));
         mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
 
         // Now setup the UI
