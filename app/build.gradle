@@ -91,10 +91,11 @@ android {
         // Needed so that Log statements using android Log won't cause unit tests fail
         unitTests.returnDefaultValues = true
 
-        // needed for unit test code coverage with jacoco with android gradble 2.2+
+
         unitTests.all {
             jacoco {
-                includeNoLocationClasses = true
+                append = false  // overwrite previous run data
+                includeNoLocationClasses = true  // needed for unit test code coverage with jacoco with android gradle 2.2+
             }
         }
     }
