@@ -23,7 +23,7 @@ Launcher Icons source:
   - [x] complete various scenarios in androidTest
   - [x] refactor so that StubPackageManger can be injected before Activity is created (hence used in onCreate())
   - [x] create a PackageManagerLite interface so that I can create a stub without using mock (mock is slow on devices)
-  - [ ] code coverage, for both test and androidTest
+  - [x] setup code coverage, for both test and androidTest
   - [ ] service test
   - [ ] `MAYBE` create a minimal androidTest that only tests bindings (require inject a mock UI Model)
 - [x] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  
