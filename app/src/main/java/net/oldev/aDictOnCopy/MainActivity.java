@@ -11,7 +11,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
 
@@ -28,22 +27,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public static class SettingsUIModel extends BaseObservable {
 
-        public static interface PackageDisplayNameErrorListener {
-            public static final int ERR_NO_DICT_AVAILABLE = 1;
-            public static final int ERR_SELECTED_DICT_NOT_FOUND = 2;
+        public static final int ERR_NO_DICT_AVAILABLE = 1;
+        public static final int ERR_SELECTED_DICT_NOT_FOUND = 2;
 
-            void onError(int errorCode, SettingsUIModel settings);
-        }
 
         private @NonNull DictionaryOnCopyService.SettingsModel mRealSettings; // non-final for injection during testing
         private @NonNull DictionaryManager mDictMgr; // final upon init()
         private @NonNull String mDictSelectionLabel; // final upon init()
-
-        /**
-         * Hook to allow UI to peform anything extra (e.g., error toasts) when
-         * package display name to be displayed is in an error condition.
-         */
-        private @NonNull PackageDisplayNameErrorListener mPackageDisplayNameErrorListener; // final upon init()
+        private int mErrorCode = -1;
 
         //
         // Methods that wrap around DictionaryOnCopyService.SettingsModel
@@ -56,11 +47,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void init(@NonNull DictionaryManager dictMgr,
-                         @NonNull String dictSelectionLabel,
-                         @NonNull PackageDisplayNameErrorListener packageDisplayNameErrorListener) {
+                         @NonNull String dictSelectionLabel) {
             mDictMgr = dictMgr;
             mDictSelectionLabel = dictSelectionLabel;
-            mPackageDisplayNameErrorListener = packageDisplayNameErrorListener;
 
             // Case initial installation: auto set a dictionary if available
             if (getPackageName() == null) {
@@ -100,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             if (newPackageName == null) {
                 // case auto set default does not yield any possible dictionary
                 // use the default selection label
-                mPackageDisplayNameErrorListener.onError(PackageDisplayNameErrorListener.ERR_NO_DICT_AVAILABLE, this);
+                setErrorCode(ERR_NO_DICT_AVAILABLE);
                 return mDictSelectionLabel;
             }
 
@@ -112,9 +101,20 @@ public class MainActivity extends AppCompatActivity {
                 String warnMsg = String.format("MainActivity: Dictionary Package in settings <%s> not found. Perhaps it is uninstalled.",
                         newPackageName);
                 PLog.w(warnMsg);
-                mPackageDisplayNameErrorListener.onError(PackageDisplayNameErrorListener.ERR_SELECTED_DICT_NOT_FOUND, this);
+                setErrorCode(ERR_SELECTED_DICT_NOT_FOUND);
                 return mDictSelectionLabel;
             }
+        }
+
+        @Bindable
+        public int getErrorCode() {
+            return mErrorCode;
+        }
+
+        private void setErrorCode(int errorCode) {
+            mErrorCode = errorCode;
+            notifyPropertyChanged(BR.errorCode);
+            // TODO: add a property isInError() to enable/disable startCtl
         }
 
         private void autoSetDefaultDictionary() {
@@ -144,37 +144,18 @@ public class MainActivity extends AppCompatActivity {
         // have circular dependency.
         // Solution for now is to defer SettingsUIModel's bulk of initialization to
         // a separate init() method.
-        // It also has the advantage that it allows additional UI logic to listen to
+        // It also has the advantage that it allows additional UI logic (indirectly via bindings) to listen to
         // changes during actual initialization (see below)
         mSettings = new SettingsUIModel(new DictionaryOnCopyService.SettingsModel(this.getApplicationContext()));
         mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
 
         // Now setup the UI
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setHandler(this);
         binding.setSettings(mSettings);
 
-        final String dictSelectionLabel = getString(R.string.dict_selection_label);
-
-
-        mSettings.init(mChooser.getManager(), dictSelectionLabel, new SettingsUIModel.PackageDisplayNameErrorListener() {
-            @Override
-            public void onError(int errorCode, SettingsUIModel settings) {
-                switch (errorCode) {
-                    case SettingsUIModel.PackageDisplayNameErrorListener.ERR_NO_DICT_AVAILABLE:
-                        // case no dictionary is available at all (even after init)
-                        Toast.makeText(MainActivity.this, R.string.err_msg_no_dict_available, Toast.LENGTH_LONG).show();
-                        break;
-                    case SettingsUIModel.PackageDisplayNameErrorListener.ERR_SELECTED_DICT_NOT_FOUND:
-                        Toast.makeText(MainActivity.this,
-                                       getString(R.string.err_msgf_selected_dict_not_found, settings.getPackageName()),
-                                       Toast.LENGTH_LONG)
-                             .show();
-                        break;
-                    default:
-                        PLog.w("Unexpected error codes from PackageDisplayNameErrorListener#onError(): " + errorCode);
-                }
-            }
-        });
+        // Init *MUST* be done after the settings id bound to data binding.
+        mSettings.init(mChooser.getManager(), getString(R.string.dict_selection_label));
 
         View startCtl = findViewById(R.id.startCtl);
         startCtl.setOnClickListener(new View.OnClickListener() {
@@ -204,6 +185,25 @@ public class MainActivity extends AppCompatActivity {
             DictionaryOnCopyService.stopForeground(getApplicationContext());
         }
 
+    }
+
+    // Used by binding
+    public @NonNull String modelErrorCodeToMessage(SettingsUIModel settings) {
+        final int errorCode = settings.getErrorCode();
+
+        if (errorCode < 0 ) {
+            return ""; // no error at all
+        }
+        switch (errorCode) {
+            case SettingsUIModel.ERR_NO_DICT_AVAILABLE:
+                // case no dictionary is available at all (even after init)
+                return getString(R.string.err_msg_no_dict_available);
+            case SettingsUIModel.ERR_SELECTED_DICT_NOT_FOUND:
+                return  getString(R.string.err_msgf_selected_dict_not_found, settings.getPackageName());
+            default:
+                PLog.w("Unexpected error codes from PackageDisplayNameErrorListener#onError(): " + errorCode);
+                return "";
+        }
     }
 
     private void startServiceAndFinish() {

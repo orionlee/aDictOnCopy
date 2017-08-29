@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SettingsUIModelTest {
 
@@ -23,17 +24,21 @@ public class SettingsUIModelTest {
     public void testAutoSetDefaultCaseNoDict() {
 
         // - default selection, case no dictionary available,
-        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0, SettingsUIModel.PackageDisplayNameErrorListener.ERR_NO_DICT_AVAILABLE);
+        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0);
+        final CharSequence packageDisplayName = uiModel.getPackageDisplayName();
         assertEquals("Dictionary Package Display Name should be generic the selection label when there is no dictionary available",
-                     DICT_SELECTION_LABEL, uiModel.getPackageDisplayName());
+                     DICT_SELECTION_LABEL, packageDisplayName);
+        assertEquals("Error code should indicate no dictionary is available",
+                     SettingsUIModel.ERR_NO_DICT_AVAILABLE, uiModel.getErrorCode());
     }
 
     @Test
     public void testAutoSetDefaultCaseSomeDictAvailable() {
         // - default selection, case some available
-        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(2, -1);
+        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(2);
         assertNotEquals("Dictionary Package Display Name should refer to a package provided by stub package manager",
                         DICT_SELECTION_LABEL, uiModel.getPackageDisplayName());
+        assertTrue("There should be no error", uiModel.getErrorCode() < 0);
 
     }
 
@@ -55,7 +60,7 @@ public class SettingsUIModelTest {
         // - average case, verify package property changes
         // @see https://medium.com/@hiBrianLee/writing-testable-android-mvvm-app-part-4-e2f83fc21d71
         // Difference: replace generic Mockito mocks with custom one. Test time reduced from ~900ms to < 10ms
-        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(2, -1);
+        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(2);
 
         final MockOnPropertyChangedCallback onPropertyChangedCallback = new MockOnPropertyChangedCallback();
         uiModel.addOnPropertyChangedCallback(onPropertyChangedCallback);
@@ -69,14 +74,19 @@ public class SettingsUIModelTest {
 
         assertEquals("Dictionary Package Display Name should be the same as what stub PackageManager provides",
                      riToChangeTo.loadLabel(null), uiModel.getPackageDisplayName());
+
+        assertTrue("There should be no error", uiModel.getErrorCode() < 0);
+
     }
 
     @Test
     public void testNegSelectedDictNotFound() {
-        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0, SettingsUIModel.PackageDisplayNameErrorListener.ERR_SELECTED_DICT_NOT_FOUND);
+        final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0);
         uiModel.setPackageName("foo.bar.nonExistentDictPkg");
         // Getting display name for a non-existent package should result in error, as specified in the model under test in the beginning.
         final CharSequence packageDisplayName = uiModel.getPackageDisplayName();
+        assertEquals("Error code should indicate selected dictionary (in backend settings) cannot be found.",
+                     SettingsUIModel.ERR_SELECTED_DICT_NOT_FOUND, uiModel.getErrorCode());
     }
 
     protected final void verifyPropertyChanged(MockOnPropertyChangedCallback onPropertyChangedCallback, int propertyIdExpected) {
@@ -117,7 +127,7 @@ public class SettingsUIModelTest {
         }
     }
 
-    private SettingsUIModel createSettingsUIModelUnderTest(int numDictAvailable, final int errorCodeExpected) {
+    private SettingsUIModel createSettingsUIModelUnderTest(int numDictAvailable) {
         DictionaryManager.msIntentFactoryForTest = new DictionaryManager.IntentFactory() {
             @NonNull
             @Override
@@ -131,18 +141,7 @@ public class SettingsUIModelTest {
         StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(numDictAvailable);
         final DictionaryManager dictMgr = new DictionaryManager(null, uiModel.getAction());
 
-        uiModel.init(dictMgr,
-                     DICT_SELECTION_LABEL,
-                     new SettingsUIModel.PackageDisplayNameErrorListener() {
-                         @Override
-                         public void onError(int errorCode, SettingsUIModel settings) {
-                             assertEquals(String.format("Unexpected error code. expected:<%s> , actual:<%s> . settings.packageName=<%s> (-1: No ErrorCode Expected)",
-                                                      errorCodeExpected,
-                                                      errorCode,
-                                                      settings.getPackageName()),
-                                        errorCodeExpected, errorCode);
-                         }
-                     });
+        uiModel.init(dictMgr, DICT_SELECTION_LABEL);
 
         return uiModel;
     }

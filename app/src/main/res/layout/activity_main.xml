@@ -6,6 +6,8 @@
     <data>
         <variable name="settings"
             type="net.oldev.aDictOnCopy.MainActivity.SettingsUIModel" />
+        <variable name="handler"
+            type="net.oldev.aDictOnCopy.MainActivity" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -69,6 +71,13 @@
                 android:textAllCaps="false"
                 android:text="@{settings.packageDisplayName}" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/dictSelectErrOutput"
+            style="@style/ErrorFont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{handler.modelErrorCodeToMessage(settings)}' />
 
     </LinearLayout>
 
