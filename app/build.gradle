@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+// generate coverage while running unit tests
+// (android gradle plugin only generates coverage for androidTest)
+apply plugin: 'jacoco'
 
 // Obtain verion name / string from AndroidManifest
 def getMyVersionName() {
@@ -87,6 +90,13 @@ android {
     testOptions {
         // Needed so that Log statements using android Log won't cause unit tests fail
         unitTests.returnDefaultValues = true
+
+        // needed for unit test code coverage with jacoco with android gradble 2.2+
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
     }
 
     aaptOptions {
