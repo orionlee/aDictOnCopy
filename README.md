@@ -25,5 +25,7 @@ Launcher Icons source:
   - [x] create a PackageManagerLite interface so that I can create a stub without using mock (mock is slow on devices)
 - [ ] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  
   - [x] initial pilot
-  - [ ] incorporate to master
+  - [x] Make UI Model unit-testable
   - [ ] binding listeners too?
+  - [ ] incorporate to master
+  
