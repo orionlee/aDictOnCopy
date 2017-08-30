@@ -130,8 +130,8 @@ android {
  * @see Based on https://medium.com/@rafael_toledo/setting-up-an-unified-coverage-report-in-android-with-jacoco-robolectric-and-espresso-ffe239aaf3fa
  *
  */
-task createDebugCombinedCoverageReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
-    description "Creates test coverage reports combining both unit tests and androidTests of debug variant."
+task createDebugCombinedCoverageReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedDebugAndroidTest']) {
+    description "Creates test coverage reports combining both unit tests and androidTests of the debug variant."
     group "verification"
 
     reports {
