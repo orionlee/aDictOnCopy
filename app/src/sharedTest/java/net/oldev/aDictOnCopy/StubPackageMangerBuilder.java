@@ -89,14 +89,17 @@ class StubPackageMangerBuilder {
     }
 
 
-    List<ResolveInfo> buildRiListAll() {
+    /*
+     * This is a non-static method so that it can use subclass-specific #mockResolveInfo
+     */
+    private List<ResolveInfo> buildRiListAll() {
         List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
 
-        riListAll.add(mockResolveInfo("livio.pack.lang.en_US",
+        riListAll.add(mockResolveInfo("livio.pack.lang.en_US.mock",
                                       "English (Mock)",
                                       -1));
 
-        riListAll.add(mockResolveInfo("com.socialnmobile.colordict",
+        riListAll.add(mockResolveInfo("com.socialnmobile.colordict.mock",
                                       "ColorDict (Mock)",
                                       -1));
 

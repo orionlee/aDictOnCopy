@@ -6,10 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Extends base StubPackageBuilder to take advantage of androidTest environment
  */
@@ -17,21 +13,6 @@ class InstrumentedStubPackageMangerBuilder extends StubPackageMangerBuilder {
 
     public InstrumentedStubPackageMangerBuilder(int numDictAvailable) {
         super(numDictAvailable);
-    }
-
-    @Override
-    List<ResolveInfo> buildRiListAll() {
-        List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
-
-        riListAll.add(mockResolveInfo("livio.pack.lang.en_US.mock",
-                                      "English (Mock)",
-                                      net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_livio));
-
-        riListAll.add(mockResolveInfo("com.socialnmobile.colordict.mock",
-                                      "ColorDict (Mock)",
-                                      net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_colordict));
-
-        return Collections.unmodifiableList(riListAll);
     }
 
     private static class InstrumentedStubResolveInfo extends StubResolveInfo {
