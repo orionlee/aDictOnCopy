@@ -16,6 +16,7 @@ import android.view.ViewParent;
 import net.oldev.aDictOnCopy.di.AppModule;
 import net.oldev.aDictOnCopy.di.DaggerTestAppComponent;
 import net.oldev.aDictOnCopy.di.StubSystemModule;
+import net.oldev.aDictOnCopy.di.SystemModule;
 import net.oldev.aDictOnCopy.di.TestAppComponent;
 
 import org.hamcrest.Description;
@@ -175,10 +176,13 @@ public class MainActivityTest {
         // Dependency Injection setup for test environment
         PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(numDictAvailable).build();
         DictionaryOnCopyApp app = DictionaryOnCopyApp.from(InstrumentationRegistry.getTargetContext());
-        TestAppComponent testAppComponent = DaggerTestAppComponent.builder()
-                                                                  .appModule(new AppModule(app))
-                                                                  .stubSystemModule(new StubSystemModule(stubPkgMgr))
-                                                                  .build();
+        TestAppComponent testAppComponent =
+                DaggerTestAppComponent.builder()
+                                      .appModule(new AppModule(app))
+                                      .stubSystemModule(
+                                              new StubSystemModule(stubPkgMgr,
+                                                                   SystemModule.INTENT_LAUNCHER))
+                                      .build();
         app.setAppComponent(testAppComponent);
 
     }

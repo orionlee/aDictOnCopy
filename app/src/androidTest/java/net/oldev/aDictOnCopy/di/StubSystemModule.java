@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
+import net.oldev.aDictOnCopy.DictionaryOnCopyService;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -13,9 +15,12 @@ import dagger.Provides;
 public class StubSystemModule {
 
     private final @NonNull PackageManager mPackageManager;
+    private final @NonNull DictionaryOnCopyService.IntentLauncher mIntentLauncher;
 
-    public StubSystemModule(@NonNull PackageManager packageManager) {
+    public StubSystemModule(@NonNull PackageManager packageManager,
+                            @NonNull DictionaryOnCopyService.IntentLauncher intentLauncher) {
         mPackageManager = packageManager;
+        mIntentLauncher = intentLauncher;
     }
 
     @Provides
@@ -23,5 +28,12 @@ public class StubSystemModule {
     PackageManager providePackageManager(Context context) {
         return mPackageManager;
     }
+
+    @Provides
+    @Singleton
+    DictionaryOnCopyService.IntentLauncher provideIntentLauncher() {
+        return mIntentLauncher;
+    }
+
 
 }

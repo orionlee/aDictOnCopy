@@ -181,10 +181,13 @@ public class DictionaryOnCopyServiceSanityTest {
         // Dependency Injection setup for test environment
         PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(2).build();
         DictionaryOnCopyApp app = DictionaryOnCopyApp.from(InstrumentationRegistry.getTargetContext());
-        TestAppComponent testAppComponent = DaggerTestAppComponent.builder()
-                                                                  .appModule(new AppModule(app))
-                                                                  .stubSystemModule(new StubSystemModule(stubPkgMgr))
-                                                                  .build();
+        TestAppComponent testAppComponent =
+                DaggerTestAppComponent.builder()
+                                      .appModule(new AppModule(app))
+                                      .stubSystemModule(
+                                              new StubSystemModule(stubPkgMgr,
+                                                                   sMockDictionaryLauncher))
+                                      .build();
         app.setAppComponent(testAppComponent);
 
 
@@ -195,9 +198,6 @@ public class DictionaryOnCopyServiceSanityTest {
         sDictPackageNameOrig = settings.getPackageName();
         settings.setPackageName(DICT_PACKAGE_NAME_FOR_TEST);
         DICT_ACTION_FOR_TEST = settings.getAction();
-
-        // - intercept dictionary activity to be launched (to verify it)
-        DictionaryOnCopyService.sIntentLauncherForTest = sMockDictionaryLauncher;
     }
 
     @After
@@ -205,8 +205,6 @@ public class DictionaryOnCopyServiceSanityTest {
         DictionaryOnCopyService.SettingsModel settings =
                 new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
         settings.setPackageName(sDictPackageNameOrig);
-
-        DictionaryOnCopyService.sIntentLauncherForTest = null;
     }
 
     private final ClipboardHelper mClipboardHelper = new ClipboardHelper();

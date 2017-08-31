@@ -41,18 +41,8 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         void start(Context ctx, @NonNull Intent intent);
     }
 
-    private static class IntentLauncherImpl implements IntentLauncher {
-        @Override
-        public void start(@NonNull Context context, @NonNull Intent intent) {
-            context.startActivity(intent);
-        }
-    }
-
-    private static IntentLauncher sIntentLauncherDefault = new IntentLauncherImpl();
-
-    @VisibleForTesting
-    static IntentLauncher sIntentLauncherForTest = null;
-
+    @Inject
+    IntentLauncher mIntentLauncher;
 
     @Inject
     PackageManager mPackageManager;
@@ -261,9 +251,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
         PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
         if (isIntentAvailable(this, intent)) { // check if intent is available ?
-            IntentLauncher launcher = (sIntentLauncherForTest == null ?
-                    sIntentLauncherDefault : sIntentLauncherForTest);
-            launcher.start(this, intent);
+            mIntentLauncher.start(this, intent);
         } else {
             toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, dictPkg));
         }
