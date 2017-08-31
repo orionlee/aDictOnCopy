@@ -30,6 +30,27 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return msRunning;
     }
 
+    /**
+     * A low-level interface that allows tests to stub Context#startActivity
+     * to isolate external dictionary package dependency.
+     * The interface exposes Intent so that tests can verify the intent used to launch
+     */
+    public static interface IntentLauncher {
+        void start(Context ctx, @NonNull Intent intent);
+    }
+
+    private static class IntentLauncherImpl implements IntentLauncher {
+        @Override
+        public void start(@NonNull Context context, @NonNull Intent intent) {
+            context.startActivity(intent);
+        }
+    }
+
+    private static IntentLauncher sIntentLauncherDefault = new IntentLauncherImpl();
+
+    @VisibleForTesting
+    static IntentLauncher sIntentLauncherForTest = null;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final int res = super.onStartCommand(intent, flags, startId);
@@ -227,9 +248,11 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 
         PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
-        if (isIntentAvailable(this, intent)) // check if intent is available ?
-            startActivity(intent);
-        else {
+        if (isIntentAvailable(this, intent)) { // check if intent is available ?
+            IntentLauncher launcher = (sIntentLauncherForTest == null ?
+                    sIntentLauncherDefault : sIntentLauncherForTest);
+            launcher.start(this, intent);
+        } else {
             toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, dictPkg));
         }
     }
