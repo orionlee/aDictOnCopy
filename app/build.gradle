@@ -157,16 +157,32 @@ task createDebugCombinedCoverageReport(type: JacocoReport, dependsOn: ['testDebu
 
 ext {
     supportLibVersion = "25.4.0"
+    daggerVersion = "2.11"
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+
     // Upgrade support lib version to be compatible with Android Testing Support Library
     compile "com.android.support:appcompat-v7:$supportLibVersion"
     compile "com.android.support:support-annotations:$supportLibVersion"
 
     testCompile 'junit:junit:4.12'
 
+    androidTestCompile "com.google.dagger:dagger:$daggerVersion"
+    androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+
     androidTestCompile 'com.android.support.test:runner:1.0.0'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.0'
+}
+
+// To make dagger2 compatible with android data binding
+// @see https://github.com/google/dagger/issues/306
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxerrs" << "500"
+    }
 }

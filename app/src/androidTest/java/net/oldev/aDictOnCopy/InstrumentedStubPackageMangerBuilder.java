@@ -23,11 +23,11 @@ class InstrumentedStubPackageMangerBuilder extends StubPackageMangerBuilder {
     List<ResolveInfo> buildRiListAll() {
         List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
 
-        riListAll.add(mockResolveInfo("livio.pack.lang.en_US",
+        riListAll.add(mockResolveInfo("livio.pack.lang.en_US.mock",
                                       "English (Mock)",
                                       net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_livio));
 
-        riListAll.add(mockResolveInfo("com.socialnmobile.colordict",
+        riListAll.add(mockResolveInfo("com.socialnmobile.colordict.mock",
                                       "ColorDict (Mock)",
                                       net.oldev.aDictOnCopy.debug.test.R.mipmap.ic_mock_colordict));
 

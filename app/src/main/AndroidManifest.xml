@@ -5,11 +5,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.oldev.aDictOnCopy"
-    android:versionCode="000326"
-    android:versionName="0.3.26"
+    android:versionCode="000327"
+    android:versionName="0.3.27"
     tools:ignore="GradleOverrides">
 
     <application
+        android:name="DictionaryOnCopyApp"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_dictionary_lblue_48dp"

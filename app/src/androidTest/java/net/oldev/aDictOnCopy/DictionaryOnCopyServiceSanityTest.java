@@ -5,14 +5,20 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import net.oldev.aDictOnCopy.di.AppModule;
+import net.oldev.aDictOnCopy.di.DaggerTestAppComponent;
+import net.oldev.aDictOnCopy.di.StubSystemModule;
+import net.oldev.aDictOnCopy.di.TestAppComponent;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -168,12 +174,22 @@ public class DictionaryOnCopyServiceSanityTest {
 
     private static MockIntentLauncher sMockDictionaryLauncher = new MockIntentLauncher();
 
-    @BeforeClass
-    public static void setUpTestDependency() {
-        // TODO: use stub PackageManager, for now the test relies on the fact the external dictionary is installed, even if it does not launch it. (due to #isIntentAvailable() check in the service)
-        DICT_PACKAGE_NAME_FOR_TEST = "com.socialnmobile.colordict";
+    @Before
+    public void setUpTestDependency() {
+        // Note: app setup with testAppComponent must be done with @Before, and not @BeforeClass
+
+        // Dependency Injection setup for test environment
+        PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(2).build();
+        DictionaryOnCopyApp app = DictionaryOnCopyApp.from(InstrumentationRegistry.getTargetContext());
+        TestAppComponent testAppComponent = DaggerTestAppComponent.builder()
+                                                                  .appModule(new AppModule(app))
+                                                                  .stubSystemModule(new StubSystemModule(stubPkgMgr))
+                                                                  .build();
+        app.setAppComponent(testAppComponent);
+
 
         // - set the appropriate dictionary package to be used under test
+        DICT_PACKAGE_NAME_FOR_TEST = InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(1).activityInfo.packageName;
         DictionaryOnCopyService.SettingsModel settings =
                 new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
         sDictPackageNameOrig = settings.getPackageName();
@@ -184,17 +200,14 @@ public class DictionaryOnCopyServiceSanityTest {
         DictionaryOnCopyService.sIntentLauncherForTest = sMockDictionaryLauncher;
     }
 
-    @AfterClass
-    public static void tearDownTestDependency() {
-        DictionaryManager.msIntentFactoryForTest = null;
-
+    @After
+    public void tearDownTestDependency() {
         DictionaryOnCopyService.SettingsModel settings =
                 new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
         settings.setPackageName(sDictPackageNameOrig);
 
         DictionaryOnCopyService.sIntentLauncherForTest = null;
     }
-
 
     private final ClipboardHelper mClipboardHelper = new ClipboardHelper();
     private final DictionaryOnCopyServiceHelper mServiceHelper = new DictionaryOnCopyServiceHelper();

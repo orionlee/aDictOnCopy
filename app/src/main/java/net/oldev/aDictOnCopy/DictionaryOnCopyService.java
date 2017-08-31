@@ -19,6 +19,8 @@ import android.support.annotation.VisibleForTesting;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 public class DictionaryOnCopyService extends ClipChangedListenerForegroundService {
 
@@ -50,6 +52,16 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
     @VisibleForTesting
     static IntentLauncher sIntentLauncherForTest = null;
+
+
+    @Inject
+    PackageManager mPackageManager;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        DictionaryOnCopyApp.from(this).getAppComponent().inject(this);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -258,7 +270,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private boolean isIntentAvailable(Context context, Intent intent) {
-        List<ResolveInfo> lri = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> lri = mPackageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return (lri != null) && (lri.size() > 0);
     }
 
