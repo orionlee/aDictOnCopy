@@ -143,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
     private SettingsUIModel mSettings;
     @VisibleForTesting DictionaryChooser mChooser;
 
+    /*
+     * Allows externally-injected PackageManager, rather than relying on
+     * <code>getApplicationContext().getPackageManager</code>, so that it can be stubbed.
+     */
     @Inject
     PackageManager mPackageManager;
 
@@ -160,7 +164,11 @@ public class MainActivity extends AppCompatActivity {
         // It also has the advantage that it allows additional UI logic (indirectly via bindings) to listen to
         // changes during actual initialization (see below)
         mSettings = new SettingsUIModel(new DictionaryOnCopyService.SettingsModel(this.getApplicationContext()));
-        mChooser = new DictionaryChooser(MainActivity.this, mPackageManager, mSettings.getAction());
+
+        DictionaryManager dictMgr = new DictionaryManager(mPackageManager,
+                                                          DictionaryManager.INTENT_FACTORY_DEFAULT,
+                                                          mSettings.getAction());
+        mChooser = new DictionaryChooser(MainActivity.this, dictMgr);
 
         // Now setup the UI
         final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);

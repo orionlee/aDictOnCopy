@@ -41,19 +41,37 @@ public class DictionaryManager {
         }
     }
 
+    /**
+     * Interfaces for creating new Intent instances
+     * It is needed in cases such as unit tests, where
+     * simple <code>new Intent()</code> would not work.
+     */
+    public static interface IntentFactory {
+        @NonNull Intent withAction(String action);
+    }
+
+    private static class IntentFactoryDefaultImpl implements DictionaryManager.IntentFactory {
+        @NonNull
+        @Override
+        public Intent withAction(String action) {
+            return new Intent(action);
+        }
+    }
+    public static IntentFactory INTENT_FACTORY_DEFAULT = new IntentFactoryDefaultImpl();
 
     private final String mAction; // action string to be used to launch a dictionary service
 
-
     @VisibleForTesting final PackageManager mPkgMgr;
+    private final IntentFactory mIntentFactory;
 
-    public DictionaryManager(@NonNull PackageManager pm, @NonNull String action) {
-        mAction = action;
+    public DictionaryManager(@NonNull PackageManager pm, @NonNull IntentFactory intentFactory, @NonNull String action) {
         mPkgMgr = pm;
+        mIntentFactory = intentFactory;
+        mAction = action;
     }
 
     public @Nullable DictChoiceItem getInfoOfPackage(String packageName) {
-        Intent intent = createIntentWithAction(mAction);
+        Intent intent = mIntentFactory.withAction(mAction);
         intent.setPackage(packageName);
         intent.putExtra(SearchManager.QUERY, "test");
 
@@ -64,7 +82,7 @@ public class DictionaryManager {
     }
 
     public @NonNull List<DictChoiceItem> getAvailableDictionaries() {
-        Intent intent = createIntentWithAction(mAction);
+        Intent intent = mIntentFactory.withAction(mAction);
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = mPkgMgr.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
@@ -80,18 +98,5 @@ public class DictionaryManager {
                 ri.loadLabel(mPkgMgr),
                 ri.loadIcon(mPkgMgr));
     }
-
-    private static @NonNull Intent createIntentWithAction(@NonNull String action) {
-        return ( msIntentFactoryForTest == null ?
-                new Intent(action) :
-                msIntentFactoryForTest.withAction(action));
-    }
-
-    static interface IntentFactory {
-        @NonNull Intent withAction(String action);
-    }
-
-    @VisibleForTesting
-    static IntentFactory msIntentFactoryForTest = null;
 
 }

@@ -148,7 +148,7 @@ public class SettingsUIModelTest {
     }
 
     private SettingsUIModel createSettingsUIModelUnderTest(int numDictAvailable) {
-        DictionaryManager.msIntentFactoryForTest = new DictionaryManager.IntentFactory() {
+        DictionaryManager.IntentFactory stubIntentFactory = new DictionaryManager.IntentFactory() {
             @NonNull
             @Override
             public Intent withAction(String action) {
@@ -159,7 +159,7 @@ public class SettingsUIModelTest {
         final SettingsUIModel uiModel = new SettingsUIModel(stubRealSettings());
 
         PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
-        final DictionaryManager dictMgr = new DictionaryManager(stubPkgMgr, uiModel.getAction());
+        final DictionaryManager dictMgr = new DictionaryManager(stubPkgMgr, stubIntentFactory, uiModel.getAction());
 
         uiModel.init(dictMgr, DICT_SELECTION_LABEL);
 
