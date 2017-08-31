@@ -119,6 +119,9 @@ public class DictionaryOnCopyServiceSanityTest {
     private static String DICT_PACKAGE_NAME_FOR_TEST; // final once inited by setUp
     private static String DICT_ACTION_FOR_TEST; // final once inited by setUp
 
+    /**
+     * It is a mock in the sense that it records the invocation (that can be verified)
+     */
     private static class MockIntentLauncher implements DictionaryOnCopyService.IntentLauncher {
         // record the intents received for verification
         public final List<Intent> intents = new ArrayList<Intent>();
@@ -129,7 +132,13 @@ public class DictionaryOnCopyServiceSanityTest {
         }
     }
 
-    private static void verifyAndReset(MockIntentLauncher launcher, String queryWordExpected) {
+    /**
+     * Assert that the launcher is launched with the expected intent, then reset the launcher to clear out the recordings.
+     *
+     * @param launcher the launcher to be asserted
+     * @param queryWordExpected the word expected in the intent extra, null if no intent is expected.
+     */
+    private static void assertAndReset(MockIntentLauncher launcher, String queryWordExpected) {
         if (queryWordExpected == null) {
             assertEquals("launcher is expected to have not been invoked. Unexpected Intents received: " + launcher.intents,
                          0, launcher.intents.size());
@@ -139,7 +148,7 @@ public class DictionaryOnCopyServiceSanityTest {
 
             // Now verify the intent is what we expected.
             final Intent actual = launcher.intents.get(0);
-            assertEquals("launcher intent assertion: getExtras() failed",
+            assertEquals("launcher intent assertion: getExtra() failed",
                          queryWordExpected,
                          actual.getStringExtra(SearchManager.QUERY));
             assertEquals("launcher intent assertion: getPackage() failed",
@@ -153,7 +162,7 @@ public class DictionaryOnCopyServiceSanityTest {
                          actual.getFlags());
         }
 
-        // verification done, now, resets the intents
+        // assertions done, now, resets the intents recording
         launcher.intents.clear();
     }
 
@@ -201,25 +210,25 @@ public class DictionaryOnCopyServiceSanityTest {
         assertEquals(true, DictionaryOnCopyService.isRunning()); // verify isRunning helper is working
 
         mClipboardHelper.setText("orange");
-        verifyAndReset(sMockDictionaryLauncher, "orange");
+        assertAndReset(sMockDictionaryLauncher, "orange");
 
         // Test: service pauses
         //
         mServiceHelper.pause();
         mClipboardHelper.setText("banana");
-        verifyAndReset(sMockDictionaryLauncher, null);
+        assertAndReset(sMockDictionaryLauncher, null);
 
         // Test: service resumes
         //
         mServiceHelper.resume();
         mClipboardHelper.setText("melon");
-        verifyAndReset(sMockDictionaryLauncher, "melon");
+        assertAndReset(sMockDictionaryLauncher, "melon");
 
         // Test: service stops
         //
         mServiceHelper.stopForeground();
         mClipboardHelper.setText("grape");
-        verifyAndReset(sMockDictionaryLauncher, null);
+        assertAndReset(sMockDictionaryLauncher, null);
 
         assertEquals(false, DictionaryOnCopyService.isRunning()); // verify isRunning helper is working
 
