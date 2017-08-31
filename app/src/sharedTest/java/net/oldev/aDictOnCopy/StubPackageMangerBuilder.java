@@ -132,23 +132,4 @@ class StubPackageMangerBuilder {
         return new StubResolveInfo(packageName, label, iconIdIfAvailable);
     }
 
-
-    /**
-     * Convenience helper to create a stub package manager,
-     * and set it to to be used by future DictionaryManager instances.
-     *
-     * @param numDictAvailable
-     */
-    public static void stubDictionariesAvailableInDictionaryManager(int numDictAvailable) {
-        final PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
-
-        DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
-            @NonNull
-            @Override
-            public PackageManager getManager() {
-                return stubPkgMgr;
-            }
-        };
-    }
-
 }

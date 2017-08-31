@@ -1,8 +1,10 @@
 package net.oldev.aDictOnCopy;
 
 
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
@@ -10,6 +12,11 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import net.oldev.aDictOnCopy.di.AppModule;
+import net.oldev.aDictOnCopy.di.DaggerTestAppComponent;
+import net.oldev.aDictOnCopy.di.StubSystemModule;
+import net.oldev.aDictOnCopy.di.TestAppComponent;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -65,7 +72,7 @@ public class MainActivityTest {
     @Test
     public void t1$setUp() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        InstrumentedStubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(0);
+        useStubPackageManagerWithDictionaries(0);
     }
 
     @Test
@@ -87,7 +94,7 @@ public class MainActivityTest {
     @Test
     public void t2$setUp4RemainingTests() {
         // Change the PackageManger use to a stub for test *before* Activity is created
-        InstrumentedStubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(2);
+        useStubPackageManagerWithDictionaries(2);
     }
 
     @Test
@@ -162,6 +169,18 @@ public class MainActivityTest {
         // Test: confirm the service is launched.
         assertTrue("The dictionary service should have been just launched",
                 DictionaryOnCopyService.isRunning());
+    }
+
+    private void useStubPackageManagerWithDictionaries(int numDictAvailable) {
+        // Dependency Injection setup for test environment
+        PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(numDictAvailable).build();
+        DictionaryOnCopyApp app = DictionaryOnCopyApp.from(InstrumentationRegistry.getTargetContext());
+        TestAppComponent testAppComponent = DaggerTestAppComponent.builder()
+                                                                  .appModule(new AppModule(app))
+                                                                  .stubSystemModule(new StubSystemModule(stubPkgMgr))
+                                                                  .build();
+        app.setAppComponent(testAppComponent);
+
     }
 
     /**

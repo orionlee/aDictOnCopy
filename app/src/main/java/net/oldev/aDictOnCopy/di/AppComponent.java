@@ -1,6 +1,7 @@
 package net.oldev.aDictOnCopy.di;
 
 import net.oldev.aDictOnCopy.DictionaryOnCopyService;
+import net.oldev.aDictOnCopy.MainActivity;
 
 import javax.inject.Singleton;
 
@@ -11,5 +12,6 @@ import dagger.Component;
 public interface AppComponent {
 
     void inject(DictionaryOnCopyService dictionaryOnCopyService);
+    void inject(MainActivity mainActivity);
 
 }

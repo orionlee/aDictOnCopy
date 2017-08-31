@@ -3,6 +3,7 @@ package net.oldev.aDictOnCopy;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -25,9 +26,14 @@ public class DictionaryChooser {
     private final Activity mCtx;
     private final DictionaryManager mDictMgr;
 
-    public DictionaryChooser(@NonNull Activity ctx, @NonNull String action) {
+    /*
+     * Note: it requires caller to supply a packageManager instance,
+     * rather than relying on ctx.getPackageManager()
+     * because it allows a stub package manager to be supplied (independent of context).
+     */
+    public DictionaryChooser(@NonNull Activity ctx, @NonNull PackageManager pkgMgr, @NonNull String action) {
         mCtx = ctx;
-        mDictMgr = new DictionaryManager(ctx.getPackageManager(), action);
+        mDictMgr = new DictionaryManager(pkgMgr, action);
     }
 
     public DictionaryManager getManager() {

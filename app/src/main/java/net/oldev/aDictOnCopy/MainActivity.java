@@ -1,6 +1,7 @@
 package net.oldev.aDictOnCopy;
 
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.DataBindingUtil;
@@ -14,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -140,10 +143,15 @@ public class MainActivity extends AppCompatActivity {
     private SettingsUIModel mSettings;
     @VisibleForTesting DictionaryChooser mChooser;
 
+    @Inject
+    PackageManager mPackageManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DictionaryOnCopyApp.from(this).getAppComponent().inject(this);
 
         // SettingsUIModel and DictionaryChooser (actually the underlying DictionaryManager)
         // have circular dependency.
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         // It also has the advantage that it allows additional UI logic (indirectly via bindings) to listen to
         // changes during actual initialization (see below)
         mSettings = new SettingsUIModel(new DictionaryOnCopyService.SettingsModel(this.getApplicationContext()));
-        mChooser = new DictionaryChooser(MainActivity.this, mSettings.getAction());
+        mChooser = new DictionaryChooser(MainActivity.this, mPackageManager, mSettings.getAction());
 
         // Now setup the UI
         final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);

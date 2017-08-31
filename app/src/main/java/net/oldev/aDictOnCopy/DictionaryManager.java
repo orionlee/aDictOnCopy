@@ -47,21 +47,9 @@ public class DictionaryManager {
 
     @VisibleForTesting final PackageManager mPkgMgr;
 
-    @VisibleForTesting
-    static interface PackageManagerHolder {
-        @NonNull PackageManager getManager();
-    }
-
-    /**
-     * Usage: set a custom holder in test statically,
-     * so that it can be used before Activity instances are created.
-     */
-    @VisibleForTesting
-    static PackageManagerHolder msPackageManagerHolderForTest  = null;
-
     public DictionaryManager(@NonNull PackageManager pm, @NonNull String action) {
         mAction = action;
-        mPkgMgr = msPackageManagerHolderForTest == null ? pm : msPackageManagerHolderForTest.getManager();
+        mPkgMgr = pm;
     }
 
     public @Nullable DictChoiceItem getInfoOfPackage(String packageName) {

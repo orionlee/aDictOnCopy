@@ -1,6 +1,7 @@
 package net.oldev.aDictOnCopy;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.databinding.Observable;
 import android.databinding.Observable.OnPropertyChangedCallback;
@@ -157,8 +158,8 @@ public class SettingsUIModelTest {
 
         final SettingsUIModel uiModel = new SettingsUIModel(stubRealSettings());
 
-        StubPackageMangerBuilder.stubDictionariesAvailableInDictionaryManager(numDictAvailable);
-        final DictionaryManager dictMgr = new DictionaryManager(null, uiModel.getAction());
+        PackageManager stubPkgMgr = new StubPackageMangerBuilder(numDictAvailable).build();
+        final DictionaryManager dictMgr = new DictionaryManager(stubPkgMgr, uiModel.getAction());
 
         uiModel.init(dictMgr, DICT_SELECTION_LABEL);
 

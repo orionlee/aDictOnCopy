@@ -56,16 +56,4 @@ class InstrumentedStubPackageMangerBuilder extends StubPackageMangerBuilder {
         return new InstrumentedStubResolveInfo(packageName, label, iconIdIfAvailable);
     }
 
-    public static void stubDictionariesAvailableInDictionaryManager(int numDictAvailable) {
-        final PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(numDictAvailable).build();
-
-        DictionaryManager.msPackageManagerHolderForTest = new DictionaryManager.PackageManagerHolder() {
-            @NonNull
-            @Override
-            public PackageManager getManager() {
-                return stubPkgMgr;
-            }
-        };
-    }
-
 }
