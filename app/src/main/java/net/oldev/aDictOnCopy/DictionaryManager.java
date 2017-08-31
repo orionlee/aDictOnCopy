@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class DictionaryManager {
 
     private final String mAction; // action string to be used to launch a dictionary service
 
-    @VisibleForTesting final PackageManager mPkgMgr;
+    private final PackageManager mPkgMgr;
     private final IntentFactory mIntentFactory;
 
     public DictionaryManager(@NonNull PackageManager pm, @NonNull IntentFactory intentFactory, @NonNull String action) {

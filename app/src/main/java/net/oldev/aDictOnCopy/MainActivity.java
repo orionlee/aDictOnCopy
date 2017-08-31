@@ -8,7 +8,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -141,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private SettingsUIModel mSettings;
-    @VisibleForTesting DictionaryChooser mChooser;
+    private DictionaryChooser mChooser;
 
     /*
      * Allows externally-injected PackageManager, rather than relying on
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         binding.setSettings(mSettings);
 
         // Init *MUST* be done after the settings id bound to data binding.
-        mSettings.init(mChooser.getManager(), getString(R.string.dict_selection_label));
+        mSettings.init(dictMgr, getString(R.string.dict_selection_label));
 
 
         // Let the main activity acts as a convenient shortcut to stop the service as well

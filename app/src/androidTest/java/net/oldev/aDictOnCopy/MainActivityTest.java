@@ -119,7 +119,7 @@ public class MainActivityTest {
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+                .loadLabel(mActivityTestRule.getActivity().mPackageManager).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
 
         //
@@ -150,7 +150,7 @@ public class MainActivityTest {
     @Test
     public void t4TypicalCaseVerifySettingsPersistence() {
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                .loadLabel(mActivityTestRule.getActivity().mChooser.getManager().mPkgMgr).toString();
+                .loadLabel(mActivityTestRule.getActivity().mPackageManager).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
     }
 

@@ -30,10 +30,6 @@ public class DictionaryChooser {
         mDictMgr = dictMgr;
     }
 
-    public DictionaryManager getManager() {
-        return mDictMgr;
-    }
-
     public void prompt(final OnSelectedListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
         builder.setTitle(R.string.prompt_select_dict_title);
