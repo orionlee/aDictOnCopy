@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.test.mock.MockPackageManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -104,21 +105,42 @@ class StubPackageMangerBuilder {
      * This is a non-static method so that it can use subclass-specific #mockResolveInfo
      */
     private List<ResolveInfo> buildRiListAll() {
-        List<ResolveInfo> riListAll = new ArrayList<ResolveInfo>();
+        List<ResolveInfo> riListAll = new ArrayList<>();
 
-        riListAll.add(mockResolveInfo("livio.pack.lang.en_US.mock",
-                                      "English (Mock)",
-                                      -1));
+        for (Object[] riData : riListAllData()) {
+            riListAll.add(mockResolveInfo((String)riData[0], // packageName
+                                          (String)riData[1], // label
+                                          (Integer)riData[2] // icon resource ID
+            ));
+        }
 
-        riListAll.add(mockResolveInfo("com.socialnmobile.colordict.mock",
-                                      "ColorDict (Mock)",
-                                      -1));
-
+        // Define the constants for test's readability
+        // MUST be consistent with what #riListAllData() return
         IDX_LIVIO = 0;
         IDX_SOME_DICT = 1;
 
         return Collections.unmodifiableList(riListAll);
     }
+
+    /**
+     * The data to be used to define the default #RI_LIST_ALL
+     * Note: if the data is changed, please check the related class / methods
+     *
+     * @see #buildRiListAll
+     * @see androidTest's subclass  StubPackageManagerBuilder#riListAllData
+     */
+    List<Object[]> riListAllData() {
+        // Icon resource IDs not applicable in unit test environment
+        // hence -1
+        // Subclass for androidTest would override the method and supply
+        // proper icon resource IDs
+        return Arrays.asList(new Object[][] {
+                {"livio.pack.lang.en_US.mock", "English (Mock)", -1},
+                {"com.socialnmobile.colordict.mock", "ColorDict (Mock)", -1}
+                             });
+    }
+
+
 
     static class StubResolveInfo extends ResolveInfo {
         private final @NonNull String mLabel;
