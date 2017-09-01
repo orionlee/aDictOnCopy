@@ -1,11 +1,14 @@
 package net.oldev.aDictOnCopy;
 
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
@@ -28,6 +31,7 @@ import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SmallTest
@@ -60,7 +64,7 @@ public class DictionaryOnCopyServiceSanityTest {
         }
 
 
-        /* OPEN: requires TargetApi(16)
+        @TargetApi(16)
         public void setHtml(CharSequence text, String htmlText) {
             ClipData clipData = ClipData.newHtmlText("test clip HTML text",
                                                      text,
@@ -68,16 +72,25 @@ public class DictionaryOnCopyServiceSanityTest {
             setPrimaryClip(clipData);
 
         }
-        */
+
+        public void setUri(String uriString) {
+            ClipData clipData = ClipData.newRawUri("test clip Uri", Uri.parse(uriString));
+            setPrimaryClip(clipData);
+        }
+
+        public void setIntent(String intentAction) {
+            ClipData clipData = ClipData.newIntent("test clip intent", new Intent(intentAction));
+            setPrimaryClip(clipData);
+        }
 
         private void setPrimaryClip(final ClipData clipData) {
             try {
                 mUiThreadRule.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    ClipboardManager clipbMgr =
-                            (ClipboardManager) InstrumentationRegistry.getTargetContext().getSystemService(CLIPBOARD_SERVICE);
-                    clipbMgr.setPrimaryClip(clipData);
+                        ClipboardManager clipbMgr =
+                                (ClipboardManager) InstrumentationRegistry.getTargetContext().getSystemService(CLIPBOARD_SERVICE);
+                        clipbMgr.setPrimaryClip(clipData);
                     }
                 });
                 // ensure clipboard listener has time to react to the changes
@@ -121,9 +134,11 @@ public class DictionaryOnCopyServiceSanityTest {
         }
     }
 
-    private static String sDictPackageNameOrig = null; // used by setUp / tearDown
-    private static String DICT_PACKAGE_NAME_FOR_TEST; // final once inited by setUp
-    private static String DICT_ACTION_FOR_TEST; // final once inited by setUp
+    private String mDictPackageNameOrig = null; // used by setUp / tearDown
+    private String DEFAULT_DICT_PACKAGE_NAME_FOR_TEST; // final once inited by setUp
+    private String DEFAULT_DICT_ACTION_FOR_TEST; // final once inited by setUp
+
+    private DictionaryOnCopyService.SettingsModel mSettingsModel; // used by tests
 
     /**
      * It is a mock in the sense that it records the invocation (that can be verified)
@@ -141,10 +156,13 @@ public class DictionaryOnCopyServiceSanityTest {
     /**
      * Assert that the launcher is launched with the expected intent, then reset the launcher to clear out the recordings.
      *
-     * @param launcher the launcher to be asserted
+     * @param launcher          the launcher to be asserted
      * @param queryWordExpected the word expected in the intent extra, null if no intent is expected.
      */
-    private static void assertAndReset(MockIntentLauncher launcher, String queryWordExpected) {
+    private void assertAndReset(MockIntentLauncher launcher,
+                                       String queryWordExpected,
+                                       String packageExpected,
+                                       String actionExpected) {
         if (queryWordExpected == null) {
             assertEquals("launcher is expected to have not been invoked. Unexpected Intents received: " + launcher.intents,
                          0, launcher.intents.size());
@@ -158,10 +176,10 @@ public class DictionaryOnCopyServiceSanityTest {
                          queryWordExpected,
                          actual.getStringExtra(SearchManager.QUERY));
             assertEquals("launcher intent assertion: getPackage() failed",
-                         DICT_PACKAGE_NAME_FOR_TEST,
+                         packageExpected,
                          actual.getPackage());
             assertEquals("launcher intent assertion: getAction() failed",
-                         DICT_ACTION_FOR_TEST,
+                         actionExpected,
                          actual.getAction());
             assertEquals("launcher intent assertion: getAction() failed",
                          Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION,
@@ -172,7 +190,14 @@ public class DictionaryOnCopyServiceSanityTest {
         launcher.intents.clear();
     }
 
-    private static MockIntentLauncher sMockDictionaryLauncher = new MockIntentLauncher();
+    private void assertAndReset(MockIntentLauncher launcher,
+                                       String queryWordExpected) {
+        assertAndReset(launcher, queryWordExpected,
+                       DEFAULT_DICT_PACKAGE_NAME_FOR_TEST,
+                       DEFAULT_DICT_ACTION_FOR_TEST);
+    }
+
+    private static final MockIntentLauncher sMockDictionaryLauncher = new MockIntentLauncher();
 
     @Before
     public void setUpTestDependency() {
@@ -191,20 +216,20 @@ public class DictionaryOnCopyServiceSanityTest {
         app.setAppComponent(testAppComponent);
 
 
-        // - set the appropriate dictionary package to be used under test
-        DICT_PACKAGE_NAME_FOR_TEST = InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(1).activityInfo.packageName;
-        DictionaryOnCopyService.SettingsModel settings =
+        // - set the default  dictionary package / actions to be used under test
+        mSettingsModel =
                 new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
-        sDictPackageNameOrig = settings.getPackageName();
-        settings.setPackageName(DICT_PACKAGE_NAME_FOR_TEST);
-        DICT_ACTION_FOR_TEST = settings.getAction();
+        DEFAULT_DICT_ACTION_FOR_TEST = mSettingsModel.getAction();
+        DEFAULT_DICT_PACKAGE_NAME_FOR_TEST =
+                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(1).activityInfo.packageName;
+
+        // - record the original package name in settings, so that we can restore it after tests are done
+        mDictPackageNameOrig = mSettingsModel.getPackageName();
     }
 
     @After
     public void tearDownTestDependency() {
-        DictionaryOnCopyService.SettingsModel settings =
-                new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
-        settings.setPackageName(sDictPackageNameOrig);
+        mSettingsModel.setPackageName(mDictPackageNameOrig);
     }
 
     private final ClipboardHelper mClipboardHelper = new ClipboardHelper();
@@ -212,6 +237,8 @@ public class DictionaryOnCopyServiceSanityTest {
 
     @Test
     public void testAverageCaseWithLifeCycles() throws Throwable {
+
+        mSettingsModel.setPackageName(DEFAULT_DICT_PACKAGE_NAME_FOR_TEST);
 
         assertEquals(false, DictionaryOnCopyService.isRunning());
 
@@ -243,6 +270,74 @@ public class DictionaryOnCopyServiceSanityTest {
 
         assertEquals(false, DictionaryOnCopyService.isRunning()); // verify isRunning helper is working
 
+    }
+
+    /*
+     * Test variation of clips
+     *
+     * Note: it was planned to do the test in a unit test, however,
+     * doing so will require functioning stub of many android dependencies, including
+     * ClipData / Item / Description, as well as Intent.
+     */
+    @Test
+    public void testClipAndPackageVariation() {
+
+        mSettingsModel.setPackageName(DEFAULT_DICT_PACKAGE_NAME_FOR_TEST);
+
+        mServiceHelper.startForeground();
+        assertEquals(true, DictionaryOnCopyService.isRunning()); // verify isRunning helper is working
+
+        //
+        // Note: semantically the following series of tests
+        // can be broken down to separate tests
+        // However, the additional per-test setUp might be too much.
+        //
+
+        // Test: clip text not a word, no launch
+        mClipboardHelper.setText("123456789");
+        assertAndReset(sMockDictionaryLauncher, null);
+
+
+        // Test: clip of type html, coerced to text
+        // requires API level >= 16
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mClipboardHelper.setHtml("double jeopardy", "<em>double</em> jeopardy");
+            assertAndReset(sMockDictionaryLauncher, "double jeopardy");
+        }
+
+
+        // Test: Clip of type Uri, no launch
+        mClipboardHelper.setUri("http://foo.bar.acme/");
+        assertAndReset(sMockDictionaryLauncher, null);
+
+
+        // Test: Clip of type intent, no launch
+        mClipboardHelper.setIntent(Intent.ACTION_MAIN);
+        assertAndReset(sMockDictionaryLauncher, null);
+
+
+        // Test: case dictionary package is of livio.pack.lang varieties
+        //  (special action string)
+        final String packageNameLivio =
+                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(0).activityInfo.packageName;
+        assertTrue("package to be passed to test should be livio variety as that is the point",
+                   packageNameLivio.startsWith("livio.pack.lang."));
+        mSettingsModel.setPackageName(packageNameLivio);
+
+        mClipboardHelper.setText("red");
+        assertAndReset(sMockDictionaryLauncher, "red", packageNameLivio, Intent.ACTION_SEARCH);
+
+
+        // Test: case dictionary package is not found.
+        final String packageNameNotInstalled = "dummy.dictionary.shouldNotExist";
+        mSettingsModel.setPackageName(packageNameNotInstalled);
+
+        mClipboardHelper.setText("blue");
+        assertAndReset(sMockDictionaryLauncher, null);
+
+
+        // Done
+        mServiceHelper.stopForeground();
     }
 
 }
