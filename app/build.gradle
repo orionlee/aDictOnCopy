@@ -141,6 +141,7 @@ task createDebugCombinedCoverageReport(type: JacocoReport, dependsOn: ['testDebu
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*',
                       '**/BR.class', '**/databinding/*', // android data binding library artifacts
+                      '**/*Dagger*.*', '**/*MembersInjector*.*', '**/*_Provide*Factory*.*', // Dagger auto-generated code.
                       '**/Manifest*.*',
                       '**/*Test*.*',
                       'android/**/*.*']
