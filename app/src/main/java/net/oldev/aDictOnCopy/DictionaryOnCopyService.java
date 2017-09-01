@@ -17,8 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 
@@ -250,16 +248,16 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 
         PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
-        if (isIntentAvailable(this, intent)) { // check if intent is available ?
+        if (isIntentAvailable(intent)) { // check if intent is available ?
             mIntentLauncher.start(this, intent);
         } else {
             toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, dictPkg));
         }
     }
 
-    private boolean isIntentAvailable(Context context, Intent intent) {
-        List<ResolveInfo> lri = mPackageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return (lri != null) && (lri.size() > 0);
+    private boolean isIntentAvailable(Intent intent) {
+        final ResolveInfo ri = mPackageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return ri != null;
     }
 
     private void toastMsg(String msg) {
