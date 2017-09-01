@@ -15,7 +15,18 @@ import java.util.List;
 
 class StubPackageMangerBuilder {
 
-    static List<ResolveInfo> RI_LIST_ALL;
+    static List<ResolveInfo> RI_LIST_ALL; // to be initialized once.
+
+    /**
+     * Constants to refer to the dictionary packages defined in
+     * #RI_LIST_ALL
+     *
+     * livio package has special handling so it is helpful to state clearly
+     * whether one uses livio or not.
+     */
+    static int IDX_LIVIO; // to be initialized once.
+    static int IDX_SOME_DICT; // to be initialized once.
+
     private final int mNumDictAvailable;
 
     public StubPackageMangerBuilder(int numDictAvailable) {
@@ -102,6 +113,9 @@ class StubPackageMangerBuilder {
         riListAll.add(mockResolveInfo("com.socialnmobile.colordict.mock",
                                       "ColorDict (Mock)",
                                       -1));
+
+        IDX_LIVIO = 0;
+        IDX_SOME_DICT = 1;
 
         return Collections.unmodifiableList(riListAll);
     }

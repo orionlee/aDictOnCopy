@@ -30,8 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static net.oldev.aDictOnCopy.StubPackageMangerBuilder.IDX_LIVIO;
+import static net.oldev.aDictOnCopy.StubPackageMangerBuilder.IDX_SOME_DICT;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SmallTest
@@ -221,7 +222,7 @@ public class DictionaryOnCopyServiceSanityTest {
                 new DictionaryOnCopyService.SettingsModel(InstrumentationRegistry.getTargetContext());
         DEFAULT_DICT_ACTION_FOR_TEST = mSettingsModel.getAction();
         DEFAULT_DICT_PACKAGE_NAME_FOR_TEST =
-                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(1).activityInfo.packageName;
+                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(IDX_SOME_DICT).activityInfo.packageName;
 
         // - record the original package name in settings, so that we can restore it after tests are done
         mDictPackageNameOrig = mSettingsModel.getPackageName();
@@ -319,9 +320,7 @@ public class DictionaryOnCopyServiceSanityTest {
         // Test: case dictionary package is of livio.pack.lang varieties
         //  (special action string)
         final String packageNameLivio =
-                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(0).activityInfo.packageName;
-        assertTrue("package to be passed to test should be livio variety as that is the point",
-                   packageNameLivio.startsWith("livio.pack.lang."));
+                InstrumentedStubPackageMangerBuilder.RI_LIST_ALL.get(IDX_LIVIO).activityInfo.packageName;
         mSettingsModel.setPackageName(packageNameLivio);
 
         mClipboardHelper.setText("red");
