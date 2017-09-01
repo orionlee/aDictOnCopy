@@ -36,6 +36,10 @@ public class IsAWordTest {
                 {"file://some-file.", false},
                 {"mailto:some-email@emailsite.", false},
                 {"tel:123456789", false},
+                {"123-456-7890", false},
+                {"123.456.7890", false},
+                {"123 456 7890", false},
+                {"(123)-456-7890", false},
                 {"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", false},
         });
     }

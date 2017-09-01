@@ -211,6 +211,12 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             return false;
         }
 
+        // ignore telephone numbers
+        if (textStr.matches("^[0-9.\\-()\\s]+$")) {
+            return false;
+        }
+
+
         // ignore text with too many words (e.g., a phrase or a sentence)
         final String[] splitted = textStr.split("\\s+", MAX_NUM_WORDS_IN_TEXT + 1);
         if (splitted.length > MAX_NUM_WORDS_IN_TEXT) {
