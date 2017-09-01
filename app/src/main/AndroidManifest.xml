@@ -5,9 +5,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="net.oldev.aDictOnCopy"
-    android:versionCode="000328"
-    android:versionName="0.3.28"
-    tools:ignore="GradleOverrides">
+    tools:ignore="GradleOverrides"> <!-- android:version{Code,Name} specified in build.gradle -->
 
     <application
         android:name="DictionaryOnCopyApp"

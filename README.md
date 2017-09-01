@@ -41,3 +41,43 @@ Launcher Icons source:
 - [ ] Refactor
   - [x] use Dagger2 : make the Intent / PackageManager injection (for tests)  cleaner
   
+- [ ] Optimize build speed
+  - [x] (NO-OP) Use the latest tools
+  - [ ] Create a build variant for development
+  - [ ] Avoid compiling unnecessary resources
+  - [ ] Disable Crashlytics for your debug builds
+  - [x] (DONE, little improve) Use static build config values with your debug build :
+  - [x] (NO-OP) Use static dependency versions
+  - [x] (N/A) Enable offline mode
+  - [x] (NO-OP) Enable configuration on demand
+  - [x] (NO-OP) Create library modules
+  - [x] (NO-OP) Create tasks for custom build logic
+  - [ ] Configure dexOptions
+  - [x] (NO-OP) Increase Gradle's heap size
+  - [x] (NO-OP)Convert images to WebP
+  - [x] (DEFERRED) Disable PNG crunching
+  - [x] (NO-OP) Enable Instant Run
+  - [x] (NO-OP) Enable Build Cache
+  - [x] (N/A) Disable annotation processors (dagger2 requires annotation processors)
+  - [ ] Profile the build
+  
+  
+| Changes       |  no change |   source   |  unitTest  | noChAnTst  | androidTst |
+| ------------- | ---------- | ---------- | ---------- | ---------- | ---------- |  
+| Baseline      |  03/44/21  |  09/44/25  |  05/44/25  |  03/65/25  |  05/65/30  |
+| StaticBConf   |  03/44/21  |  09/44/25  |  05/44/25  |  03/65/25  |  05/65/30  |
+
+Legends: 
+- {elapsed time in seconds} / {# gradle tasks run} / {#tasks not UP-TO-DATE}
+- androidTest command line : use task `assembleDebugAndroidTest` 
+
+StaticBConf (Use static build config values):
+- Summary: No noticeable difference, but it does clean up build.gradle logic
+- No noticeable difference on command line: neither time, nor #tasks not UP-TO-DATE
+- No noticeable difference on Android Studio either. Both Baseline and StaticBConf:  
+  - can use Instant Run upon changing Activity
+  - calls `:app:assembleDebug` to generate full apk anyway (It doesn't install it though)
+  - `:app:assembleDebug`  is no op (aka UP-TO-DATE) when there is indeed no code change in main/ source for both cases 
+  - Instant Run doesn't apply to running android test either (make it even less useful)  
+  
+  
