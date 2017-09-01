@@ -35,17 +35,17 @@ Launcher Icons source:
   - [x] incorporate to master
 - [ ] tweak styles
   - [ ] static members
-  - [ ] test methods name using _ to differeniate cases
+  - [ ] test methods name using _ to differentiate cases
   - [ ] arrange members to consistent layout (keep public interface?!)
   - [ ] fix android studio config for the above: import  android platform style xml?! 
 - [ ] Refactor
   - [x] use Dagger2 : make the Intent / PackageManager injection (for tests)  cleaner
+  - [x] (NO-OP. An overkill) consider use dagger-android
   
-- [ ] Optimize build speed
+- [x] Optimize build speed
   - [x] (NO-OP) Use the latest tools
-  - [ ] Create a build variant for development
-  - [ ] Avoid compiling unnecessary resources
-  - [ ] Disable Crashlytics for your debug builds
+  - [x] (DEFERRED, too small) Create a build variant for development + Avoid compiling unnecessary resources
+  - [x] (N/A) Disable Crashlytics for your debug builds
   - [x] (DONE, little improve) Use static build config values with your debug build :
   - [x] (NO-OP) Use static dependency versions
   - [x] (N/A) Enable offline mode
@@ -59,7 +59,7 @@ Launcher Icons source:
   - [x] (NO-OP) Enable Instant Run
   - [x] (NO-OP) Enable Build Cache
   - [x] (N/A) Disable annotation processors (dagger2 requires annotation processors)
-  - [ ] Profile the build
+  - [x] (DONE, no change needed) Profile the build
   
 
 ## Build Speed Optimization Notes
