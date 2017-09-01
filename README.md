@@ -52,7 +52,7 @@ Launcher Icons source:
   - [x] (NO-OP) Enable configuration on demand
   - [x] (NO-OP) Create library modules
   - [x] (NO-OP) Create tasks for custom build logic
-  - [ ] Configure dexOptions
+  - [x] (DONE, no improvement)Configure dexOptions
   - [x] (NO-OP) Increase Gradle's heap size
   - [x] (NO-OP)Convert images to WebP
   - [x] (DEFERRED) Disable PNG crunching
@@ -61,7 +61,10 @@ Launcher Icons source:
   - [x] (N/A) Disable annotation processors (dagger2 requires annotation processors)
   - [ ] Profile the build
   
+
+## Build Speed Optimization Notes
   
+### Static Build Config Values  
 | Changes       |  no change |   source   |  unitTest  | noChAnTst  | androidTst |
 | ------------- | ---------- | ---------- | ---------- | ---------- | ---------- |  
 | Baseline      |  03/44/21  |  09/44/25  |  05/44/25  |  03/65/25  |  05/65/30  |
@@ -80,4 +83,6 @@ StaticBConf (Use static build config values):
   - `:app:assembleDebug`  is no op (aka UP-TO-DATE) when there is indeed no code change in main/ source for both cases 
   - Instant Run doesn't apply to running android test either (make it even less useful)  
   
-  
+### Dex Options
+- setting `preDexLibraries true` does not yield noticeable gain in incremental builds
+  isolated tests (adding a private method to a service). Leave it on for now

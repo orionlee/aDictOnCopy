@@ -86,6 +86,10 @@ android {
         }
     }
 
+    dexOptions {
+        preDexLibraries true // make incremental builds faster, but might slow down clean build
+    }
+
     aaptOptions {
         additionalParameters "--no-version-vectors"
     }
