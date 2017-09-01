@@ -95,7 +95,7 @@ public class DictionaryOnCopyServiceSanityTest {
                 });
                 // ensure clipboard listener has time to react to the changes
                 // so that subsequent calls can verify what the listener has done.
-                delay(50);
+                delay(90);
             } catch (Throwable t) {
                 fail("Unexpected error in setting clipboard. " + t.getMessage());
             }
