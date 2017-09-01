@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import net.oldev.aDictOnCopy.DictionaryOnCopyService.SettingsModel;
 import net.oldev.aDictOnCopy.di.AppModule;
 import net.oldev.aDictOnCopy.di.DaggerTestAppComponent;
 import net.oldev.aDictOnCopy.di.StubSystemModule;
@@ -22,6 +23,8 @@ import net.oldev.aDictOnCopy.di.TestAppComponent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +65,28 @@ public class MainActivityTest {
     public ActivityTestRule<MainActivity> mActivityTestRule =
             new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
 
+    private static String mDictPkgOriginal = null;
+
+    /**
+     * Purpose: Isolate the test from any existing settings on the device
+     */
+    @BeforeClass
+    public static void initSettingsForTest() {
+        mDictPkgOriginal = getSettingsModel().getPackageName();
+    }
+
+    @AfterClass
+    public static void restoreSettings() {
+        getSettingsModel().setPackageName(mDictPkgOriginal);
+    }
+
+    private static SettingsModel getSettingsModel() {
+        SettingsModel settings =
+                new SettingsModel(InstrumentationRegistry.getTargetContext());
+
+        return settings;
+    }
+
     /**
      * A test setup for test t1
      * It is masqueraded as test because it has a t1-specific parameter (0 dictionary)
@@ -72,8 +97,12 @@ public class MainActivityTest {
      */
     @Test
     public void t1$setUp() {
-        // Change the PackageManger use to a stub for test *before* Activity is created
+        // Change the PackageManager use to a stub for test *before* Activity is created
+        // (for the actual t1 test)
         useStubPackageManagerWithDictionaries(0);
+
+        // ensure there is nothing specified prior to t1 test
+        getSettingsModel().setPackageName(null);
     }
 
     @Test
@@ -83,6 +112,10 @@ public class MainActivityTest {
         onView(allOf(not(isEnabled()),
                      withId(R.id.startCtl),
                      withText(getString(R.string.start_service_label)),
+                     isDisplayed()));
+
+        onView(allOf(withId(R.id.dictSelectErrOutput),
+                     withText(getString(R.string.err_msg_no_dict_available)),
                      isDisplayed()));
     }
 
@@ -94,7 +127,8 @@ public class MainActivityTest {
      */
     @Test
     public void t2$setUp4RemainingTests() {
-        // Change the PackageManger use to a stub for test *before* Activity is created
+        // Change the PackageManager use to a stub for test *before* Activity is created
+        // (for the actual t2 test)
         useStubPackageManagerWithDictionaries(2);
     }
 
@@ -172,6 +206,29 @@ public class MainActivityTest {
                 DictionaryOnCopyService.isRunning());
     }
 
+    private static final String PACKAGE_NAME_IN_T6 = "foo.bar.dictPackage.notExist";
+    @Test
+    public void t6$setUp() {
+        // ensure package specified does not exist
+        getSettingsModel().setPackageName(PACKAGE_NAME_IN_T6);
+    }
+
+    @Test
+    public void t6NegCaseSelectedDictNotFound() throws Throwable {
+        onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
+        // start service button is disabled when there is no dictionary
+        onView(allOf(not(isEnabled()),
+                     withId(R.id.startCtl),
+                     withText(getString(R.string.start_service_label)),
+                     isDisplayed()));
+
+        String errMsgExpected = String.format(getString(R.string.err_msgf_selected_dict_not_found),
+                                              PACKAGE_NAME_IN_T6);
+        onView(allOf(withId(R.id.dictSelectErrOutput),
+                     withText(errMsgExpected),
+                     isDisplayed()));
+    }
+
     private void useStubPackageManagerWithDictionaries(int numDictAvailable) {
         // Dependency Injection setup for test environment
         PackageManager stubPkgMgr = new InstrumentedStubPackageMangerBuilder(numDictAvailable).build();
@@ -221,8 +278,8 @@ public class MainActivityTest {
 
 
     private void assertPackageNameInSettingsEquals(String packageNameExpected) {
-        DictionaryOnCopyService.SettingsModel settings =
-                new DictionaryOnCopyService.SettingsModel(mActivityTestRule.getActivity());
+        SettingsModel settings =
+                new SettingsModel(mActivityTestRule.getActivity());
         assertEquals("Dictionary package picked in t3 should still be here, i.e., persisted",
                 packageNameExpected, settings.getPackageName());
     }
