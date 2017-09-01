@@ -25,7 +25,7 @@ Launcher Icons source:
   - [x] create a PackageManagerLite interface so that I can create a stub without using mock (mock is slow on devices)
   - [x] setup code coverage, for both test and androidTest
   - [x] service androidTest mainly on life cycle
-  - [ ] service androidTest on clip handling logic
+  - [x] service androidTest on clip handling logic
   - [x] (Abandoned, too much android dependency requiring functioning stub of Intent, ClipData, its dependency, etc.)service unitTest on the details of the logic.
   - [ ] `MAYBE` create a minimal androidTest that only tests bindings (require inject a mock UI Model)
 - [x] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  

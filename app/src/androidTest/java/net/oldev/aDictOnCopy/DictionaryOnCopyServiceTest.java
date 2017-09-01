@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 
 @SmallTest
 @RunWith(AndroidJUnit4.class)
-public class DictionaryOnCopyServiceSanityTest {
+public class DictionaryOnCopyServiceTest {
 
     private static void delay(long delayMillis) {
         try {
