@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class SettingsUIModelTest {
 
     @Test
-    public void testAutoSetDefaultCaseNoDict() {
+    public void testAutoSetDefault_noDict() {
 
         // - default selection, case no dictionary available,
         final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0);
@@ -44,7 +44,7 @@ public class SettingsUIModelTest {
     }
 
     @Test
-    public void testAutoSetDefaultCaseSomeDictAvailable() {
+    public void testAutoSetDefault_someDictAvailable() {
         // - default selection, case some available
         final SettingsUIModel uiModel = createSettingsUIModelUnderTest(2);
         assertNotEquals("Dictionary Package Display Name should refer to a package provided by stub package manager",

@@ -25,9 +25,9 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     //
     // For query service running state (locally within the app)
     //
-    private static boolean msRunning = false;
+    private static boolean sRunning = false;
     public static boolean isRunning() {
-        return msRunning;
+        return sRunning;
     }
 
     /**
@@ -54,14 +54,14 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final int res = super.onStartCommand(intent, flags, startId);
-        msRunning = true;
+        sRunning = true;
         return res;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        msRunning = false;
+        sRunning = false;
     }
 
     //

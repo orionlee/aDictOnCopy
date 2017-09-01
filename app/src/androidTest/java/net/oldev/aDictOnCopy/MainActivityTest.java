@@ -106,7 +106,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void t1InitialLaunchCaseNoDictAvailable() throws Throwable {
+    public void t1InitialLaunch_noDictAvailable() throws Throwable {
         onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
         // start service button is disabled when there is no dictionary
         onView(allOf(not(isEnabled()),
@@ -133,7 +133,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void t2InitialLaunchCaseDictAvailable() throws Throwable {
+    public void t2InitialLaunch_dictAvailable() throws Throwable {
         onViewDictSelectOutputCheckMatches(not(withText(getString(R.string.dict_selection_label))));
     }
 
@@ -189,7 +189,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void t5TypicalCaseCasePressYesButton() {
+    public void t5TypicalCase_pressYesButton() {
 
         // Test: click dictionary selection and pick one
         // answer *YES* in whether to launch service dialog
@@ -214,7 +214,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void t6NegCaseSelectedDictNotFound() throws Throwable {
+    public void t6Neg_selectedDictNotFound() throws Throwable {
         onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
         // start service button is disabled when there is no dictionary
         onView(allOf(not(isEnabled()),

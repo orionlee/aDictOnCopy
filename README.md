@@ -33,9 +33,9 @@ Launcher Icons source:
   - [x] Make UI Model unit-testable
   - [x] binding listeners too, reducing boilerplate codes
   - [x] incorporate to master
-- [ ] tweak styles
-  - [ ] static members
-  - [ ] test methods name using _ to differentiate cases
+- [ ] tweak code styles
+  - [x] static members
+  - [x] test methods name using _ to differentiate cases
   - [ ] arrange members to consistent layout (keep public interface?!)
   - [ ] fix android studio config for the above: import  android platform style xml?! 
 - [ ] Refactor
