@@ -154,6 +154,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         
         public static Builder addAction(Builder builder, int icon, CharSequence title, PendingIntent intent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                //noinspection deprecation
                 return builder.addAction(icon, title, intent);
             } else {
                 return builder;
@@ -164,6 +165,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 return builder.build();
             } else {
+                //noinspection deprecation
                 return builder.getNotification();
             }
         }

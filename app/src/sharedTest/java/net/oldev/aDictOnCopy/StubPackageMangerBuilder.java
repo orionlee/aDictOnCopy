@@ -42,6 +42,7 @@ class StubPackageMangerBuilder {
         mNumDictAvailable = numDictAvailable;
     }
 
+    @SuppressWarnings("deprecation")
     private static class StubPackageManager extends MockPackageManager {
         private final List<ResolveInfo> mRiList;
 

@@ -54,6 +54,7 @@ public class DictionaryOnCopyServiceTest {
          * The larger test involves start/stop service that cannot be run in UIThread
          *
          */
+        @SuppressWarnings("deprecation")
         @Rule
         public final UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
 
