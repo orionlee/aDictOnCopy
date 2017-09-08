@@ -33,7 +33,9 @@ public class MainActivity extends Activity {
 
 
         private @NonNull DictionaryOnCopyService.SettingsModel mRealSettings; // non-final for injection during testing
+        @SuppressWarnings("NullableProblems")
         private @NonNull DictionaryManager mDictMgr; // final upon init()
+        @SuppressWarnings("NullableProblems")
         private @NonNull String mDictSelectionLabel; // final upon init()
         private int mErrorCode = -1;
 
