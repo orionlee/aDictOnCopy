@@ -309,7 +309,7 @@ public class MainActivityTest {
     }
 
     private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
+            final Matcher<View> parentMatcher, @SuppressWarnings("SameParameterValue") final int position) {
 
         return new TypeSafeMatcher<View>() {
             @Override
@@ -332,7 +332,7 @@ public class MainActivityTest {
         return mActivityTestRule.getActivity().getString(resId);
     }
 
-    private static void delay(long delayMillis) {
+    private static void delay(@SuppressWarnings("SameParameterValue") long delayMillis) {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html

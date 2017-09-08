@@ -70,7 +70,7 @@ public class DictionaryOnCopyServiceTest {
 
 
         @TargetApi(16)
-        public void setHtml(CharSequence text, String htmlText) {
+        public void setHtml(@SuppressWarnings("SameParameterValue") CharSequence text, @SuppressWarnings("SameParameterValue") String htmlText) {
             ClipData clipData = ClipData.newHtmlText("test clip HTML text",
                                                      text,
                                                      htmlText);
@@ -78,12 +78,12 @@ public class DictionaryOnCopyServiceTest {
 
         }
 
-        public void setUri(String uriString) {
+        public void setUri(@SuppressWarnings("SameParameterValue") String uriString) {
             ClipData clipData = ClipData.newRawUri("test clip Uri", Uri.parse(uriString));
             setPrimaryClip(clipData);
         }
 
-        public void setIntent(String intentAction) {
+        public void setIntent(@SuppressWarnings("SameParameterValue") String intentAction) {
             ClipData clipData = ClipData.newIntent("test clip intent", new Intent(intentAction));
             setPrimaryClip(clipData);
         }
@@ -195,8 +195,8 @@ public class DictionaryOnCopyServiceTest {
         launcher.intents.clear();
     }
 
-    private void assertAndReset(MockIntentLauncher launcher,
-                                       String queryWordExpected) {
+    private void assertAndReset(@SuppressWarnings("SameParameterValue") MockIntentLauncher launcher,
+                                String queryWordExpected) {
         assertAndReset(launcher, queryWordExpected,
                        DEFAULT_DICT_PACKAGE_NAME_FOR_TEST,
                        DEFAULT_DICT_ACTION_FOR_TEST);

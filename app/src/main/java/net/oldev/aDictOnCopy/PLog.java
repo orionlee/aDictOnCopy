@@ -9,7 +9,7 @@ class PLog {
     private PLog() {} // only has static methods
     private static final String TAG = "DictionaryOnCopy";
 
-    static void e(String msg, Throwable t) { Log.e(TAG, msg, t); }
+    static void e(@SuppressWarnings("SameParameterValue") String msg, Throwable t) { Log.e(TAG, msg, t); }
 
     static void w(String msg, Throwable t) {
         Log.w(TAG, msg, t);
