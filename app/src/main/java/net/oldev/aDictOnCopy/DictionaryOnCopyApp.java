@@ -34,7 +34,7 @@ public class DictionaryOnCopyApp extends Application {
         mAppComponent = initDagger();
     }
 
-    protected AppComponent initDagger() {
+    private AppComponent initDagger() {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .systemModule(new SystemModule())

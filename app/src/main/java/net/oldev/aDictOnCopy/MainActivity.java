@@ -208,6 +208,7 @@ public class MainActivity extends Activity {
     }
 
     // Used by binding
+    @SuppressWarnings("WeakerAccess")
     public void startServiceAndFinish() {
         DictionaryOnCopyService.startForeground(getApplicationContext());
         MainActivity.this.finish();

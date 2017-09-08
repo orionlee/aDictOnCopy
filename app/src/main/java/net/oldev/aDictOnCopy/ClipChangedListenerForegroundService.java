@@ -69,7 +69,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         return getString(getServiceResources().getDisplayName());
     }
 
-    protected boolean allowPause() {
+    private boolean allowPause() {
         return getNotificationResources().getPauseNotificationSmallIcon() > 0;
     }
 

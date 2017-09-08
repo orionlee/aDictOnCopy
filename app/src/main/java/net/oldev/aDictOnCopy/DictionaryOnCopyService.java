@@ -41,11 +41,11 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         void start(Context ctx, @NonNull Intent intent);
     }
 
-    @SuppressWarnings("CanBeFinal")
+    @SuppressWarnings({"CanBeFinal", "WeakerAccess"})
     @Inject
     IntentLauncher mIntentLauncher;
 
-    @SuppressWarnings("CanBeFinal")
+    @SuppressWarnings({"CanBeFinal", "WeakerAccess"})
     @Inject
     PackageManager mPackageManager;
 
