@@ -17,9 +17,9 @@ import java.util.List;
 public class DictionaryManager {
 
     public static class DictChoiceItem {
-        private CharSequence packageName;
-        private CharSequence label;
-        private Drawable icon;
+        private final CharSequence packageName;
+        private final CharSequence label;
+        private final Drawable icon;
 
         public DictChoiceItem(CharSequence packageName, CharSequence label, Drawable icon) {
             this.packageName = packageName;
@@ -56,7 +56,7 @@ public class DictionaryManager {
             return new Intent(action);
         }
     }
-    public static IntentFactory INTENT_FACTORY_DEFAULT = new IntentFactoryDefaultImpl();
+    public static final IntentFactory INTENT_FACTORY_DEFAULT = new IntentFactoryDefaultImpl();
 
     private final String mAction; // action string to be used to launch a dictionary service
 

@@ -64,7 +64,7 @@ public class MainActivityTest {
     private static final boolean RELAUNCH_ACTIVITY_TRUE = true;
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule =
+    public final ActivityTestRule<MainActivity> mActivityTestRule =
             new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
 
     private static String mDictPkgOriginal = null;

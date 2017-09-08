@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
         public static final int ERR_SELECTED_DICT_NOT_FOUND = 2;
 
 
-        private @NonNull DictionaryOnCopyService.SettingsModel mRealSettings; // non-final for injection during testing
+        private @NonNull final DictionaryOnCopyService.SettingsModel mRealSettings; // non-final for injection during testing
         @SuppressWarnings("NullableProblems")
         private @NonNull DictionaryManager mDictMgr; // final upon init()
         @SuppressWarnings("NullableProblems")

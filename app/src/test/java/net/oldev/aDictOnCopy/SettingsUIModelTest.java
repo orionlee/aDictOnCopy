@@ -122,7 +122,7 @@ public class SettingsUIModelTest {
     private static class StubIntent extends Intent {
         // The stub needs to hold states, using mock would be more complex
 
-        private String mAction;
+        private final String mAction;
 
         private String mPackage;
 
