@@ -2,7 +2,7 @@
 <!--
 -->
 
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout>
     <data>
         <variable name="settings"
             type="net.oldev.aDictOnCopy.MainActivity.SettingsUIModel" />
