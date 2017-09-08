@@ -2,7 +2,7 @@
 <!--
 -->
 
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable name="settings"
             type="net.oldev.aDictOnCopy.MainActivity.SettingsUIModel" />
@@ -32,7 +32,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+            android:layout_height="@dimen/section_spacer_height"
+            tools:ignore="UselessLeaf"/> <!-- Used as <Space> for API level < 14 -->
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -46,7 +47,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/section_spacer_height"/> <!-- Used as <Space> for API level < 14 -->
+            android:layout_height="@dimen/section_spacer_height"
+            tools:ignore="UselessLeaf"/> <!-- Used as <Space> for API level < 14 -->
 
         <LinearLayout
             android:id="@+id/dictSelectCtl"
@@ -64,7 +66,8 @@
 
             <RelativeLayout
                 android:layout_width="@dimen/item_spacer_width"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                tools:ignore="UselessLeaf"/>
             <TextView
                 android:id="@+id/dictSelectOutput"
                 style="@style/BodyFont"
