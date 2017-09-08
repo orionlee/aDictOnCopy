@@ -36,7 +36,7 @@ class StubPackageMangerBuilder {
         }
 
         if (numDictAvailable > RI_LIST_ALL.size()) {
-            throw new IllegalArgumentException(String.format("numDictAvailable <%s> is larger than max <s>",
+            throw new IllegalArgumentException(String.format("numDictAvailable <%s> is larger than max <%s>",
                                                              numDictAvailable, RI_LIST_ALL.size()));
         }
         mNumDictAvailable = numDictAvailable;
