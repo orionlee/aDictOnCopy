@@ -246,9 +246,4 @@ public class MainActivity extends Activity {
         mSettings.setPackageName(packageName);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // the service remains even when the activity is destroyed.
-    }
 }
