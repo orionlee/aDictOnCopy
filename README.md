@@ -18,6 +18,8 @@ Launcher Icons source:
   - [x] Notification title (using app name is redundant)
   - [x] Prompt users to start service after selecting a dictionary
 - [x] i18N
+- [x] APK size reduction (by removing the use of AppCompat support lib)
+- [x] `NO-ACTION` reduce runtime memory usage (start service without fully initializing MainActivity did not cut down memory usage)
 - [ ] More info on supported dictionaries, or broaden the list of supported dictionaries (with other more generic intent action)
 - [ ] Testing 
   - [x] complete various scenarios in androidTest
