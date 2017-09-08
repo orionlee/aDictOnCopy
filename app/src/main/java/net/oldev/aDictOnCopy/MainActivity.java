@@ -148,6 +148,7 @@ public class MainActivity extends Activity {
      * Allows externally-injected PackageManager, rather than relying on
      * <code>getApplicationContext().getPackageManager</code>, so that it can be stubbed.
      */
+    @SuppressWarnings("CanBeFinal")
     @Inject
     PackageManager mPackageManager;
 

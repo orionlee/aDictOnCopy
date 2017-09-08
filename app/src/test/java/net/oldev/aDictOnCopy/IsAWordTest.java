@@ -44,9 +44,11 @@ public class IsAWordTest {
         });
     }
 
+    @SuppressWarnings("CanBeFinal")
     @Parameter
     public CharSequence text;
 
+    @SuppressWarnings("CanBeFinal")
     @Parameter(1)
     public boolean expected;
 
