@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "net.oldev.aDictOnCopy"
-        minSdkVersion 11
+        minSdkVersion 16
         targetSdkVersion 24
         
         def vMajor = 0
