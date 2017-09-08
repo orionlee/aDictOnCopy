@@ -44,7 +44,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -286,14 +285,6 @@ public class MainActivityTest {
                       isDisplayed()));
         launchServiceDialogOptionButton.perform(click());
 
-    }
-
-
-    private void assertPackageNameInSettingsEquals(String packageNameExpected) {
-        SettingsModel settings =
-                new SettingsModel(mActivityTestRule.getActivity());
-        assertEquals("Dictionary package picked in t3 should still be here, i.e., persisted",
-                packageNameExpected, settings.getPackageName());
     }
 
 
