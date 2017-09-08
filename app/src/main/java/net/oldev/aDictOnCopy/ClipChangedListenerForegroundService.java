@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
@@ -107,7 +108,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
             addActionPause(builder);
         }
 
-        Notification notification = builder.build();
+        Notification notification = NotificationBuilderCompatHelper.build(builder);
         startForeground(getOngoingNotificationId(), notification);
     }
 
@@ -145,6 +146,29 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         stopSelf();
     }
 
+    /**
+     * Helper to make the uses of Notification support API Level 11 
+     * without resorting to use NotificationCompat
+     */
+    private static class NotificationBuilderCompatHelper {
+        
+        public static Builder addAction(Builder builder, int icon, CharSequence title, PendingIntent intent) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                return builder.addAction(icon, title, intent);
+            } else {
+                return builder;
+            }
+        }
+
+        public static Notification build(Builder builder) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                return builder.build();
+            } else {
+                return builder.getNotification();
+            }
+        }
+    }
+    
     private Builder createBasicBuilder() {
         Builder builder = new Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIcon())
@@ -165,7 +189,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getPauseActionIcon(), getString(getNotificationResources().getPauseActionText()), pausePendingIntent);
+        NotificationBuilderCompatHelper.addAction(builder, getNotificationResources().getPauseActionIcon(), getString(getNotificationResources().getPauseActionText()), pausePendingIntent);
         return builder;
     }
 
@@ -173,7 +197,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_RESUME);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(getNotificationResources().getResumeActionIcon(), getString(getNotificationResources().getResumeActionText()), pausePendingIntent);
+        NotificationBuilderCompatHelper.addAction(builder, getNotificationResources().getResumeActionIcon(), getString(getNotificationResources().getResumeActionText()), pausePendingIntent);
         return builder;
     }
 
