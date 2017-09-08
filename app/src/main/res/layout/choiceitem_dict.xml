@@ -12,6 +12,7 @@
         android:id="@+id/dictChoiceIcon"
         android:layout_width="@dimen/icon_width"
         android:layout_height="@dimen/icon_height"
+        android:contentDescription="@string/desc_select_dict_icon"
         />
 
     <RelativeLayout
