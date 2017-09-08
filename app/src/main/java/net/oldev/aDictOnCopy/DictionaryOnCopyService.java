@@ -270,7 +270,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         final SettingsModel settings = new SettingsModel(this);
         String dictPkg = settings.getPackageName();
         String action = settings.getAction();
-        if (dictPkg != null && dictPkg.startsWith("livio.pack.lang.") && action != Intent.ACTION_SEARCH) {
+        if (dictPkg != null && dictPkg.startsWith("livio.pack.lang.") && !Intent.ACTION_SEARCH.equals(action)) {
             PLog.v("DictionaryOnCopyService.launchDictionary(): Livio-specific workaround for action. package=%s", dictPkg);
             // Livio dictionaries support colordict's action, but somehow it only brings up the app without word lookup.
             // So here I use Livio's default action string
