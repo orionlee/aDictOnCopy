@@ -82,7 +82,7 @@ public class SettingsUIModelTest {
         final SettingsUIModel uiModel = createSettingsUIModelUnderTest(0);
         uiModel.setPackageName("foo.bar.nonExistentDictPkg");
         // Getting display name for a non-existent package should result in error, as specified in the model under test in the beginning.
-        final CharSequence packageDisplayName = uiModel.getPackageDisplayName();
+        uiModel.getPackageDisplayName();
         assertEquals("Error code should indicate selected dictionary (in backend settings) cannot be found.",
                      SettingsUIModel.ERR_SELECTED_DICT_NOT_FOUND, uiModel.getErrorCode());
     }
