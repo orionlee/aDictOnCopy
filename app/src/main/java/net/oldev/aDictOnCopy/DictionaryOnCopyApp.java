@@ -31,10 +31,10 @@ public class DictionaryOnCopyApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        mAppComponent = initDagger(this);
+        mAppComponent = initDagger();
     }
 
-    protected AppComponent initDagger(DictionaryOnCopyApp application) {
+    protected AppComponent initDagger() {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .systemModule(new SystemModule())

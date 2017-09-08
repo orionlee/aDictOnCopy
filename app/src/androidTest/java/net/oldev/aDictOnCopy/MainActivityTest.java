@@ -264,7 +264,7 @@ public class MainActivityTest {
                 allOf(childAtPosition(
                         allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
                               withParent(withClassName(is("android.widget.LinearLayout")))),
-                        1),
+                        dictChoiceIdx),
                       isDisplayed()));
         linearLayout2.perform(click());
 

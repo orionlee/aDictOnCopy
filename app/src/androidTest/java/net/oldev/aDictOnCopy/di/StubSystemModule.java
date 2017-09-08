@@ -25,7 +25,7 @@ public class StubSystemModule {
 
     @Provides
     @Singleton
-    PackageManager providePackageManager(Context context) {
+    PackageManager providePackageManager(@SuppressWarnings("UnusedParameters") Context context) {
         return mPackageManager;
     }
 
