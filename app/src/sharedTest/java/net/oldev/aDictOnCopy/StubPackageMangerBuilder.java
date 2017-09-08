@@ -127,8 +127,9 @@ class StubPackageMangerBuilder {
      * The data to be used to define the default #RI_LIST_ALL
      * Note: if the data is changed, please check the related class / methods
      *
+     * Note: The method is to be overrode in androidTest, adding support for mock icons.
+     *
      * @see #buildRiListAll
-     * @see androidTest's subclass  StubPackageManagerBuilder#riListAllData
      */
     List<Object[]> riListAllData() {
         // Icon resource IDs not applicable in unit test environment
