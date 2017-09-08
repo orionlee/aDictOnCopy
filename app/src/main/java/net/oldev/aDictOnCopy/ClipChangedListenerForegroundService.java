@@ -123,7 +123,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         addActionResume(builder);
 
         NotificationManager notifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notifyMgr.notify(getOngoingNotificationId(), builder.build());
+        notifyMgr.notify(getOngoingNotificationId(), NotificationBuilderCompatHelper.build(builder));
     }
 
     private void doResume() {
@@ -135,7 +135,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         addActionPause(builder);
 
         NotificationManager notifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notifyMgr.notify(getOngoingNotificationId(), builder.build());
+        notifyMgr.notify(getOngoingNotificationId(), NotificationBuilderCompatHelper.build(builder));
     }
 
     private void doStopForeground() {
