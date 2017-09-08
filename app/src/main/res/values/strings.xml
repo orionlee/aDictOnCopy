@@ -9,7 +9,7 @@
     <string name="start_service_label">Start Dictionary On Copy</string>
     <string name="app_intro_label">When text is copied, it will be looked up in the dictionary.</string>
     <string name="selected_dict_label">Dictionary:</string>
-    <string name="dict_selection_label">Select...</string>
+    <string name="dict_selection_label">Select…</string>
     <string name="prompt_start_service_title">Start</string>
     <string name="prompt_start_service_msg">Dictionary has been selected. Do you want to start?</string>
     <string name="yes_btn_label">Yes</string>
@@ -20,8 +20,8 @@
 
     <!-- resources for the service -->
 
-    <string name="info_msgf_starting_service">Starting %s ...</string>
-    <string name="info_msgf_stopping_service">Stopping %s ...</string>
+    <string name="info_msgf_starting_service">Starting %s …</string>
+    <string name="info_msgf_stopping_service">Stopping %s …</string>
     <string name="noti_msg_touch_to_stop">Touch to stop.</string>
     <string name="noti_btn_pause">Pause</string>
     <string name="noti_btn_resume">Resume</string>
