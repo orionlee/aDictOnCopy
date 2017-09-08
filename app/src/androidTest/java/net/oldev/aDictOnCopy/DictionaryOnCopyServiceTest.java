@@ -93,9 +93,9 @@ public class DictionaryOnCopyServiceTest {
                 mUiThreadRule.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ClipboardManager clipbMgr =
+                        ClipboardManager clipboardManager =
                                 (ClipboardManager) InstrumentationRegistry.getTargetContext().getSystemService(CLIPBOARD_SERVICE);
-                        clipbMgr.setPrimaryClip(clipData);
+                        clipboardManager.setPrimaryClip(clipData);
                     }
                 });
                 // ensure clipboard listener has time to react to the changes
@@ -140,8 +140,8 @@ public class DictionaryOnCopyServiceTest {
     }
 
     private String mDictPackageNameOrig = null; // used by setUp / tearDown
-    private String DEFAULT_DICT_PACKAGE_NAME_FOR_TEST; // final once inited by setUp
-    private String DEFAULT_DICT_ACTION_FOR_TEST; // final once inited by setUp
+    private String DEFAULT_DICT_PACKAGE_NAME_FOR_TEST; // final once initialized by setUp
+    private String DEFAULT_DICT_ACTION_FOR_TEST; // final once initialized  by setUp
 
     private DictionaryOnCopyService.SettingsModel mSettingsModel; // used by tests
 

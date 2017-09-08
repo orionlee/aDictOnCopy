@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * A more reliable and complete test
  * It uses mock PackageManger to avoid external dictionary app dependency.
- * However, the mocks noticably slow down the test.
+ * However, the mocks noticeably slow down the test.
  *
  * Test orders are important
  *
@@ -249,12 +249,12 @@ public class MainActivityTest {
      * Perform the following :
      * - Click dictionary selection control
      * - Pick a dictionary among the choices provided, as specified in dictChoiceIdx (0-based)
-     * - Click a button in the subsequent launch service dialog, as specified in isYesInlaunchServiceDialog
+     * - Click a button in the subsequent launch service dialog, as specified in isYesInLaunchServiceDialog
      *
      * @param dictChoiceIdx
-     * @param isYesInlaunchServiceDialog
+     * @param isYesInLaunchServiceDialog
      */
-    private void clickDictSelectCtlAndSelectChoice(int dictChoiceIdx, boolean isYesInlaunchServiceDialog) {
+    private void clickDictSelectCtlAndSelectChoice(int dictChoiceIdx, boolean isYesInLaunchServiceDialog) {
         ViewInteraction dictSelectCtl = onView(
                 allOf(withId(R.id.dictSelectCtl), isDisplayed()));
         dictSelectCtl.perform(click());
@@ -270,7 +270,7 @@ public class MainActivityTest {
 
         @IdRes int btnId;
         @StringRes int launchServiceDialogBtnLabel;
-        if (isYesInlaunchServiceDialog) { // Obtained btnIds via espresso test recording
+        if (isYesInLaunchServiceDialog) { // Obtained btnIds via espresso test recording
             btnId = android.R.id.button1;
             launchServiceDialogBtnLabel = R.string.yes_btn_label;
         } else {

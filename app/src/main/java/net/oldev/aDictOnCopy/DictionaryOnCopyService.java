@@ -177,9 +177,9 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
                     //   Furthermore, the oid of the listener instance is the same, suggesting it is not the case
                     //   2 instances of the listener has been registered.
                     // - It does not happen when the text to be copied is plain text
-                    // - Tested on 2 devices, ibe with Andriid 7.1 and one with 4.4
+                    // - Tested on 2 devices, ibe with Android 7.1 and one with 4.4
                     // - There does not seem to be any workaround, barring some custom logic that tracks the last time
-                    //   the listener was fired and prevent it from firing again (with the same text) within a short timespan.
+                    //   the listener was fired and prevent it from firing again (with the same text) within a short time span.
                     //   Given there is no user-visible difference (of firing the dictionary multiple times in a few ms),
                     //   I opt for leaving it alone.
                     //
@@ -240,8 +240,8 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
 
         // ignore text with too many words (e.g., a phrase or a sentence)
-        final String[] splitted = textStr.split("\\s+", MAX_NUM_WORDS_IN_TEXT + 1);
-        if (splitted.length > MAX_NUM_WORDS_IN_TEXT) {
+        final String[] split = textStr.split("\\s+", MAX_NUM_WORDS_IN_TEXT + 1);
+        if (split.length > MAX_NUM_WORDS_IN_TEXT) {
             return false;
         }
 
