@@ -1,13 +1,13 @@
 package net.oldev.aDictOnCopy;
 
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
-import android.support.v4.app.NotificationCompat;
 
 /**
  * An abstract foreground service that listens to clipboard changes
@@ -101,7 +101,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         PLog.d(LIFECYCLE_LOG_FORMAT, "doStartForeground()");
         toastMsg(getString(getServiceResources().getStartingServiceTextf(), getServiceDisplayName()));
 
-        NotificationCompat.Builder builder = createBasicBuilder();
+        Builder builder = createBasicBuilder();
 
         if (allowPause()) {
             addActionPause(builder);
@@ -116,7 +116,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         pause();
 
         // Update UI
-        NotificationCompat.Builder builder = createBasicBuilder();
+        Builder builder = createBasicBuilder();
         builder.setSmallIcon(getNotificationResources().getPauseNotificationSmallIcon());
 
         addActionResume(builder);
@@ -130,7 +130,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         resume();
 
         // Update UI
-        NotificationCompat.Builder builder = createBasicBuilder();
+        Builder builder = createBasicBuilder();
         addActionPause(builder);
 
         NotificationManager notifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -145,12 +145,12 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         stopSelf();
     }
 
-    private NotificationCompat.Builder createBasicBuilder() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+    private Builder createBasicBuilder() {
+        Builder builder = new Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIcon())
                 .setContentTitle(getString(getNotificationResources().getContentTitle()))
-                .setContentText(getString(getNotificationResources().getContentText()))
-                .setCategory(NotificationCompat.CATEGORY_SERVICE);
+                .setContentText(getString(getNotificationResources().getContentText()));
+                /// for API level >= 21 if not using NotificationCompat .setCategory(Notification.CATEGORY_SERVICE);
 
         // Set a PendingIntent to stop the copy service
         Intent stopIntent = new Intent(getApplicationContext(), this.getClass());
@@ -161,7 +161,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         return builder;
     }
 
-    private NotificationCompat.Builder addActionPause(NotificationCompat.Builder builder) {
+    private Builder addActionPause(Builder builder) {
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -169,7 +169,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         return builder;
     }
 
-    private NotificationCompat.Builder addActionResume(NotificationCompat.Builder builder) {
+    private Builder addActionResume(Builder builder) {
         Intent pauseIntent = new Intent(getApplicationContext(), this.getClass());
         pauseIntent.setAction(ACTION_RESUME);
         PendingIntent pausePendingIntent = PendingIntent.getService(getApplicationContext(), 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);

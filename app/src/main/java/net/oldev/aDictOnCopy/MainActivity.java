@@ -1,5 +1,7 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.databinding.BaseObservable;
@@ -8,8 +10,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 
 import net.oldev.aDictOnCopy.databinding.ActivityMainBinding;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     /**
      * Semantically decorates DictionaryOnCopyService.SettingsModel,

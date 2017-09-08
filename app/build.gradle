@@ -18,7 +18,7 @@ android {
         
         def vMajor = 0
         def vMinor = 3
-        def vPatch = 28
+        def vPatch = 29
         versionCode vMajor * 10000 + vMinor * 100 + vPatch
         versionName "${vMajor}.${vMinor}.${vPatch}"
 
@@ -159,7 +159,6 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
     // Upgrade support lib version to be compatible with Android Testing Support Library
-    compile "com.android.support:appcompat-v7:$supportLibVersion"
     compile "com.android.support:support-annotations:$supportLibVersion"
 
     testCompile 'junit:junit:4.12'

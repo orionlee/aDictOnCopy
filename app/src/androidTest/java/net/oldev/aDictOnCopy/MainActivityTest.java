@@ -2,6 +2,7 @@ package net.oldev.aDictOnCopy;
 
 
 import android.content.pm.PackageManager;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.test.InstrumentationRegistry;
@@ -33,14 +34,15 @@ import org.junit.runners.MethodSorters;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -149,7 +151,7 @@ public class MainActivityTest {
 
         // Test: click dictionary selection and pick one
         // answer *NO* in whether to launch service dialog
-        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T3, R.string.no_btn_label);
+        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T3, false);
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
@@ -194,7 +196,7 @@ public class MainActivityTest {
         // Test: click dictionary selection and pick one
         // answer *YES* in whether to launch service dialog
         final int IDX_DICT_TO_PICK_IN_T5 = 0;
-        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T5, R.string.yes_btn_label);
+        clickDictSelectCtlAndSelectChoice(IDX_DICT_TO_PICK_IN_T5, true);
 
         delay(100); // give time for service & activity to complete their action
 
@@ -248,12 +250,12 @@ public class MainActivityTest {
      * Perform the following :
      * - Click dictionary selection control
      * - Pick a dictionary among the choices provided, as specified in dictChoiceIdx (0-based)
-     * - Click a button in the subsequent launch service dialog, as specified in launchServiceDialogBtnLabel
+     * - Click a button in the subsequent launch service dialog, as specified in isYesInlaunchServiceDialog
      *
      * @param dictChoiceIdx
-     * @param launchServiceDialogBtnLabel
+     * @param isYesInlaunchServiceDialog
      */
-    private void clickDictSelectCtlAndSelectChoice(int dictChoiceIdx, @StringRes int launchServiceDialogBtnLabel) {
+    private void clickDictSelectCtlAndSelectChoice(int dictChoiceIdx, boolean isYesInlaunchServiceDialog) {
         ViewInteraction dictSelectCtl = onView(
                 allOf(withId(R.id.dictSelectCtl), isDisplayed()));
         dictSelectCtl.perform(click());
@@ -261,18 +263,28 @@ public class MainActivityTest {
         // Pick one in the multiple choices in the dialog
         ViewInteraction linearLayout2 = onView(
                 allOf(childAtPosition(
-                        allOf(withId(R.id.select_dialog_listview),
-                                withParent(withId(R.id.contentPanel))),
-                        dictChoiceIdx),
-                        isDisplayed()));
+                        allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
+                              withParent(withClassName(is("android.widget.LinearLayout")))),
+                        1),
+                      isDisplayed()));
         linearLayout2.perform(click());
 
+        @IdRes int btnId;
+        @StringRes int launchServiceDialogBtnLabel;
+        if (isYesInlaunchServiceDialog) { // Obtained btnIds via espresso test recording
+            btnId = android.R.id.button1;
+            launchServiceDialogBtnLabel = R.string.yes_btn_label;
+        } else {
+            btnId = android.R.id.button2;
+            launchServiceDialogBtnLabel = R.string.no_btn_label;
+        }
         // A dialog box asking whether to launch the service.
         // click the specified button
         ViewInteraction launchServiceDialogOptionButton = onView(
-                allOf(withText(getString(launchServiceDialogBtnLabel)),
-                        withParent(withParent(withId(R.id.buttonPanel)))));
-        launchServiceDialogOptionButton.perform(scrollTo(), click());
+                allOf(withId(btnId),
+                      withText(getString(launchServiceDialogBtnLabel)),
+                      isDisplayed()));
+        launchServiceDialogOptionButton.perform(click());
 
     }
 
