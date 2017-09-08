@@ -48,7 +48,7 @@ class StubPackageMangerBuilder {
 
         public StubPackageManager(List<ResolveInfo> riListAll, int numDictAvailable) {
             super();
-            List<ResolveInfo> riList = new ArrayList<ResolveInfo>();
+            List<ResolveInfo> riList = new ArrayList<>();
             for(int i = 0; i < numDictAvailable; i++) {
                 final ResolveInfo ri = riListAll.get(i);
                 riList.add(ri);
@@ -76,7 +76,7 @@ class StubPackageMangerBuilder {
             if (isDictionaryAction(intent) && flags == PackageManager.MATCH_DEFAULT_ONLY) {
                 return mRiList;
             } else {
-                return new ArrayList<ResolveInfo>();
+                return new ArrayList<>();
             }
         }
 

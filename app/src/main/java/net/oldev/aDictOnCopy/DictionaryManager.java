@@ -85,7 +85,7 @@ public class DictionaryManager {
         intent.putExtra(SearchManager.QUERY, "test");
         List<ResolveInfo> lri = mPkgMgr.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-        ArrayList<DictChoiceItem> items = new ArrayList<DictChoiceItem>(lri.size());
+        ArrayList<DictChoiceItem> items = new ArrayList<>(lri.size());
         for (int i = 0; i < lri.size(); i++) {
             items.add(toDictChoiceItem(lri.get(i)));
         }

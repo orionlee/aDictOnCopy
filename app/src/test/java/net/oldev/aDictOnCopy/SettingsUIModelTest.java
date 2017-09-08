@@ -89,7 +89,7 @@ public class SettingsUIModelTest {
 
 
     private static class MockOnPropertyChangedCallback extends OnPropertyChangedCallback {
-        public final List<Integer> propertyIds = new ArrayList<Integer>();
+        public final List<Integer> propertyIds = new ArrayList<>();
 
         public MockOnPropertyChangedCallback() {
             super();

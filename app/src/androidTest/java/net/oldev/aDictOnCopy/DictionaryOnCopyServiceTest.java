@@ -150,7 +150,7 @@ public class DictionaryOnCopyServiceTest {
      */
     private static class MockIntentLauncher implements DictionaryOnCopyService.IntentLauncher {
         // record the intents received for verification
-        public final List<Intent> intents = new ArrayList<Intent>();
+        public final List<Intent> intents = new ArrayList<>();
 
         @Override
         public void start(Context ctx, @NonNull Intent intent) {
