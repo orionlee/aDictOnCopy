@@ -18,7 +18,7 @@ android {
         
         def vMajor = 0
         def vMinor = 3
-        def vPatch = 32
+        def vPatch = 33
         versionCode vMajor * 10000 + vMinor * 100 + vPatch
         versionName "${vMajor}.${vMinor}.${vPatch}"
 
