@@ -173,6 +173,7 @@ public class SettingsUIModelTest {
         private String packageName;
 
         public StubDictSettingsModel() {
+            //noinspection ConstantConditions
             super(null); // stub doesn't care for context
         }
 
