@@ -37,7 +37,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
      * to isolate external dictionary package dependency.
      * The interface exposes Intent so that tests can verify the intent used to launch
      */
-    public static interface IntentLauncher {
+    public interface IntentLauncher {
         void start(Context ctx, @NonNull Intent intent);
     }
 

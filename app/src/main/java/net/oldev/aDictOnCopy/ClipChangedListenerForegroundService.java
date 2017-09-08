@@ -26,7 +26,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
      */
     abstract protected int getOngoingNotificationId();
 
-    public static interface NotificationResources {
+    public interface NotificationResources {
 
         @StringRes int getContentTitle();
 
@@ -57,7 +57,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
 
     abstract protected NotificationResources getNotificationResources();
 
-    public abstract interface ServiceResources {
+    public interface ServiceResources {
         @StringRes int getDisplayName();
         @StringRes int getStartingServiceTextf();
         @StringRes int getStoppingServiceTextf();

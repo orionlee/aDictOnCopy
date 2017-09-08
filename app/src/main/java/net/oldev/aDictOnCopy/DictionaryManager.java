@@ -45,7 +45,7 @@ public class DictionaryManager {
      * It is needed in cases such as unit tests, where
      * simple <code>new Intent()</code> would not work.
      */
-    public static interface IntentFactory {
+    public interface IntentFactory {
         @NonNull Intent withAction(String action);
     }
 

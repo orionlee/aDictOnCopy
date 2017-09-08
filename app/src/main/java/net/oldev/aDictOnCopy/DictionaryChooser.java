@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DictionaryChooser {
 
-    public static interface OnSelectedListener {
+    public interface OnSelectedListener {
         void onSelected(DictionaryManager.DictChoiceItem item);
     }
 
