@@ -53,6 +53,9 @@ public class DictionaryOnCopyServiceTest {
          * mUiThreadRule is needed to access ClipboardManager (which cannot be accessed otherwise)
          * The larger test involves start/stop service that cannot be run in UIThread
          *
+         * The issue of deprecation usage is raised in
+         * https://issuetracker.google.com/issues/65268270
+         *
          */
         @SuppressWarnings("deprecation")
         @Rule
