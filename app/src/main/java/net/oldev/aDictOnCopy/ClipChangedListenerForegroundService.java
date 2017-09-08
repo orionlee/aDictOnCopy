@@ -150,7 +150,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
      * Helper to make the uses of Notification support API Level 11 
      * without resorting to use NotificationCompat
      */
-    private static class NotificationBuilderCompatHelper {
+    protected static class NotificationBuilderCompatHelper {
         
         public static Builder addAction(Builder builder, int icon, CharSequence title, PendingIntent intent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -169,7 +169,7 @@ public abstract class ClipChangedListenerForegroundService extends ClipChangedLi
         }
     }
     
-    private Builder createBasicBuilder() {
+    protected Builder createBasicBuilder() {
         Builder builder = new Builder(this)
                 .setSmallIcon(getNotificationResources().getNotificationSmallIcon())
                 .setContentTitle(getString(getNotificationResources().getContentTitle()))

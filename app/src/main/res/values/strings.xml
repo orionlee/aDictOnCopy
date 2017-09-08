@@ -25,7 +25,8 @@
     <string name="noti_msg_touch_to_stop">Touch to stop.</string>
     <string name="noti_btn_pause">Pause</string>
     <string name="noti_btn_resume">Resume</string>
-    <string name="noti_title">Launch dictionary when text is copied.</string>
+    <string name="noti_btn_open_dict">Open Dictionary</string>
+    <string name="noti_title">Open dictionary when text is copied.</string>
     <string name="err_msg_service_unexpected_err">Unexpected errors in Dictionary On Copy. Please try again.</string>
     <string name="err_msgf_service_dict_not_found_at_intent_launch">Dictionary [%s] not found."</string>
 

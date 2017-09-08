@@ -1,5 +1,7 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Notification.Builder;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -123,6 +125,24 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return SERVICE_RESOURCES;
     }
 
+    /**
+     * Add action button to allow users to open the dictionary directly.
+     *
+     */
+    @Override
+    protected Builder createBasicBuilder() {
+        Builder builder = super.createBasicBuilder();
+        addActionLaunchDictionary(builder);
+        return builder;
+    }
+
+    private Builder addActionLaunchDictionary(Builder builder) {
+        Intent dictIntent = intentForDictionary("");
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, dictIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationBuilderCompatHelper.addAction(builder, getNotificationResources().getNotificationSmallIcon(), getString(R.string.noti_btn_open_dict), pendingIntent);
+        return builder;
+    }
+
     //
     // Implement actual clipboard logic, i.e., ClipChangedListenerService
     //
@@ -237,6 +257,16 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     }
 
     private void launchDictionary(CharSequence word) {
+        Intent intent = intentForDictionary(word);
+        PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
+        if (isIntentAvailable(intent)) { // check if intent is available ?
+            mIntentLauncher.start(this, intent);
+        } else {
+            toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, intent.getPackage()));
+        }
+    }
+
+    private Intent intentForDictionary(CharSequence word) {
         final SettingsModel settings = new SettingsModel(this);
         String dictPkg = settings.getPackageName();
         String action = settings.getAction();
@@ -253,12 +283,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         // after dictionary is launched, pressing back button will go back to the previous app.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 
-        PLog.v("DictionaryOnCopyService.launchDictionary(): word=<%s>, intent=<%s>", word, intent);
-        if (isIntentAvailable(intent)) { // check if intent is available ?
-            mIntentLauncher.start(this, intent);
-        } else {
-            toastMsg(getString(R.string.err_msgf_service_dict_not_found_at_intent_launch, dictPkg));
-        }
+        return intent;
     }
 
     private boolean isIntentAvailable(Intent intent) {
