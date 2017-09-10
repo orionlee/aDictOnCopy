@@ -228,6 +228,16 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             return false;
         }
 
+        // ignore web site addresses (without http)
+        if (textStr.matches("^[^ .]+[.][^ ]{2,}$")) {
+            return false;
+        }
+
+        // ignore email addresses
+        if (textStr.matches("^[^ @]+[@][^ @.]$")) {
+            return false;
+        }
+
         // ignore numbers
         if (textStr.matches("^[$0-9.,\\s%/]+$")) {
             return false;
