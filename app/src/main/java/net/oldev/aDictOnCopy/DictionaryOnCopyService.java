@@ -268,46 +268,49 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return res;
     }
 
-    private static final String PUNCTUATIONS = buildPunctuations();
-
-    private static String buildPunctuations() {
-        String res = " \t\"'.,;:!";
-        // for special punctuation, use unicodes with corresponding HTML entity for readability
-        res += "\u2018"; // &OpenCurlyQuote;
-        res += "\u2019"; // &CloseCurlyQuote;
-        res += "\u201A"; // &lsquor;  single low-9 quotation mark (German)
-        res += "\u201C"; // &OpenCurlyDoubleQuote;
-        res += "\u201D"; // &CloseCurlyDoubleQuote;
-        res += "\u201E"; // &ldquor;  double low-9 quotation mark (German)
-
-        return res;
-    }
-
     private static CharSequence trimLeadingPunctuations(CharSequence text) {
         final int textLen = text.length();
         int i;
         for (i = 0; i < textLen; i++) {
-            if (PUNCTUATIONS.contains(""+text.charAt(i))) {
-                // found punctuation, continues to the next character to see if it's one
+            if (isPunctuationLike(text.charAt(i))) {
+                // found punctuation, continues to the next character to see if it's one too
             } else {
-                break;
+                break; // not punctuation. stop the search
             }
         }
-        // trim the consecutive punctuations
+        // trim the (consecutive) punctuations
         return text.subSequence(i, textLen);
     }
 
     private static CharSequence trimTrailingPunctuations(CharSequence text) {
         int i;
         for (i = text.length() - 1; i >= 0; i--) {
-            if (PUNCTUATIONS.contains(""+text.charAt(i))) {
-                // found punctuation, continues to the previous character to see if it's one
+            if (isPunctuationLike(text.charAt(i))) {
+                // found punctuation, continues to the previous character to see if it's one too
             } else {
-                break;
+                break; // not punctuation. stop the search
             }
         }
-        // trim the consecutive punctuations
+        // trim the (consecutive) punctuations
         return text.subSequence(0, i + 1);
+    }
+
+    private static boolean isPunctuationLike(char ch) {
+        int charType = Character.getType(ch);
+        switch(charType) {
+            case Character.END_PUNCTUATION:
+            case Character.START_PUNCTUATION:
+            case Character.FINAL_QUOTE_PUNCTUATION:
+            case Character.INITIAL_QUOTE_PUNCTUATION:
+            case Character.OTHER_PUNCTUATION: // neutral double quote is OTHER_PUNCTUATION
+            case Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE: // for tabs
+            case Character.SPACE_SEPARATOR:
+            case Character.LINE_SEPARATOR:
+            case Character.PARAGRAPH_SEPARATOR:
+                return true;
+            default:  // non punctuation
+                return false;
+        }
     }
 
     private boolean launchDictionaryIfAWord(CharSequence text) {

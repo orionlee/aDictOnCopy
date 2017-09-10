@@ -79,15 +79,17 @@ public class DictionaryOnCopyServiceUtilsTest {
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][]{
                     {"hello", "hello"},
-                    {"  hello", "hello"},
                     {"hello ", "hello"},
+                    {" \thello", "hello"}, // multiple punctuation / space to strip
                     {"hello.'", "hello"},
+                    {"\n \thello.\n", "hello"},
+                    {"'hello", "hello"}, // neutral single quote
+                    {"\"hello", "hello"}, // neutral double quote
                     {"“hello", "hello"}, // curly open double quote
                     {"hello”", "hello"}, // curly end double quote
                     {"‘hello", "hello"}, // curly open single quote
                     {"hello’", "hello"}, // curly end single quote
-                    {"\"hello", "hello"},
-                    {"  ", ""},
+                    {"   ", ""},
                     {"", ""},
                     {null, null}
             });
