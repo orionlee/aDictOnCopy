@@ -38,6 +38,8 @@ public class IsAWordTest {
                 {"some-web-site.net", false},
                 {"some.web-site.net", false},
                 {"https://some-secure-web-site.", false},
+                {"ftp://some.web-site.net/", false},
+                {"ftp://some.web-site.net/path", false},
                 {"file://some-file.", false},
                 {"file:///some-file.", false},
                 {"mailto:some-email@emailsite.", false},

@@ -225,7 +225,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
 
         // ignore various non-word patterns
         final String[] ignorePatterns = new String[] {
-                "^(https?|file|mailto|tel):.*", // URIs
+                "^(https?|file|mailto|ftp|tel):.*", // URIs
                 "^[^ .]+[.][^ ]{2,}$", // web site addresses without http
                 "^[^ @]+[@][^ @.]$", // email addresses
                 "^[$0-9.,\\s%/]+$", // numbers, including fraction
