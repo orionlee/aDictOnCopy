@@ -70,4 +70,41 @@ public class DictionaryOnCopyServiceUtilsTest {
             assertEquals(expected, actual);
         }
     }
+
+
+    @RunWith(Parameterized.class)
+    public static class NormalizeForWordSearchTest {
+
+        @Parameters(name = "{index}: <{0}> expected={1}")
+        public static Iterable<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {"hello", "hello"},
+                    {"  hello", "hello"},
+                    {"hello ", "hello"},
+                    {"hello.'", "hello"},
+                    {"“hello", "hello"}, // curly open double quote
+                    {"hello”", "hello"}, // curly end double quote
+                    {"‘hello", "hello"}, // curly open single quote
+                    {"hello’", "hello"}, // curly end single quote
+                    {"\"hello", "hello"},
+                    {"  ", ""},
+                    {"", ""},
+                    {null, null}
+            });
+        }
+
+        @SuppressWarnings({"CanBeFinal", "unused"})
+        @Parameter
+        public CharSequence text;
+
+        @SuppressWarnings({"CanBeFinal", "unused"})
+        @Parameter(1)
+        public CharSequence expected;
+
+        @Test
+        public void test() throws Exception {
+            CharSequence actual = DictionaryOnCopyService.normalizeForWordSearch(text);
+            assertEquals(expected, actual);
+        }
+    }
 }

@@ -248,9 +248,72 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
         return true;
     }
 
+    /**
+     * Normalize text, currently to strip any leading or trailing punctuations
+     * so that the word can be searched in dictionary.
+     *
+     * Some applications, e.g., Kindle, include leading / trailing punctuation (if any)
+     * in the default selection.
+     * The logic here frees users from removing the punctuation themselves from selection.
+     *
+     */
+    @VisibleForTesting
+    static CharSequence normalizeForWordSearch(CharSequence text) {
+        if (text == null || text.length() < 1) {
+            return text;
+        }
+
+        CharSequence res = trimLeadingPunctuations(text);
+        res = trimTrailingPunctuations(res);
+        return res;
+    }
+
+    private static final String PUNCTUATIONS = buildPunctuations();
+
+    private static String buildPunctuations() {
+        String res = " \t\"'.,;:!";
+        // for special punctuation, use unicodes with corresponding HTML entity for readability
+        res += "\u2018"; // &OpenCurlyQuote;
+        res += "\u2019"; // &CloseCurlyQuote;
+        res += "\u201A"; // &lsquor;  single low-9 quotation mark (German)
+        res += "\u201C"; // &OpenCurlyDoubleQuote;
+        res += "\u201D"; // &CloseCurlyDoubleQuote;
+        res += "\u201E"; // &ldquor;  double low-9 quotation mark (German)
+
+        return res;
+    }
+
+    private static CharSequence trimLeadingPunctuations(CharSequence text) {
+        final int textLen = text.length();
+        int i;
+        for (i = 0; i < textLen; i++) {
+            if (PUNCTUATIONS.contains(""+text.charAt(i))) {
+                // found punctuation, continues to the next character to see if it's one
+            } else {
+                break;
+            }
+        }
+        // trim the consecutive punctuations
+        return text.subSequence(i, textLen);
+    }
+
+    private static CharSequence trimTrailingPunctuations(CharSequence text) {
+        int i;
+        for (i = text.length() - 1; i >= 0; i--) {
+            if (PUNCTUATIONS.contains(""+text.charAt(i))) {
+                // found punctuation, continues to the previous character to see if it's one
+            } else {
+                break;
+            }
+        }
+        // trim the consecutive punctuations
+        return text.subSequence(0, i + 1);
+    }
+
     private boolean launchDictionaryIfAWord(CharSequence text) {
-        if (isAWord(text)) {
-            launchDictionary(text);
+        CharSequence normalizedText = normalizeForWordSearch(text);
+        if (isAWord(normalizedText)) {
+            launchDictionary(normalizedText);
             return true;
         } else {
             return false;
