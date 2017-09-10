@@ -19,7 +19,10 @@ Launcher Icons source:
   - [x] Prompt users to start service after selecting a dictionary
 - [x] i18N
 - [x] APK size reduction (by removing the use of AppCompat support lib)
-- [x] `NO-ACTION` reduce runtime memory usage (start service without fully initializing MainActivity did not cut down memory usage)
+- [ ] Reduce runtime memory usage 
+  - [x]`NO-ACTION` Start service without fully initializing MainActivity did not cut down memory usage
+  - [x] Investigate memory usage - graphics seemed to have unusual large memory usage. See Memory Usage section below
+  - [ ] Experiment with other ways to reduce memory usage, e.g., bypass Activity altogether?!
 - [x] Add Open Dictionary action to Notification
 - [ ] More info on supported dictionaries, or broaden the list of supported dictionaries (with other more generic intent action)
 - [ ] Testing 
@@ -64,6 +67,68 @@ Launcher Icons source:
   - [x] (N/A) Disable annotation processors (dagger2 requires annotation processors)
   - [x] (DONE, no change needed) Profile the build
   
+
+## Memory Usage Notes
+- `dumpsys meminfo` reveals graphics has unusual large memory usage (5.5 out of 13Mb). Causes unknown
+```
+> adb shell dumpsys meminfo net.oldev.aDictOnCopy
+Applications Memory Usage (in Kilobytes):
+Uptime: 819351387 Realtime: 1445614633
+
+** MEMINFO in pid 18047 [net.oldev.aDictOnCopy] **
+                   Pss  Private  Private  SwapPss     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------
+  Native Heap     2228     2216        0        0     5632     3732     1899
+  Dalvik Heap     1063     1036        0        0     5711     3427     2284
+ Dalvik Other      354      352        0        1                           
+        Stack      146      144        0        0                           
+       Ashmem        2        0        0        0                           
+      Gfx dev     1452     1452        0        0                           
+    Other dev        4        0        4        0                           
+     .so mmap      956      196        8       11                           
+    .apk mmap      436        0      248        0                           
+    .ttf mmap       78        0        4        0                           
+    .dex mmap       72        4       68        0                           
+    .oat mmap      894        0       32        0                           
+    .art mmap      795      592        0        2                           
+   Other mmap       34        4        0        0                           
+   EGL mtrack      135      135        0        0                           
+    GL mtrack     4064     4064        0        0                           
+      Unknown      236      236        0        0                           
+        TOTAL    12963    10431      364       14    11343     7159     4183
+ 
+ App Summary
+                       Pss(KB)
+                        ------
+           Java Heap:     1628
+         Native Heap:     2216
+                Code:      560
+               Stack:      144
+            Graphics:     5651
+       Private Other:      596
+              System:     2168
+ 
+               TOTAL:    12963       TOTAL SWAP PSS:       14
+ 
+ Objects
+               Views:       33         ViewRootImpl:        2
+         AppContexts:        4           Activities:        1
+              Assets:        3        AssetManagers:        2
+       Local Binders:       10        Proxy Binders:       18
+       Parcel memory:        3         Parcel count:       12
+    Death Recipients:        0      OpenSSL Sockets:        0
+            WebViews:        0
+ 
+ SQL
+         MEMORY_USED:        0
+  PAGECACHE_OVERFLOW:        0          MALLOC_SIZE:        0
+```
+
+- Comparing with similar small utility app (with minimal UI), 
+  - `com.kober.headsetbutton` Headset Controller `meminfo` showed almost no memory usage by graphics, even when the settings UI is shown
+  - `com.haxor` Screen Filter `meminfo` showed graphics memory usage similar to us here.
+
 
 ## Build Speed Optimization Notes
   
