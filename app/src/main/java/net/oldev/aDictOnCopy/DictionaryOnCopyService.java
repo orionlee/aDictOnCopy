@@ -223,31 +223,20 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
             return false;
         }
 
-        // ignore URIs
-        if (textStr.matches("^(https?|file|mailto|tel):.*")) {
-            return false;
-        }
+        // ignore various non-word patterns
+        final String[] ignorePatterns = new String[] {
+                "^(https?|file|mailto|tel):.*", // URIs
+                "^[^ .]+[.][^ ]{2,}$", // web site addresses without http
+                "^[^ @]+[@][^ @.]$", // email addresses
+                "^[$0-9.,\\s%/]+$", // numbers, including fraction
+                "^[0-9.\\-()\\s]+$", // telephone numbers
 
-        // ignore web site addresses (without http)
-        if (textStr.matches("^[^ .]+[.][^ ]{2,}$")) {
-            return false;
+        };
+        for(String aIgnorePattern : ignorePatterns) {
+            if (textStr.matches(aIgnorePattern)) {
+                return false;
+            }
         }
-
-        // ignore email addresses
-        if (textStr.matches("^[^ @]+[@][^ @.]$")) {
-            return false;
-        }
-
-        // ignore numbers
-        if (textStr.matches("^[$0-9.,\\s%/]+$")) {
-            return false;
-        }
-
-        // ignore telephone numbers
-        if (textStr.matches("^[0-9.\\-()\\s]+$")) {
-            return false;
-        }
-
 
         // ignore text with too many words (e.g., a phrase or a sentence)
         final String[] split = textStr.split("\\s+", MAX_NUM_WORDS_IN_TEXT + 1);
