@@ -302,6 +302,10 @@ public class DictionaryOnCopyServiceTest {
         mClipboardHelper.setText("123456789");
         assertAndReset(sMockDictionaryLauncher, null);
 
+        // Test: clip text normalized before launch
+        mClipboardHelper.setText("'hello.");
+        assertAndReset(sMockDictionaryLauncher, "hello");
+
 
         // Test: clip of type html, coerced to text
         // requires API level >= 16
