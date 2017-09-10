@@ -210,7 +210,7 @@ public class DictionaryOnCopyService extends ClipChangedListenerForegroundServic
     // Actual logic in launching dictionary
     //
 
-    private static final int MAX_NUM_WORDS_IN_TEXT = 5;
+    private static final int MAX_NUM_WORDS_IN_TEXT = 3;
     private static final int MAX_NUM_CHARS_IN_TEXT = 100;
     @VisibleForTesting
     static boolean isAWord(CharSequence text) {

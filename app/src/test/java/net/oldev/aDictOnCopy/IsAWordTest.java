@@ -22,6 +22,9 @@ public class IsAWordTest {
         return Arrays.asList(new Object[][] {
                 {"hello", true},
                 {"shopping mall", true},
+                {"the shopping mall", true},
+                {" the shopping mall ", true},
+                {"the one shopping mall", false},
                 {"", false},
                 {"This is a test for a rejecting a sentence.", false},
                 {"123", false},
