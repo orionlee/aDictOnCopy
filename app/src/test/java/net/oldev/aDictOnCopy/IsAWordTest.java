@@ -35,6 +35,7 @@ public class IsAWordTest {
                 {"7/21", false},
                 {"7 / 21", false},
                 {"http://some-web-site.", false},
+                {"http://some.web-site.net/path/query?arg1=v1&arg2=v%202", false},
                 {"some-web-site.net", false},
                 {"some.web-site.net", false},
                 {"https://some-secure-web-site.", false},
