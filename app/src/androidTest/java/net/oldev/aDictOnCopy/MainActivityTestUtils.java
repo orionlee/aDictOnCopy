@@ -156,6 +156,8 @@ public class MainActivityTestUtils {
     @RunWith(AndroidJUnit4.class)
     @Ignore
     static abstract class BaseTest {
+        // needed when an activity has to be relaunched between methods.
+        // E.g., test t3TypicalCase and test t4TypicalCaseVerifySettingsPersistence
         static final boolean RELAUNCH_ACTIVITY_TRUE = true;
 
         @Rule
