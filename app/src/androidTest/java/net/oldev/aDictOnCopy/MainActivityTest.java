@@ -139,6 +139,15 @@ public class MainActivityTest {
     }
 
 
+    @Test
+    public void t3$setUp() {
+        // ensure there is nothing specified prior to t3 test
+        // so that the UI can be fully exercised
+        // (rather than hitting the code path of
+        // starting the service with the specified dictionary and exit )
+        getSettingsModel().setPackageName(null);
+    }
+
     private final int IDX_DICT_TO_PICK_IN_T3 = 1;
     @Test
     public void t3TypicalCase() {
@@ -190,6 +199,14 @@ public class MainActivityTest {
     }
 
     @Test
+    public void t5$setUp() {
+        // ensure there is nothing specified prior to t5 test
+        // so that the UI can be exercised
+        // @see #t3$setUp
+        getSettingsModel().setPackageName(null);
+    }
+
+    @Test
     public void t5TypicalCase_pressYesButton() {
 
         // Test: click dictionary selection and pick one
@@ -215,7 +232,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void t6Neg_selectedDictNotFound() throws Throwable {
+    public void t6Neg_selectedDictNotFound() {
         onViewDictSelectOutputCheckMatches(withText(getString(R.string.dict_selection_label)));
         // start service button is disabled when there is no dictionary
         onView(allOf(not(isEnabled()),

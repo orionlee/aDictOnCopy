@@ -159,18 +159,38 @@ public class MainActivity extends Activity {
 
         DictionaryOnCopyApp.from(this).getAppComponent().inject(this);
 
+        // Non-UI initialization
+        // - the bare minimum initialization needed for the code path of
+        //   starting DictionaryOnCopyService without launching the full UI
+        //   This path reduces the memory usage
+        final DictionaryOnCopyService.SettingsModel serviceSettings =
+                new DictionaryOnCopyService.SettingsModel(this.getApplicationContext());
+
+        final DictionaryManager dictMgr = new DictionaryManager(mPackageManager,
+                                                          DictionaryManager.INTENT_FACTORY_DEFAULT,
+                                                          serviceSettings.getAction());
+        if (hasValidDictionaryPackageSpecifiedInModel(serviceSettings, dictMgr) &&
+                !DictionaryOnCopyService.isRunning()) {
+            PLog.d("Starting the service and exit right away without showing the UI, minimizing memory usage in average case.");
+            startServiceAndFinish();
+            return;
+        }
+        // else continue to start the UI. For cases:
+        //   1. first launch after install
+        //   2. the dictionary specified is not valid anymore (edge case)
+        //   3. the service is already running. Show the UI to allow users to change settings.
+
+        // Finally, UI initialization
+        //
+
         // SettingsUIModel and DictionaryChooser (actually the underlying DictionaryManager)
         // have circular dependency.
         // Solution for now is to defer SettingsUIModel's bulk of initialization to
         // a separate init() method.
         // It also has the advantage that it allows additional UI logic (indirectly via bindings) to listen to
         // changes during actual initialization (see below)
-        mSettings = new SettingsUIModel(new DictionaryOnCopyService.SettingsModel(this.getApplicationContext()));
-
-        DictionaryManager dictMgr = new DictionaryManager(mPackageManager,
-                                                          DictionaryManager.INTENT_FACTORY_DEFAULT,
-                                                          mSettings.getAction());
-        mChooser = new DictionaryChooser(MainActivity.this, dictMgr);
+        mSettings = new SettingsUIModel(serviceSettings);
+        mChooser = new DictionaryChooser(this, dictMgr);
 
         // Now setup the UI
         final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -211,7 +231,7 @@ public class MainActivity extends Activity {
     @SuppressWarnings("WeakerAccess")
     public void startServiceAndFinish() {
         DictionaryOnCopyService.startForeground(getApplicationContext());
-        MainActivity.this.finish();
+        finish();
     }
 
     // Used by binding
@@ -245,6 +265,18 @@ public class MainActivity extends Activity {
     private void setDictionaryToUse(DictionaryManager.DictChoiceItem item) {
         final String packageName = ( item != null ? item.getPackageName().toString() : null );
         mSettings.setPackageName(packageName);
+    }
+
+    /**
+     * Non-UI helper to check if there is a valid (installed) dictionary package
+     * specified in the backend model.
+     */
+    private static boolean hasValidDictionaryPackageSpecifiedInModel(
+            DictionaryOnCopyService.SettingsModel serviceSettings,
+            DictionaryManager dictMgr) {
+        final String pkgName = serviceSettings.getPackageName();
+        return pkgName!= null &&
+                dictMgr.getInfoOfPackage(pkgName) != null;
     }
 
 }

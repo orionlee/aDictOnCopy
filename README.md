@@ -20,9 +20,11 @@ Launcher Icons source:
 - [x] i18N
 - [x] APK size reduction (by removing the use of AppCompat support lib)
 - [ ] Reduce runtime memory usage 
-  - [x]`NO-ACTION` Start service without fully initializing MainActivity did not cut down memory usage
   - [x] Investigate memory usage - graphics seemed to have unusual large memory usage. See Memory Usage section below
-  - [ ] Experiment with other ways to reduce memory usage, e.g., bypass Activity altogether?!
+  - [ ] Experiment with other ways to reduce memory usage, e.g., bypass Activity altogether using autostart
+  - [ ] Start service without fully initializing MainActivity for typical cases. Reduced memory usage from ~12Mb to: 
+    - around 3.8Mb on KitKat
+    - around 8.6Mb on Nougat (on Nougat, it seems to continue to use a few Mb on graphics, still less than full MainActivity would have used).
 - [x] Add Open Dictionary action to Notification
 - [ ] More info on supported dictionaries, or broaden the list of supported dictionaries (with other more generic intent action)
 - [ ] Testing 
