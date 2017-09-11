@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -20,9 +21,11 @@ import net.oldev.aDictOnCopy.di.TestAppComponent;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -150,6 +153,8 @@ public class MainActivityTestUtils {
      * @see #createTestEnv(int, String) Typically a subclass will need to use createTestEnv to
      * setup the environment for the specific test
      */
+    @RunWith(AndroidJUnit4.class)
+    @Ignore
     static abstract class BaseTest {
         static final boolean RELAUNCH_ACTIVITY_TRUE = true;
 

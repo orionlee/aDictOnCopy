@@ -1,7 +1,6 @@
 package net.oldev.aDictOnCopy;
 
 import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 
 import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
 import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
@@ -10,7 +9,6 @@ import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -21,7 +19,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
 @MediumTest
-@RunWith(AndroidJUnit4.class)
 public class MA_T6Neg_selectedDictNotFound extends BaseTest {
     private static final String PACKAGE_NAME_IN_T6 = "foo.bar.dictPackage.notExist";
 

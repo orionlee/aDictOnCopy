@@ -2,7 +2,6 @@ package net.oldev.aDictOnCopy;
 
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 
 import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
 import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
@@ -12,7 +11,6 @@ import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -33,7 +31,6 @@ import static org.junit.Assert.assertTrue;
  * (The second invocation is to verify the settings done in the first one).
  */
 @SmallTest
-@RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MA_T3TypicalCase extends BaseTest {
     // Define test-specific stubs / settings
