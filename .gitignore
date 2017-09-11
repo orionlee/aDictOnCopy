@@ -20,6 +20,9 @@ gradle.properties
 .gradle
 build.xml
 
+# Android Studio generated reports on device memory usage, etc.
+captures/
+
 # Backup files
 *~
 
