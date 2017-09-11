@@ -7,6 +7,8 @@
     package="net.oldev.aDictOnCopy"
     tools:ignore="GradleOverrides"> <!-- android:version{Code,Name} specified in build.gradle -->
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:name="DictionaryOnCopyApp"
         android:allowBackup="true"
@@ -30,6 +32,13 @@
             >
         </service>
 
+        <receiver android:name=".BootReceiver"
+                  android:label="Dictionary On Copy AutoStart"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
