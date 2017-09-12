@@ -19,10 +19,11 @@ Launcher Icons source:
   - [x] Prompt users to start service after selecting a dictionary
 - [x] i18N
 - [x] APK size reduction (by removing the use of AppCompat support lib)
-- [ ] Reduce runtime memory usage 
+- [x] Reduce runtime memory usage 
   - [x] Investigate memory usage - graphics seemed to have unusual large memory usage. See Memory Usage section below
-  - [ ] Experiment with other ways to reduce memory usage, e.g., bypass Activity altogether using autostart
-  - [ ] Start service without fully initializing MainActivity for typical cases. Reduced memory usage from ~12Mb to: 
+  - [x] Experiment with other ways to reduce memory usage, e.g., bypass Activity altogether using autostart on boot
+    - It worked but not helpful for typical use cases (auto start on boot not desirable)
+  - [x] Start service without fully initializing MainActivity for typical cases. Reduced memory usage from ~12Mb to: 
     - around 3.8Mb on KitKat
     - around 8.6Mb on Nougat (on Nougat, it seems to continue to use a few Mb on graphics, still less than full MainActivity would have used).
 - [x] Add Open Dictionary action to Notification
@@ -35,6 +36,7 @@ Launcher Icons source:
   - [x] service androidTest mainly on life cycle
   - [x] service androidTest on clip handling logic
   - [x] (Abandoned, too much android dependency requiring functioning stub of Intent, ClipData, its dependency, etc.)service unitTest on the details of the logic.
+  - [x] Refactor MainActivityTest to remove dependency between tests
   - [ ] `MAYBE` create a minimal androidTest that only tests bindings (require inject a mock UI Model)
 - [x] Consider to adopt data binding (which could help to move activity logic outside to a standalone UI Model for testing)  
   - [x] initial pilot
