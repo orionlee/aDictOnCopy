@@ -47,6 +47,7 @@ import static org.hamcrest.Matchers.is;
  * but doing so will result in ClassNotFoundException when AndroidJUnitRunner tries to load
  * the test class. Hence, they are all top level classes with a prefix <code>MA_</code>
  *
+ * @see https://issuetracker.google.com/issues/65560251 AndroidJUnitRunner bug on inner static test class
  */
 public class MainActivityTestUtils {
 
