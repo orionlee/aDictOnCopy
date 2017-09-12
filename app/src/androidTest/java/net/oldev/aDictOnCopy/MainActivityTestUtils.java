@@ -73,12 +73,9 @@ public class MainActivityTestUtils {
                 try {
                     // test body
                     mBase.evaluate();
-                } catch (Throwable t) {
+                } finally {
                     // Post-test teardown: restore original package name
                     getSettingsModel().setPackageName(mDictPkgOriginal);
-
-                    // throw the original exception from test body
-                    throw t;
                 }
             }
         }
