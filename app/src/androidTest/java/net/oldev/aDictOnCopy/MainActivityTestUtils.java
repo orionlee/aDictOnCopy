@@ -1,6 +1,5 @@
 package net.oldev.aDictOnCopy;
 
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -160,7 +159,7 @@ public class MainActivityTestUtils {
          *
          * @return the activity under test
          */
-        abstract @NonNull Activity getActivity();
+        abstract @NonNull MainActivity getActivity();
 
         //
         // Helpers for specific tests
@@ -291,7 +290,7 @@ public class MainActivityTestUtils {
         }
 
         @Override
-        Activity getActivity() {
+        MainActivity getActivity() {
             return mActivityTestRule.getActivity();
         }
     }

@@ -26,6 +26,6 @@ public class MA_T7AutoStartService extends BaseTestWithTestEnvAsTestRules {
                     DictionaryOnCopyService.isRunning());
 
         assertTrue("The activity should have finished upon autostarting the service.",
-                   mActivityTestRule.getActivity().isFinishing());
+                   getActivity().isFinishing());
     }
 }

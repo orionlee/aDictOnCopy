@@ -1,6 +1,5 @@
 package net.oldev.aDictOnCopy;
 
-import android.app.Activity;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.SmallTest;
 import android.support.test.rule.ActivityTestRule;
@@ -63,7 +62,7 @@ public class MA_T3TypicalCase extends BaseTest {
             new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
 
     @Override
-    Activity getActivity() {
+    MainActivity getActivity() {
         return mActivityTestRule.getActivity();
     }
 
@@ -83,7 +82,7 @@ public class MA_T3TypicalCase extends BaseTest {
 
         // Ensure the label reflect the dict picked
         final String labelExpected = StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                                                                         .loadLabel(mActivityTestRule.getActivity().mPackageManager).toString();
+                                                                         .loadLabel(getActivity().mPackageManager).toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
 
         //
@@ -91,7 +90,7 @@ public class MA_T3TypicalCase extends BaseTest {
         //
 
         assertFalse("The Activity should still be running at this point.",
-                    mActivityTestRule.getActivity().isFinishing());
+                    getActivity().isFinishing());
 
         ViewInteraction launchServiceButton = onView(
                 allOf(withId(R.id.startCtl), withText(getString(R.string.start_service_label)), isDisplayed()));
@@ -100,7 +99,7 @@ public class MA_T3TypicalCase extends BaseTest {
         delay(100); // give time for service & activity to complete their action
 
         assertTrue("The Activity should be finished upon launching the service.",
-                   mActivityTestRule.getActivity().isFinishing());
+                   getActivity().isFinishing());
 
         // Test: confirm the service is launched.
         assertTrue("The dictionary service should have been just launched",
@@ -115,7 +114,7 @@ public class MA_T3TypicalCase extends BaseTest {
     public void t4TypicalCaseVerifySettingsPersistence() {
         final String labelExpected =
                 StubPackageMangerBuilder.RI_LIST_ALL.get(IDX_DICT_TO_PICK_IN_T3)
-                                                    .loadLabel(mActivityTestRule.getActivity().mPackageManager)
+                                                    .loadLabel(getActivity().mPackageManager)
                                                     .toString();
         onViewDictSelectOutputCheckMatches(withText(labelExpected));
     }

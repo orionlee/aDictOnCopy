@@ -23,7 +23,7 @@ public class MA_T5TypicalCase_pressYesButton extends MainActivityTestUtils.BaseT
         delay(100); // give time for service & activity to complete their action
 
         assertTrue("The Activity should be finished after the launch service option is clicked in the dialog.",
-                   mActivityTestRule.getActivity().isFinishing());
+                   getActivity().isFinishing());
 
         // Test: confirm the service is launched.
         assertTrue("The dictionary service should have been just launched",
