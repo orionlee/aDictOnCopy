@@ -2,27 +2,14 @@ package net.oldev.aDictOnCopy;
 
 import android.support.test.filters.MediumTest;
 
-import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.StubPackageManagerRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
-
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
-public class MA_T5TypicalCase_pressYesButton extends BaseTest {
-    // Define test-specific stubs / settings
-    @ClassRule
-    public static final StubPackageManagerRule mStubPackageManagerRule;
-    @ClassRule
-    public static final ServiceSettingsRule mServiceSettingsRule;
-    static {
-        TestEnv testEnv = createTestEnv(2, null);
-        mStubPackageManagerRule = testEnv.stubPackageManagerRule;
-        mServiceSettingsRule = testEnv.serviceSettingsRule;
+public class MA_T5TypicalCase_pressYesButton extends MainActivityTestUtils.BaseTestWithTestEnvAsTestRules {
+    public MA_T5TypicalCase_pressYesButton() {
+        super(2, null); // Define test-specific stubs / settings
     }
 
     @Test

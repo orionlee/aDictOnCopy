@@ -2,12 +2,8 @@ package net.oldev.aDictOnCopy;
 
 import android.support.test.filters.MediumTest;
 
-import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.StubPackageManagerRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
+import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTestWithTestEnvAsTestRules;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -19,18 +15,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
 @MediumTest
-public class MA_T6Neg_selectedDictNotFound extends BaseTest {
+public class MA_T6Neg_selectedDictNotFound extends BaseTestWithTestEnvAsTestRules {
     private static final String PACKAGE_NAME_IN_T6 = "foo.bar.dictPackage.notExist";
 
-    // Define test-specific stubs / settings
-    @ClassRule
-    public static final StubPackageManagerRule mStubPackageManagerRule;
-    @ClassRule
-    public static final ServiceSettingsRule mServiceSettingsRule;
-    static {
-        TestEnv testEnv = createTestEnv(2, PACKAGE_NAME_IN_T6);
-        mStubPackageManagerRule = testEnv.stubPackageManagerRule;
-        mServiceSettingsRule = testEnv.serviceSettingsRule;
+    public MA_T6Neg_selectedDictNotFound() {
+        super(2, PACKAGE_NAME_IN_T6); // Define test-specific stubs / settings
     }
 
     @Test

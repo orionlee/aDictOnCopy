@@ -2,30 +2,19 @@ package net.oldev.aDictOnCopy;
 
 import android.support.test.filters.MediumTest;
 
-import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.StubPackageManagerRule;
-import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
+import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTestWithTestEnvAsTestRules;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
 
 @MediumTest
-public class MA_T7AutoStartService extends BaseTest {
+public class MA_T7AutoStartService extends BaseTestWithTestEnvAsTestRules {
     private static final String PKG_NAME_DICT_TO_PICK =
             StubPackageMangerBuilder.RI_LIST_ALL.get(0).activityInfo.packageName;
 
-    // Define test-specific stubs / settings
-    @ClassRule
-    public static final StubPackageManagerRule mStubPackageManagerRule;
-    @ClassRule
-    public static final ServiceSettingsRule mServiceSettingsRule;
-    static {
-        TestEnv testEnv = createTestEnv(2, PKG_NAME_DICT_TO_PICK);
-        mStubPackageManagerRule = testEnv.stubPackageManagerRule;
-        mServiceSettingsRule = testEnv.serviceSettingsRule;
+    public MA_T7AutoStartService() {
+        super(2, PKG_NAME_DICT_TO_PICK); // Define test-specific stubs / settings
     }
 
     @Test

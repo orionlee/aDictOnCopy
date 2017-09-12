@@ -1,5 +1,6 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -144,8 +145,8 @@ public class MainActivityTestUtils {
     }
 
     /**
-     * Skeleton for MainActivity Test with a MainActivity ready to be tested. It also includes
-     * common helper methods.
+     * Skeleton for MainActivity Test: mainly a set of common helper methods.
+     * Implementation needs to supply a MainActivityTestRule for their specific case
      *
      * @see #createTestEnv(int, String) Typically a subclass will need to use createTestEnv to
      * setup the environment for the specific test
@@ -153,13 +154,12 @@ public class MainActivityTestUtils {
     @RunWith(AndroidJUnit4.class)
     @Ignore
     static abstract class BaseTest {
-        // needed when an activity has to be relaunched between methods.
-        // E.g., test t3TypicalCase and test t4TypicalCaseVerifySettingsPersistence
-        static final boolean RELAUNCH_ACTIVITY_TRUE = true;
 
-        @Rule
-        public final ActivityTestRule<MainActivity> mActivityTestRule =
-                new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
+        /**
+         *
+         * @return the activity under test
+         */
+        abstract @NonNull Activity getActivity();
 
         //
         // Helpers for specific tests
@@ -177,7 +177,7 @@ public class MainActivityTestUtils {
 
         @NonNull
         String getString(@StringRes int resId) {
-            return mActivityTestRule.getActivity().getString(resId);
+            return getActivity().getString(resId);
         }
 
 
@@ -265,4 +265,34 @@ public class MainActivityTestUtils {
             };
         }
     }
+
+    /**
+     * Abstract MainActivity test class where TestEnv is applied for each test method.
+     * In other words, TestEnv is instantiated as JUnit Test Rules.
+     */
+    static abstract class BaseTestWithTestEnvAsTestRules extends BaseTest {
+        // Define test-specific stubs / settings
+        @Rule
+        public final StubPackageManagerRule mStubPackageManagerRule;
+        @Rule
+        public final ServiceSettingsRule mServiceSettingsRule;
+
+        @Rule
+        public final ActivityTestRule<MainActivity> mActivityTestRule; // activity under test
+
+        BaseTestWithTestEnvAsTestRules(int numDictAvailable, @Nullable String packageName4Test) {
+            super();
+            TestEnv testEnv = createTestEnv(numDictAvailable, packageName4Test);
+            mStubPackageManagerRule = testEnv.stubPackageManagerRule;
+            mServiceSettingsRule = testEnv.serviceSettingsRule;
+
+            mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+        }
+
+        @Override
+        Activity getActivity() {
+            return mActivityTestRule.getActivity();
+        }
+    }
+
 }

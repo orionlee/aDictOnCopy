@@ -1,7 +1,9 @@
 package net.oldev.aDictOnCopy;
 
+import android.app.Activity;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.SmallTest;
+import android.support.test.rule.ActivityTestRule;
 
 import net.oldev.aDictOnCopy.MainActivityTestUtils.BaseTest;
 import net.oldev.aDictOnCopy.MainActivityTestUtils.ServiceSettingsRule;
@@ -10,6 +12,7 @@ import net.oldev.aDictOnCopy.MainActivityTestUtils.TestEnv;
 
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -33,16 +36,37 @@ import static org.junit.Assert.assertTrue;
 @SmallTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MA_T3TypicalCase extends BaseTest {
+    /*
+     * This class inherits from BaseTest, rather than BaseTestWithTestEnvAsTestRules
+     * because TestEnv is needed to be applied once only across all test methods of the class.
+     *
+     * They are not reset across test methods because the test t4 verifies the settings made in t3.
+     * So TestEnv should not be applied before running t4.
+     */
+
     // Define test-specific stubs / settings
     @ClassRule
-    public static final StubPackageManagerRule mStubPackageManagerRule;
+    public static final StubPackageManagerRule sStubPackageManagerRule;
     @ClassRule
-    public static final ServiceSettingsRule mServiceSettingsRule;
+    public static final ServiceSettingsRule sServiceSettingsRule;
     static {
         TestEnv testEnv = createTestEnv(2, null);
-        mStubPackageManagerRule = testEnv.stubPackageManagerRule;
-        mServiceSettingsRule = testEnv.serviceSettingsRule;
+        sStubPackageManagerRule = testEnv.stubPackageManagerRule;
+        sServiceSettingsRule = testEnv.serviceSettingsRule;
     }
+    // needed when an activity has to be relaunched between methods.
+    // E.g., test t3TypicalCase and test t4TypicalCaseVerifySettingsPersistence
+    static final boolean RELAUNCH_ACTIVITY_TRUE = true;
+
+    @Rule
+    public final ActivityTestRule<MainActivity> mActivityTestRule =
+            new ActivityTestRule<>(MainActivity.class, false, RELAUNCH_ACTIVITY_TRUE);
+
+    @Override
+    Activity getActivity() {
+        return mActivityTestRule.getActivity();
+    }
+
 
     private static final int IDX_DICT_TO_PICK_IN_T3 = 1;
     @Test
