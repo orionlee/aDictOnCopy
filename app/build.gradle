@@ -5,7 +5,7 @@ apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.3"
 
     dataBinding {
         enabled = true
@@ -18,7 +18,7 @@ android {
         
         def vMajor = 0
         def vMinor = 3
-        def vPatch = 37
+        def vPatch = 38
         versionCode vMajor * 10000 + vMinor * 100 + vPatch
         versionName "${vMajor}.${vMinor}.${vPatch}"
 
@@ -164,6 +164,8 @@ dependencies {
     compile "com.android.support:support-annotations:$supportLibVersion"
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.4.2'
+    testCompile 'com.android.support.test.espresso:espresso-core:3.0.0' // for ViewMatchers only
 
     androidTestCompile "com.google.dagger:dagger:$daggerVersion"
     androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
