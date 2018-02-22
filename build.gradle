@@ -2,6 +2,7 @@
 
 buildscript {
     repositories {
+        google() // required for android gradle 3.0.1
         jcenter()
     }
     dependencies {
@@ -22,7 +23,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "3.5"
+    gradleVersion = "4.1"
 }
 
 task clean(type: Delete) {
